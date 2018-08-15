@@ -47,11 +47,6 @@ public class MunicipalityEntityManager extends GeoEntityManager<MunicipalityEnti
     }
 
     @Override
-    protected SessionManager getSessionManager() {
-        return this.sessionManager;
-    }
-
-    @Override
     protected Class<MunicipalityEntity> getEntityClass() {
         return MunicipalityEntity.class;
     }

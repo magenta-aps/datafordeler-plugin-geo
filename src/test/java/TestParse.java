@@ -46,6 +46,7 @@ public class TestParse {
         ImportMetadata importMetadata = new ImportMetadata();
         Session session = sessionManager.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
+        importMetadata.setTransactionInProgress(true);
         importMetadata.setSession(session);
         try {
             entityManager.parseData(data, importMetadata);
@@ -54,6 +55,7 @@ public class TestParse {
             transaction.rollback();
             e.printStackTrace();
         } finally {
+            importMetadata.setTransactionInProgress(false);
             session.close();
         }
     }

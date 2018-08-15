@@ -1,31 +1,17 @@
 package dk.magenta.datafordeler.geo.data.municipality;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import dk.magenta.datafordeler.geo.data.GeoMonotemporalRecord;
-
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.xml.bind.annotation.XmlTransient;
+import java.util.Objects;
 
 @Entity
-public class MunicipalityNameRecord extends GeoMonotemporalRecord {
+public class MunicipalityNameRecord extends MunicipalityDataRecord {
 
-    public static final String DB_FIELD_ENTITY = "entity";
-
-    @JsonIgnore
-    @XmlTransient
-    @ManyToOne(optional = false)
-    private MunicipalityEntity entity;
-
-    public MunicipalityEntity getEntity() {
-        return this.entity;
+    public MunicipalityNameRecord() {
     }
 
-    public void setEntity(MunicipalityEntity entity) {
-        this.entity = entity;
+    public MunicipalityNameRecord(String name) {
+        this.name = name;
     }
-
-
 
     private String name;
 
@@ -35,6 +21,14 @@ public class MunicipalityNameRecord extends GeoMonotemporalRecord {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean equalData(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equalData(o)) return false;
+        MunicipalityNameRecord that = (MunicipalityNameRecord) o;
+        return Objects.equals(this.name, that.name);
     }
 
 }

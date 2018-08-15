@@ -5,12 +5,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dk.magenta.datafordeler.core.database.DatabaseEntry;
 import dk.magenta.datafordeler.core.database.Identification;
 import dk.magenta.datafordeler.core.database.IdentifiedEntity;
+import dk.magenta.datafordeler.core.io.ImportMetadata;
 import org.hibernate.Session;
 
 import javax.persistence.*;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.Objects;
+import java.util.Set;
 
 @MappedSuperclass
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -59,11 +62,21 @@ public abstract class GeoEntity extends DatabaseEntry implements IdentifiedEntit
         this.setCreationDate(Instant.ofEpochMilli(creationDate).atOffset(ZoneOffset.UTC));
     }
 
-
-
     @Override
     public void forceLoad(Session session) {
     }
 
-    public abstract <T extends RawData> boolean update(T rawData);
+    protected static <E extends GeoMonotemporalRecord> boolean addItem(Set<E> set, GeoMonotemporalRecord newItem) {
+        if (newItem != null) {
+            for (E oldItem : set) {
+                if (newItem.equalData(oldItem) && Objects.equals(newItem.getRegistrationFrom(), oldItem.getRegistrationFrom())) {
+                    return false;
+                }
+            }
+            return set.add((E) newItem);
+        }
+        return false;
+    }
+
+    public abstract void addMonotemporalRecord(GeoMonotemporalRecord record);
 }

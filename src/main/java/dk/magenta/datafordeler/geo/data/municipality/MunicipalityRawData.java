@@ -3,7 +3,11 @@ package dk.magenta.datafordeler.geo.data.municipality;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import dk.magenta.datafordeler.geo.data.GeoMonotemporalRecord;
 import dk.magenta.datafordeler.geo.data.RawData;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MunicipalityRawData extends RawData {
@@ -21,13 +25,15 @@ public class MunicipalityRawData extends RawData {
     @JsonProperty
     public MunicipalityRawProperties properties;
 
-    @JsonIgnore
-    public MunicipalityNameRecord getNameRecord() {
-        MunicipalityNameRecord newRecord = new MunicipalityNameRecord();
-        newRecord.setName(this.properties.municipalityName);
-        newRecord.setEditor(this.properties.editor);
-        newRecord.setRegistrationFrom(this.properties.editDate);
-        return newRecord;
+    @Override
+    public List<GeoMonotemporalRecord> getMonotemporalRecords() {
+        ArrayList<GeoMonotemporalRecord> records = new ArrayList<>();
+        records.add(
+                new MunicipalityNameRecord(this.properties.municipalityName)
+                .setEditor(this.properties.editor)
+                .setRegistrationFrom(this.properties.editDate)
+        );
+        return records;
     }
 
 }

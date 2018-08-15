@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import dk.magenta.datafordeler.core.database.Identification;
 import dk.magenta.datafordeler.core.database.IdentifiedEntity;
+import dk.magenta.datafordeler.core.io.ImportMetadata;
 import dk.magenta.datafordeler.geo.data.AreaRecord;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 import dk.magenta.datafordeler.geo.data.GeoMonotemporalRecord;
@@ -123,29 +124,20 @@ public class MunicipalityEntity extends GeoEntity implements IdentifiedEntity {
         return false;
     }
 
-    @Override
-    public void forceLoad(Session session) {
-
-    }
-
-    @Override
-    public <T extends RawData> boolean update(T rawData) {
-        boolean updated = false;
-        if (rawData instanceof MunicipalityRawData) {
-            MunicipalityRawData raw = (MunicipalityRawData) rawData;
-            MunicipalityNameRecord nameRecord = GeoMonotemporalRecord.newestRecord(this.name);
-
-            if (nameRecord == null || !Objects.equals(nameRecord.getName(), raw.properties.municipalityName)) {
-                MunicipalityNameRecord newRecord = raw.getNameRecord();
-                newRecord.setEntity(this);
-                this.name.add(newRecord);
+    public void addMonotemporalRecord(GeoMonotemporalRecord record) {
+        boolean added = false;
+        if (record instanceof MunicipalityDataRecord) {
+            MunicipalityDataRecord municipalityDataRecord = (MunicipalityDataRecord) record;
+            if (municipalityDataRecord instanceof MunicipalityNameRecord) {
+                added = addItem(this.name, municipalityDataRecord);
             }
-
+            if (added) {
+                municipalityDataRecord.setEntity(this);
+            }
         }
-        return updated;
     }
 
-    @Override
+        @Override
     public IdentifiedEntity getNewest(Collection<IdentifiedEntity> collection) {
         return null;
     }

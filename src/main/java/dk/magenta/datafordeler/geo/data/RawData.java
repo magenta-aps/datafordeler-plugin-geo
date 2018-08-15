@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
 import java.util.UUID;
 
 public abstract class RawData {
@@ -54,4 +55,6 @@ public abstract class RawData {
         public double length;
 
     }
+
+    public abstract List<GeoMonotemporalRecord> getMonotemporalRecords();
 }

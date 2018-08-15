@@ -54,6 +54,9 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
     @Autowired
     private ConfigurationSessionManager configurationSessionManager;
 
+    @Autowired
+    private SessionManager sessionManager;
+
     private HttpCommunicator commonFetcher;
 
     protected Logger log = LogManager.getLogger(this.getClass().getSimpleName());
@@ -159,16 +162,15 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
         return (GeoRegisterManager) super.getRegisterManager();
     }
 
-
-    protected abstract SessionManager getSessionManager();
-    protected abstract Class<E> getEntityClass();
-
     private static final String TASK_PARSE = "GeoParse";
     private static final String TASK_FIND_ENTITY = "GeoFindEntity";
+    private static final String TASK_POPULATE_DATA = "GeoPopulateData";
     private static final String TASK_SAVE = "GeoSave";
     private static final String TASK_COMMIT = "GeoCommit";
     private static final String TASK_CHUNK_HANDLE = "GeoChunk";
 
+
+    protected abstract Class<E> getEntityClass();
     protected abstract Class<T> getRawClass();
     protected abstract UUID generateUUID(T rawData);
     protected abstract E createBasicEntity(T record);
@@ -177,30 +179,51 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
     public List<? extends Registration> parseData(InputStream jsonData, ImportMetadata importMetadata) throws DataFordelerException {
         HashMap<UUID, E> entityCache = new HashMap<>();
         Session session = importMetadata.getSession();
+        boolean wrappedInTransaction = importMetadata.isTransactionInProgress();
+        if (!wrappedInTransaction) {
+            session.beginTransaction();
+            importMetadata.setTransactionInProgress(true);
+        }
+        timer.clear();
         parseJsonStream(jsonData, "features", this.objectMapper, jsonNode -> {
             try {
+                timer.start(TASK_PARSE);
                 T rawData = objectMapper.readerFor(this.getRawClass()).readValue(jsonNode);
+                timer.measure(TASK_PARSE);
+
+                timer.start(TASK_FIND_ENTITY);
                 UUID uuid = this.generateUUID(rawData);
                 E entity = entityCache.get(uuid);
                 if (entity == null) {
-                    System.out.println("getting ident");
                     Identification identification = QueryManager.getOrCreateIdentification(session, uuid, this.getDomain());
                     entity = QueryManager.getEntity(session, identification, this.getEntityClass());
                     if (entity == null) {
                         entity = this.createBasicEntity(rawData);
-                        System.out.println("setting identification");
                         entity.setIdentification(identification);
                     }
-                    entity.update(rawData);
                     entityCache.put(uuid, entity);
-                    session.save(entity);
-                    System.out.println(entity.identification.getUuid());
-                    System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(entity));
                 }
+                timer.measure(TASK_FIND_ENTITY);
+
+                timer.start(TASK_POPULATE_DATA);
+                this.updateEntity(entity, rawData);
+                timer.measure(TASK_POPULATE_DATA);
+
+                timer.start(TASK_SAVE);
+                session.save(entity);
+                timer.measure(TASK_SAVE);
+
+                System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(entity));
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
+        if (!wrappedInTransaction) {
+            session.getTransaction().commit();
+            importMetadata.setTransactionInProgress(false);
+        }
+        log.info(timer.formatAllTotal());
         return null;
     }
 
@@ -246,6 +269,12 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
         return count;
     }
 
+
+    protected void updateEntity(E entity, T rawData) {
+        for (GeoMonotemporalRecord record : rawData.getMonotemporalRecords()) {
+            entity.addMonotemporalRecord(record);
+        }
+    }
 
     protected boolean filter(JsonNode record, ObjectNode importConfiguration) {
         return true;

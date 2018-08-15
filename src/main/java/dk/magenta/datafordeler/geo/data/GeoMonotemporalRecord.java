@@ -30,12 +30,13 @@ public class GeoMonotemporalRecord extends GeoNontemporalRecord {
         return this.registrationFrom;
     }
 
-    public void setRegistrationFrom(OffsetDateTime registrationFrom) {
+    public GeoMonotemporalRecord setRegistrationFrom(OffsetDateTime registrationFrom) {
         this.registrationFrom = registrationFrom;
+        return this;
     }
 
-    public void setRegistrationFrom(long registrationFrom) {
-        this.setRegistrationFrom(
+    public GeoMonotemporalRecord setRegistrationFrom(long registrationFrom) {
+        return this.setRegistrationFrom(
                 Instant.ofEpochMilli(registrationFrom).atOffset(ZoneOffset.UTC)
         );
     }
@@ -55,12 +56,13 @@ public class GeoMonotemporalRecord extends GeoNontemporalRecord {
         return this.registrationTo;
     }
 
-    public void setRegistrationTo(OffsetDateTime registrationTo) {
+    public GeoMonotemporalRecord setRegistrationTo(OffsetDateTime registrationTo) {
         this.registrationTo = registrationTo;
+        return this;
     }
 
-    public void setRegistrationTo(long registrationTo) {
-        this.setRegistrationTo(
+    public GeoMonotemporalRecord setRegistrationTo(long registrationTo) {
+        return this.setRegistrationTo(
                 Instant.ofEpochMilli(registrationTo).atOffset(ZoneOffset.UTC)
         );
     }
@@ -78,8 +80,9 @@ public class GeoMonotemporalRecord extends GeoNontemporalRecord {
         return this.editor;
     }
 
-    public void setEditor(String editor) {
+    public GeoMonotemporalRecord setEditor(String editor) {
         this.editor = editor;
+        return this;
     }
 
 
