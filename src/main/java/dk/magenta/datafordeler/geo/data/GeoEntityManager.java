@@ -213,8 +213,6 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
                 session.save(entity);
                 timer.measure(TASK_SAVE);
 
-                System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(entity));
-
             } catch (IOException e) {
                 e.printStackTrace();
             }

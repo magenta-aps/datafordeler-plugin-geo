@@ -12,6 +12,7 @@ import dk.magenta.datafordeler.geo.data.RawData;
 import org.hibernate.Session;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import java.time.Instant;
@@ -20,7 +21,7 @@ import java.time.ZoneOffset;
 import java.util.*;
 
 @Entity
-public class MunicipalityEntity extends GeoEntity implements IdentifiedEntity {
+public class MunicipalityEntity extends SumiffiikEntity implements IdentifiedEntity {
 
     @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="type")
     public static final String schema = "Municipality";
@@ -29,10 +30,8 @@ public class MunicipalityEntity extends GeoEntity implements IdentifiedEntity {
     }
 
     public MunicipalityEntity(MunicipalityRawData record) {
-        this.setSumiffiikId(record.properties.sumiffiikId);
-        this.setObjectId(record.properties.objectId);
+        super(record);
         this.setCode(record.properties.code);
-        this.setCreationDate(record.properties.creationDate);
     }
 
     public static UUID generateUUID(int municipalityCode) {
@@ -41,35 +40,9 @@ public class MunicipalityEntity extends GeoEntity implements IdentifiedEntity {
     }
 
 
-
-    @JsonProperty
-    private int objectId;
-
-    public int getObjectId() {
-        return this.objectId;
-    }
-
-    @JsonProperty(value = "OBJECTID")
-    public void setObjectId(int objectId) {
-        this.objectId = objectId;
-    }
-
-
-    @JsonProperty
-    private String sumiffiikId;
-
-    @JsonProperty(value = "id")
-    public String getSumiffiikId() {
-        return this.sumiffiikId;
-    }
-
-    public void setSumiffiikId(String sumiffiikId) {
-        this.sumiffiikId = sumiffiikId;
-    }
-
-
-
-
+    public static final String DB_FIELD_CODE = "code";
+    public static final String IO_FIELD_CODE = "kode";
+    @Column(name = DB_FIELD_CODE)
     @JsonProperty
     private int code;
 

@@ -21,6 +21,7 @@ public abstract class GeoEntity extends DatabaseEntry implements IdentifiedEntit
 
     public abstract boolean merge(GeoEntity other);
 
+    public static final String DB_FIELD_IDENTIFICATION = "identification";
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     protected Identification identification;
 
@@ -33,6 +34,8 @@ public abstract class GeoEntity extends DatabaseEntry implements IdentifiedEntit
         this.identification = identification;
     }
 
+    public static final String DB_FIELD_CREATOR = "creator";
+    @Column(name = DB_FIELD_CREATOR)
     private String creator;
 
     public String getCreator() {
@@ -46,6 +49,8 @@ public abstract class GeoEntity extends DatabaseEntry implements IdentifiedEntit
 
 
 
+    public static final String DB_FIELD_CREATION_DATE = "creationDate";
+    @Column(name = DB_FIELD_CREATION_DATE)
     private OffsetDateTime creationDate;
 
     public OffsetDateTime getCreationDate() {
