@@ -2,22 +2,13 @@ package dk.magenta.datafordeler.geo.data.municipality;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import dk.magenta.datafordeler.core.database.Identification;
 import dk.magenta.datafordeler.core.database.IdentifiedEntity;
-import dk.magenta.datafordeler.core.io.ImportMetadata;
-import dk.magenta.datafordeler.geo.data.AreaRecord;
-import dk.magenta.datafordeler.geo.data.GeoEntity;
-import dk.magenta.datafordeler.geo.data.GeoMonotemporalRecord;
-import dk.magenta.datafordeler.geo.data.RawData;
-import org.hibernate.Session;
+import dk.magenta.datafordeler.geo.data.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.*;
 
 @Entity

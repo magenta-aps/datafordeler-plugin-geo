@@ -4,7 +4,6 @@ import dk.magenta.datafordeler.core.database.*;
 import dk.magenta.datafordeler.core.fapi.BaseQuery;
 import dk.magenta.datafordeler.core.fapi.ParameterMap;
 import dk.magenta.datafordeler.core.fapi.QueryField;
-import dk.magenta.datafordeler.geo.data.municipality.SumiffiikEntity;
 
 import java.time.OffsetDateTime;
 import java.util.HashMap;

@@ -1,10 +1,11 @@
-package dk.magenta.datafordeler.geo.data.municipality;
+package dk.magenta.datafordeler.geo.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import dk.magenta.datafordeler.core.database.IdentifiedEntity;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 import dk.magenta.datafordeler.geo.data.GeoMonotemporalRecord;
+import dk.magenta.datafordeler.geo.data.municipality.MunicipalityRawData;
 
 import javax.persistence.*;
 import java.util.Collection;
