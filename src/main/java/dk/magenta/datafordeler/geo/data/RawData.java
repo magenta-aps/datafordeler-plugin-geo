@@ -3,6 +3,9 @@ package dk.magenta.datafordeler.geo.data;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.geojson.GeoJsonObject;
+import org.geojson.MultiPolygon;
+import org.geojson.Polygon;
 
 import java.util.List;
 import java.util.UUID;
@@ -55,6 +58,9 @@ public abstract class RawData {
         public double length;
 
     }
+
+    @JsonProperty("geometry")
+    public GeoJsonObject shape;
 
     public abstract List<GeoMonotemporalRecord> getMonotemporalRecords();
 }

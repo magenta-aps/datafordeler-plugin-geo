@@ -1,10 +1,12 @@
 package dk.magenta.datafordeler.geo.data.municipality;
 
+import dk.magenta.datafordeler.geo.data.GeoMonotemporalRecord;
+
 import javax.persistence.Entity;
 import java.util.Objects;
 
 @Entity
-public class MunicipalityNameRecord extends MunicipalityDataRecord {
+public class MunicipalityNameRecord extends GeoMonotemporalRecord<MunicipalityEntity> {
 
     public MunicipalityNameRecord() {
     }

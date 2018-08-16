@@ -15,7 +15,7 @@ import java.util.Comparator;
 import java.util.Objects;
 
 @MappedSuperclass
-public class GeoMonotemporalRecord extends GeoNontemporalRecord {
+public class GeoMonotemporalRecord<E extends GeoEntity> extends GeoNontemporalRecord<E> {
 
 
     // For storing the calculated endRegistration time, ie. when the next registration "overrides" us

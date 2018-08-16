@@ -1,16 +1,36 @@
 package dk.magenta.datafordeler.geo.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import dk.magenta.datafordeler.core.database.DatabaseEntry;
+import dk.magenta.datafordeler.geo.data.municipality.MunicipalityEntity;
 
 import javax.persistence.Column;
+import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
 @MappedSuperclass
-public class GeoNontemporalRecord extends DatabaseEntry {
+public abstract class GeoNontemporalRecord<E extends GeoEntity> extends DatabaseEntry {
+
+    public static final String DB_FIELD_ENTITY = "entity";
+
+    @JsonIgnore
+    @XmlTransient
+    @ManyToOne(optional = false)
+    private E entity;
+
+    public E getEntity() {
+        return this.entity;
+    }
+
+    public void setEntity(E entity) {
+        this.entity = entity;
+    }
+
 
 
     public static final String DB_FIELD_UPDATED = "dafoUpdated";

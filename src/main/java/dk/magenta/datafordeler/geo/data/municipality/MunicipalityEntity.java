@@ -126,18 +126,18 @@ public class MunicipalityEntity extends GeoEntity implements IdentifiedEntity {
 
     public void addMonotemporalRecord(GeoMonotemporalRecord record) {
         boolean added = false;
-        if (record instanceof MunicipalityDataRecord) {
-            MunicipalityDataRecord municipalityDataRecord = (MunicipalityDataRecord) record;
-            if (municipalityDataRecord instanceof MunicipalityNameRecord) {
-                added = addItem(this.name, municipalityDataRecord);
-            }
-            if (added) {
-                municipalityDataRecord.setEntity(this);
-            }
+        if (record instanceof MunicipalityNameRecord) {
+            added = addItem(this.name, record);
+        }
+        if (record instanceof MunicipalityShapeRecord) {
+            added = addItem(this.shape, record);
+        }
+        if (added) {
+            record.setEntity(this);
         }
     }
 
-        @Override
+    @Override
     public IdentifiedEntity getNewest(Collection<IdentifiedEntity> collection) {
         return null;
     }
