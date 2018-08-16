@@ -1,12 +1,12 @@
-package dk.magenta.datafordeler.geo.data.locality;
+package dk.magenta.datafordeler.geo.data.road;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import dk.magenta.datafordeler.core.database.IdentifiedEntity;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
-import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
 import dk.magenta.datafordeler.geo.data.SumiffiikEntity;
+import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -15,26 +15,26 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = GeoPlugin.DEBUG_TABLE_PREFIX + LocalityEntity.TABLE_NAME, indexes = {
-        @Index(name = GeoPlugin.DEBUG_TABLE_PREFIX + LocalityEntity.TABLE_NAME + LocalityEntity.DB_FIELD_CODE, columnList = LocalityEntity.DB_FIELD_CODE),
+@Table(name = GeoPlugin.DEBUG_TABLE_PREFIX + RoadEntity.TABLE_NAME, indexes = {
+        @Index(name = GeoPlugin.DEBUG_TABLE_PREFIX + RoadEntity.TABLE_NAME + RoadEntity.DB_FIELD_CODE, columnList = RoadEntity.DB_FIELD_CODE),
 })
-public class LocalityEntity extends SumiffiikEntity implements IdentifiedEntity {
+public class RoadEntity extends SumiffiikEntity implements IdentifiedEntity {
 
-    public static final String TABLE_NAME = "geo_locality";
+    public static final String TABLE_NAME = "geo_road";
 
     @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="type")
-    public static final String schema = "Locality";
+    public static final String schema = "Road";
 
-    public LocalityEntity() {
+    public RoadEntity() {
     }
 
-    public LocalityEntity(LocalityRawData record) {
+    public RoadEntity(RoadRawData record) {
         super(record);
         this.setCode(record.properties.code);
     }
 
     public static UUID generateUUID(int localityCode) {
-        String uuidInput = "lokalitet:"+localityCode;
+        String uuidInput = "vej:"+localityCode;
         return UUID.nameUUIDFromBytes(uuidInput.getBytes());
     }
 
@@ -43,47 +43,60 @@ public class LocalityEntity extends SumiffiikEntity implements IdentifiedEntity 
     public static final String IO_FIELD_CODE = "kode";
     @Column(name = DB_FIELD_CODE)
     @JsonProperty
-    private String code;
+    private int code;
 
-    public String getCode() {
+    public int getCode() {
         return this.code;
     }
 
-    @JsonProperty(value = "Lokalitetskode")
-    public void setCode(String code) {
+    @JsonProperty(value = "Vejkode")
+    public void setCode(int code) {
         this.code = code;
     }
 
-
-
-
     public static final String DB_FIELD_NAME = "name";
     public static final String IO_FIELD_NAME = "navn";
-    @OneToMany(mappedBy = LocalityNameRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = RoadNameRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
     /*@Filters({
             @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_EFFECT_FROM),
             @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_EFFECT_TO)
     })*/
     @JsonProperty(IO_FIELD_NAME)
-    Set<LocalityNameRecord> name = new HashSet<>();
+    Set<RoadNameRecord> name = new HashSet<>();
 
-    public Set<LocalityNameRecord> getName() {
+    public Set<RoadNameRecord> getName() {
         return this.name;
+    }
+
+
+
+    public static final String DB_FIELD_LOCALITY = "locality";
+    public static final String IO_FIELD_LOCALITY = "lokalitet";
+    @OneToMany(mappedBy = RoadLocalityRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
+    /*@Filters({
+            @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_EFFECT_FROM),
+            @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_EFFECT_TO)
+    })*/
+    @JsonProperty(IO_FIELD_MUNICIPALITY)
+    Set<RoadLocalityRecord> locality = new HashSet<>();
+
+    public Set<RoadLocalityRecord> getLocality() {
+        return this.locality;
     }
 
 
 
     public static final String DB_FIELD_MUNICIPALITY = "municipality";
     public static final String IO_FIELD_MUNICIPALITY = "kommune";
-    @OneToMany(mappedBy = LocalityMunicipalityRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = RoadMunicipalityRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
     /*@Filters({
             @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_EFFECT_FROM),
             @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_EFFECT_TO)
     })*/
     @JsonProperty(IO_FIELD_MUNICIPALITY)
-    Set<LocalityMunicipalityRecord> municipality = new HashSet<>();
+    Set<RoadMunicipalityRecord> municipality = new HashSet<>();
 
-    public Set<LocalityMunicipalityRecord> getMunicipality() {
+    public Set<RoadMunicipalityRecord> getMunicipality() {
         return this.municipality;
     }
 
@@ -91,15 +104,15 @@ public class LocalityEntity extends SumiffiikEntity implements IdentifiedEntity 
 
     public static final String DB_FIELD_SHAPE = "shape";
     public static final String IO_FIELD_SHAPE = "form";
-    @OneToMany(mappedBy = LocalityShapeRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = RoadShapeRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
     /*@Filters({
             @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_EFFECT_FROM),
             @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_EFFECT_TO)
     })*/
     @JsonProperty(IO_FIELD_SHAPE)
-    Set<LocalityShapeRecord> shape = new HashSet<>();
+    Set<RoadShapeRecord> shape = new HashSet<>();
 
-    public Set<LocalityShapeRecord> getShape() {
+    public Set<RoadShapeRecord> getShape() {
         return this.shape;
     }
 
@@ -112,13 +125,13 @@ public class LocalityEntity extends SumiffiikEntity implements IdentifiedEntity 
 
     public void addMonotemporalRecord(GeoMonotemporalRecord record) {
         boolean added = false;
-        if (record instanceof LocalityNameRecord) {
+        if (record instanceof RoadNameRecord) {
             added = addItem(this.name, record);
         }
-        if (record instanceof LocalityMunicipalityRecord) {
+        if (record instanceof RoadMunicipalityRecord) {
             added = addItem(this.municipality, record);
         }
-        if (record instanceof LocalityShapeRecord) {
+        if (record instanceof RoadShapeRecord) {
             added = addItem(this.shape, record);
         }
         if (added) {

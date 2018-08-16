@@ -10,7 +10,7 @@ import javax.persistence.Index;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = GeoPlugin.DEBUG_TABLE_PREFIX + LocalityNameRecord.TABLE_NAME, indexes = {
+@Table(name = GeoPlugin.DEBUG_TABLE_PREFIX + LocalityShapeRecord.TABLE_NAME, indexes = {
         @Index(
                 name = GeoPlugin.DEBUG_TABLE_PREFIX + LocalityShapeRecord.TABLE_NAME + LocalityShapeRecord.DB_FIELD_ENTITY,
                 columnList = LocalityShapeRecord.DB_FIELD_ENTITY + DatabaseEntry.REF

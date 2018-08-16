@@ -10,6 +10,9 @@ import dk.magenta.datafordeler.geo.data.locality.LocalityService;
 import dk.magenta.datafordeler.geo.data.municipality.MunicipalityEntity;
 import dk.magenta.datafordeler.geo.data.municipality.MunicipalityEntityManager;
 import dk.magenta.datafordeler.geo.data.municipality.MunicipalityService;
+import dk.magenta.datafordeler.geo.data.road.RoadEntity;
+import dk.magenta.datafordeler.geo.data.road.RoadEntityManager;
+import dk.magenta.datafordeler.geo.data.road.RoadService;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.junit.Assert;
@@ -54,6 +57,12 @@ public class TestParse {
 
     @Autowired
     private LocalityEntityManager localityEntityManager;
+
+    @Autowired
+    private RoadService roadService;
+
+    @Autowired
+    private RoadEntityManager roadEntityManager;
 
     private ResponseEntity<String> restSearch(ParameterMap parameters, String type) {
         HttpHeaders headers = new HttpHeaders();
@@ -121,6 +130,40 @@ public class TestParse {
             Assert.assertEquals("Aadarujuup Aqquserna nord", aadarujuupAqquserna.getName().iterator().next().getName());
 
             ResponseEntity<String> aadarujuupAqqusernaResponse = this.uuidSearch("32C1849A-6AB6-4358-B293-7D5EC69C3A19", "locality");
+            Assert.assertEquals(200, aadarujuupAqqusernaResponse.getStatusCode().value());
+
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            importMetadata.setTransactionInProgress(false);
+            session.close();
+        }
+    }
+
+
+    @Test
+    public void testRoad() throws DataFordelerException, IOException {
+        FileInputStream data = new FileInputStream(new File("fixtures/Vejmidte.json"));
+        ImportMetadata importMetadata = new ImportMetadata();
+        Session session = sessionManager.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        importMetadata.setTransactionInProgress(true);
+        importMetadata.setSession(session);
+        try {
+            roadEntityManager.parseData(data, importMetadata);
+
+            RoadEntity pujooriarfik = QueryManager.getEntity(session, UUID.fromString("DDF9075A-0B47-442B-BC0C-EFC296F67417"), RoadEntity.class);
+            Assert.assertNotNull(pujooriarfik);
+            Assert.assertEquals(0, pujooriarfik.getCode());
+            Assert.assertEquals(OffsetDateTime.parse("2018-07-23T06:25:18Z"), pujooriarfik.getCreationDate());
+            Assert.assertEquals("GREENADMIN", pujooriarfik.getCreator());
+            Assert.assertEquals(1, pujooriarfik.getName().size());
+            Assert.assertEquals("Pujooriarfik", pujooriarfik.getName().iterator().next().getName());
+            Assert.assertEquals(OffsetDateTime.parse("2018-07-23T06:25:18Z"), pujooriarfik.getName().iterator().next().getRegistrationFrom());
+
+            ResponseEntity<String> aadarujuupAqqusernaResponse = this.uuidSearch("DDF9075A-0B47-442B-BC0C-EFC296F67417", "locality");
             Assert.assertEquals(200, aadarujuupAqqusernaResponse.getStatusCode().value());
 
             transaction.commit();
