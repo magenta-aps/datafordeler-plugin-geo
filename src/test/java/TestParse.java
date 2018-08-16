@@ -27,22 +27,7 @@ public class TestParse {
 
     @Test
     public void testParse() throws DataFordelerException, IOException {
-        /*String json = "{\"features\": [{\n" +
-                "\t\t\t\"attributes\": {\n" +
-                "\t\t\t\t\"OBJECTID\": 1,\n" +
-                "\t\t\t\t\"Postdistrikt\": \"Santa Claus/Julemanden\",\n" +
-                "\t\t\t\t\"Postnummer\": 2412\n" +
-                "\t\t\t}\n" +
-                "\t\t}, {\n" +
-                "\t\t\t\"attributes\": {\n" +
-                "\t\t\t\t\"OBJECTID\": 2,\n" +
-                "\t\t\t\t\"Postdistrikt\": \"Nuuk\",\n" +
-                "\t\t\t\t\"Postnummer\": 3900\n" +
-                "\t\t\t}\n" +
-                "\t\t}],\"data\":{\"features\":1}}";
-        ByteArrayInputStream data = new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));
-        */
-        FileInputStream data = new FileInputStream(new File("/home/lars/Projekt/datafordeler/plugin/adresse/fixtures/Kommune.json"));
+        FileInputStream data = new FileInputStream(new File("fixtures/Kommune.json"));
         ImportMetadata importMetadata = new ImportMetadata();
         Session session = sessionManager.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
