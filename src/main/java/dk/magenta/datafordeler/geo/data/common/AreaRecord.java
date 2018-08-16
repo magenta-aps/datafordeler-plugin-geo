@@ -1,11 +1,10 @@
-package dk.magenta.datafordeler.geo.data;
+package dk.magenta.datafordeler.geo.data.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.vividsolutions.jts.geom.*;
+import dk.magenta.datafordeler.geo.data.GeoEntity;
 import org.geojson.LngLatAlt;
-import org.geojson.jackson.LngLatAltDeserializer;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;

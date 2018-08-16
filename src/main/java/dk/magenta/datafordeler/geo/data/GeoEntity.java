@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dk.magenta.datafordeler.core.database.DatabaseEntry;
 import dk.magenta.datafordeler.core.database.Identification;
 import dk.magenta.datafordeler.core.database.IdentifiedEntity;
-import dk.magenta.datafordeler.core.io.ImportMetadata;
+import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
 import org.hibernate.Session;
 
 import javax.persistence.*;

@@ -1,4 +1,4 @@
-package dk.magenta.datafordeler.geo.data.municipality;
+package dk.magenta.datafordeler.geo.data.locality;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,26 +11,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class MunicipalityRawData extends RawData {
+public class LocalityRawData extends RawData {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public class MunicipalityRawProperties extends RawAreaProperties {
+    public class LocalityRawProperties extends RawAreaProperties {
 
-        @JsonProperty("Kommunenavn")
+        @JsonProperty("Lokalitetsnavn")
         public String name;
 
+        @JsonProperty("Lokalitetskode")
+        public String code;
+
         @JsonProperty("Kommunekode")
-        public int code;
+        public Integer municipality;
     }
 
     @JsonProperty
-    public MunicipalityRawProperties properties;
+    public LocalityRawProperties properties;
 
     @Override
     public List<GeoMonotemporalRecord> getMonotemporalRecords() {
         ArrayList<GeoMonotemporalRecord> records = new ArrayList<>();
+
         records.add(
-                new MunicipalityNameRecord(this.properties.name)
+                new LocalityNameRecord(this.properties.name)
+                .setEditor(this.properties.editor)
+                .setRegistrationFrom(this.properties.editDate)
+        );
+
+        records.add(
+                new LocalityMunicipalityRecord(this.properties.municipality)
                 .setEditor(this.properties.editor)
                 .setRegistrationFrom(this.properties.editDate)
         );
@@ -45,7 +55,7 @@ public class MunicipalityRawData extends RawData {
         }
         if (multiPolygon != null) {
             records.add(
-                    new MunicipalityShapeRecord(this.properties.area, this.properties.length, multiPolygon)
+                    new LocalityShapeRecord(this.properties.area, this.properties.length, multiPolygon)
                     .setEditor(this.properties.editor)
                     .setRegistrationFrom(this.properties.editDate)
             );

@@ -1,7 +1,7 @@
-package dk.magenta.datafordeler.geo.data;
+package dk.magenta.datafordeler.geo.data.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import dk.magenta.datafordeler.core.database.Registration;
+import dk.magenta.datafordeler.geo.data.GeoEntity;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;

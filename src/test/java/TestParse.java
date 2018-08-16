@@ -4,9 +4,11 @@ import dk.magenta.datafordeler.core.database.SessionManager;
 import dk.magenta.datafordeler.core.exception.DataFordelerException;
 import dk.magenta.datafordeler.core.fapi.ParameterMap;
 import dk.magenta.datafordeler.core.io.ImportMetadata;
+import dk.magenta.datafordeler.geo.data.locality.LocalityEntity;
+import dk.magenta.datafordeler.geo.data.locality.LocalityEntityManager;
+import dk.magenta.datafordeler.geo.data.locality.LocalityService;
 import dk.magenta.datafordeler.geo.data.municipality.MunicipalityEntity;
 import dk.magenta.datafordeler.geo.data.municipality.MunicipalityEntityManager;
-import dk.magenta.datafordeler.geo.data.municipality.MunicipalityNameRecord;
 import dk.magenta.datafordeler.geo.data.municipality.MunicipalityService;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -34,8 +36,6 @@ import java.util.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class TestParse {
 
-    @Autowired
-    private MunicipalityEntityManager entityManager;
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -45,6 +45,15 @@ public class TestParse {
 
     @Autowired
     private MunicipalityService municipalityService;
+
+    @Autowired
+    private MunicipalityEntityManager municipalityEntityManager;
+
+    @Autowired
+    private LocalityService localityService;
+
+    @Autowired
+    private LocalityEntityManager localityEntityManager;
 
     private ResponseEntity<String> restSearch(ParameterMap parameters, String type) {
         HttpHeaders headers = new HttpHeaders();
@@ -69,7 +78,7 @@ public class TestParse {
         importMetadata.setTransactionInProgress(true);
         importMetadata.setSession(session);
         try {
-            entityManager.parseData(data, importMetadata);
+            municipalityEntityManager.parseData(data, importMetadata);
 
             MunicipalityEntity kujalleq = QueryManager.getEntity(session, UUID.fromString("96C57A43-5761-45E6-83D0-F329A10B0AEC"), MunicipalityEntity.class);
             Assert.assertNotNull(kujalleq);
@@ -81,6 +90,38 @@ public class TestParse {
 
             ResponseEntity<String> kujalleqResponse = this.uuidSearch("96C57A43-5761-45E6-83D0-F329A10B0AEC", "municipality");
             Assert.assertEquals(200, kujalleqResponse.getStatusCode().value());
+
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            importMetadata.setTransactionInProgress(false);
+            session.close();
+        }
+    }
+
+    @Test
+    public void testLocality() throws DataFordelerException, IOException {
+        FileInputStream data = new FileInputStream(new File("fixtures/Lokalitet.json"));
+        ImportMetadata importMetadata = new ImportMetadata();
+        Session session = sessionManager.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        importMetadata.setTransactionInProgress(true);
+        importMetadata.setSession(session);
+        try {
+            localityEntityManager.parseData(data, importMetadata);
+
+            LocalityEntity aadarujuupAqquserna = QueryManager.getEntity(session, UUID.fromString("32C1849A-6AB6-4358-B293-7D5EC69C3A19"), LocalityEntity.class);
+            Assert.assertNotNull(aadarujuupAqquserna);
+            Assert.assertEquals(null, aadarujuupAqquserna.getCode());
+            Assert.assertEquals(OffsetDateTime.parse("2018-07-19T10:57:39Z"), aadarujuupAqquserna.getCreationDate());
+            Assert.assertEquals("GREENADMIN", aadarujuupAqquserna.getCreator());
+            Assert.assertEquals(1, aadarujuupAqquserna.getName().size());
+            Assert.assertEquals("Aadarujuup Aqquserna nord", aadarujuupAqquserna.getName().iterator().next().getName());
+
+            ResponseEntity<String> aadarujuupAqqusernaResponse = this.uuidSearch("32C1849A-6AB6-4358-B293-7D5EC69C3A19", "locality");
+            Assert.assertEquals(200, aadarujuupAqqusernaResponse.getStatusCode().value());
 
             transaction.commit();
         } catch (Exception e) {

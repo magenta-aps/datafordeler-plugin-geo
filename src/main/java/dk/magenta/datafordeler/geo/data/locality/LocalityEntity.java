@@ -1,36 +1,40 @@
-package dk.magenta.datafordeler.geo.data.municipality;
+package dk.magenta.datafordeler.geo.data.locality;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import dk.magenta.datafordeler.core.database.IdentifiedEntity;
 import dk.magenta.datafordeler.geo.GeoPlugin;
-import dk.magenta.datafordeler.geo.data.*;
+import dk.magenta.datafordeler.geo.data.GeoEntity;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
+import dk.magenta.datafordeler.geo.data.SumiffiikEntity;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @Entity
-@Table(name = GeoPlugin.DEBUG_TABLE_PREFIX + MunicipalityEntity.TABLE_NAME, indexes = {
-        @Index(name = GeoPlugin.DEBUG_TABLE_PREFIX + MunicipalityEntity.TABLE_NAME + MunicipalityEntity.DB_FIELD_CODE, columnList = MunicipalityEntity.DB_FIELD_CODE),
+@Table(name = GeoPlugin.DEBUG_TABLE_PREFIX + LocalityEntity.TABLE_NAME, indexes = {
+        @Index(name = GeoPlugin.DEBUG_TABLE_PREFIX + LocalityEntity.TABLE_NAME + LocalityEntity.DB_FIELD_CODE, columnList = LocalityEntity.DB_FIELD_CODE),
 })
-public class MunicipalityEntity extends SumiffiikEntity implements IdentifiedEntity {
+public class LocalityEntity extends SumiffiikEntity implements IdentifiedEntity {
 
-    public static final String TABLE_NAME = "geo_municipality";
+    public static final String TABLE_NAME = "geo_locality";
 
     @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="type")
-    public static final String schema = "Municipality";
+    public static final String schema = "Locality";
 
-    public MunicipalityEntity() {
+    public LocalityEntity() {
     }
 
-    public MunicipalityEntity(MunicipalityRawData record) {
+    public LocalityEntity(LocalityRawData record) {
         super(record);
         this.setCode(record.properties.code);
     }
 
-    public static UUID generateUUID(int municipalityCode) {
-        String uuidInput = "kommune:"+municipalityCode;
+    public static UUID generateUUID(int localityCode) {
+        String uuidInput = "lokalitet:"+localityCode;
         return UUID.nameUUIDFromBytes(uuidInput.getBytes());
     }
 
@@ -39,29 +43,29 @@ public class MunicipalityEntity extends SumiffiikEntity implements IdentifiedEnt
     public static final String IO_FIELD_CODE = "kode";
     @Column(name = DB_FIELD_CODE)
     @JsonProperty
-    private int code;
+    private String code;
 
-    public int getCode() {
+    public String getCode() {
         return this.code;
     }
 
-    @JsonProperty(value = "Kommunekode")
-    public void setCode(int code) {
+    @JsonProperty(value = "Lokalitetskode")
+    public void setCode(String code) {
         this.code = code;
     }
 
 
     public static final String DB_FIELD_NAME = "name";
     public static final String IO_FIELD_NAME = "navn";
-    @OneToMany(mappedBy = MunicipalityNameRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = LocalityNameRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
     /*@Filters({
             @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_EFFECT_FROM),
             @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_EFFECT_TO)
     })*/
     @JsonProperty(IO_FIELD_NAME)
-    Set<MunicipalityNameRecord> name = new HashSet<>();
+    Set<LocalityNameRecord> name = new HashSet<>();
 
-    public Set<MunicipalityNameRecord> getName() {
+    public Set<LocalityNameRecord> getName() {
         return this.name;
     }
 
@@ -73,15 +77,15 @@ public class MunicipalityEntity extends SumiffiikEntity implements IdentifiedEnt
 
     public static final String DB_FIELD_SHAPE = "shape";
     public static final String IO_FIELD_SHAPE = "form";
-    @OneToMany(mappedBy = MunicipalityShapeRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = LocalityShapeRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
     /*@Filters({
             @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_EFFECT_FROM),
             @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_EFFECT_TO)
     })*/
     @JsonProperty(IO_FIELD_SHAPE)
-    Set<MunicipalityShapeRecord> shape = new HashSet<>();
+    Set<LocalityShapeRecord> shape = new HashSet<>();
 
-    public Set<MunicipalityShapeRecord> getShape() {
+    public Set<LocalityShapeRecord> getShape() {
         return this.shape;
     }
 
@@ -94,10 +98,10 @@ public class MunicipalityEntity extends SumiffiikEntity implements IdentifiedEnt
 
     public void addMonotemporalRecord(GeoMonotemporalRecord record) {
         boolean added = false;
-        if (record instanceof MunicipalityNameRecord) {
+        if (record instanceof LocalityNameRecord) {
             added = addItem(this.name, record);
         }
-        if (record instanceof MunicipalityShapeRecord) {
+        if (record instanceof LocalityShapeRecord) {
             added = addItem(this.shape, record);
         }
         if (added) {

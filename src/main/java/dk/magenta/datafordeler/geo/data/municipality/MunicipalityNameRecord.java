@@ -1,36 +1,33 @@
 package dk.magenta.datafordeler.geo.data.municipality;
 
-import dk.magenta.datafordeler.geo.data.GeoMonotemporalRecord;
+import dk.magenta.datafordeler.core.database.DatabaseEntry;
+import dk.magenta.datafordeler.geo.GeoPlugin;
+import dk.magenta.datafordeler.geo.data.common.NameRecord;
 
 import javax.persistence.Entity;
-import java.util.Objects;
+import javax.persistence.Index;
+import javax.persistence.Table;
 
 @Entity
-public class MunicipalityNameRecord extends GeoMonotemporalRecord<MunicipalityEntity> {
+@Table(name = GeoPlugin.DEBUG_TABLE_PREFIX + MunicipalityNameRecord.TABLE_NAME, indexes = {
+        @Index(
+                name = GeoPlugin.DEBUG_TABLE_PREFIX + MunicipalityNameRecord.TABLE_NAME + MunicipalityNameRecord.DB_FIELD_ENTITY,
+                columnList = MunicipalityNameRecord.DB_FIELD_ENTITY + DatabaseEntry.REF
+        ),
+        @Index(
+                name = GeoPlugin.DEBUG_TABLE_PREFIX + MunicipalityNameRecord.TABLE_NAME + MunicipalityNameRecord.DB_FIELD_NAME,
+                columnList = MunicipalityNameRecord.DB_FIELD_NAME
+        ),
+})
+public class MunicipalityNameRecord extends NameRecord<MunicipalityEntity> {
+
+    public static final String TABLE_NAME = "geo_municipality_name";
 
     public MunicipalityNameRecord() {
     }
 
     public MunicipalityNameRecord(String name) {
-        this.name = name;
-    }
-
-    private String name;
-
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean equalData(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equalData(o)) return false;
-        MunicipalityNameRecord that = (MunicipalityNameRecord) o;
-        return Objects.equals(this.name, that.name);
+        super(name);
     }
 
 }

@@ -1,9 +1,6 @@
 package dk.magenta.datafordeler.geo.data.municipality;
 
-import dk.magenta.datafordeler.core.database.SessionManager;
-import dk.magenta.datafordeler.core.fapi.FapiService;
 import dk.magenta.datafordeler.geo.data.GeoEntityManager;
-import dk.magenta.datafordeler.geo.data.RawData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,11 +9,8 @@ import java.util.UUID;
 @Component
 public class MunicipalityEntityManager extends GeoEntityManager<MunicipalityEntity, MunicipalityRawData> {
 
-    //@Autowired
-    //private PersonEntityService personEntityService;
-
     @Autowired
-    private SessionManager sessionManager;
+    private MunicipalityService municipalityService;
 
     public MunicipalityEntityManager() {
     }
@@ -26,14 +20,9 @@ public class MunicipalityEntityManager extends GeoEntityManager<MunicipalityEnti
         return "municipality";
     }
 
-    /*@Override
-    public PersonEntityService getEntityService() {
-        //return this.personEntityService;
-        return null;
-    }*/
     @Override
-    public FapiService getEntityService() {
-        return null;
+    public MunicipalityService getEntityService() {
+        return this.municipalityService;
     }
 
     @Override
@@ -66,16 +55,5 @@ public class MunicipalityEntityManager extends GeoEntityManager<MunicipalityEnti
     protected MunicipalityEntity createBasicEntity(MunicipalityRawData record) {
         return new MunicipalityEntity(record);
     }
-/*
-    @Override
-    protected void parseAlternate(MunicipalityEntity entity, Collection<PersonDataRecord> records, ImportMetadata importMetadata) {
-        OffsetDateTime updateTime = importMetadata.getImportTime();
-        for (PersonDataRecord record : records) {
-            for (CprBitemporalRecord bitemporalRecord : record.getBitemporalRecords()) {
-                bitemporalRecord.setDafoUpdated(updateTime);
-                entity.addBitemporalRecord((CprBitemporalPersonRecord) bitemporalRecord, importMetadata.getSession());
-            }
-        }
-    }
-*/
+
 }

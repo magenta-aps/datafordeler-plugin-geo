@@ -3,7 +3,6 @@ package dk.magenta.datafordeler.geo.data;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -23,7 +22,7 @@ import dk.magenta.datafordeler.core.util.Stopwatch;
 import dk.magenta.datafordeler.geo.GeoRegisterManager;
 import dk.magenta.datafordeler.geo.configuration.GeoConfiguration;
 import dk.magenta.datafordeler.geo.configuration.GeoConfigurationManager;
-import dk.magenta.datafordeler.geo.data.municipality.MunicipalityRawData;
+import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
@@ -32,12 +31,10 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 @Component
 public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> extends EntityManager {

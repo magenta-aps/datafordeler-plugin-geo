@@ -1,17 +1,9 @@
 package dk.magenta.datafordeler.geo.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import dk.magenta.datafordeler.core.database.IdentifiedEntity;
-import dk.magenta.datafordeler.geo.data.GeoEntity;
-import dk.magenta.datafordeler.geo.data.GeoMonotemporalRecord;
-import dk.magenta.datafordeler.geo.data.municipality.MunicipalityRawData;
 
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
 
 @MappedSuperclass
 public abstract class SumiffiikEntity extends GeoEntity implements IdentifiedEntity {
@@ -19,11 +11,11 @@ public abstract class SumiffiikEntity extends GeoEntity implements IdentifiedEnt
     public SumiffiikEntity() {
     }
 
-    public SumiffiikEntity(MunicipalityRawData record) {
-        this.setSumiffiikId(record.properties.sumiffiikId);
-        this.setObjectId(record.properties.objectId);
-        this.setCreator(record.properties.creator);
-        this.setCreationDate(record.properties.creationDate);
+    public SumiffiikEntity(RawData record) {
+        this.setSumiffiikId(record.getProperties().sumiffiikId);
+        this.setObjectId(record.getProperties().objectId);
+        this.setCreator(record.getProperties().creator);
+        this.setCreationDate(record.getProperties().creationDate);
     }
 
 

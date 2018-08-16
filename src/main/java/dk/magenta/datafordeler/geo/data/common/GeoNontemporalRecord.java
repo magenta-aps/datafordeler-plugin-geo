@@ -1,9 +1,9 @@
-package dk.magenta.datafordeler.geo.data;
+package dk.magenta.datafordeler.geo.data.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import dk.magenta.datafordeler.core.database.DatabaseEntry;
-import dk.magenta.datafordeler.geo.data.municipality.MunicipalityEntity;
+import dk.magenta.datafordeler.geo.data.GeoEntity;
 
 import javax.persistence.Column;
 import javax.persistence.ManyToOne;
@@ -11,7 +11,6 @@ import javax.persistence.MappedSuperclass;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.time.OffsetDateTime;
-import java.util.Objects;
 
 @MappedSuperclass
 public abstract class GeoNontemporalRecord<E extends GeoEntity> extends DatabaseEntry {
