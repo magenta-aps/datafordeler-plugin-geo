@@ -1,10 +1,8 @@
 package dk.magenta.datafordeler.geo.data.common;
 
 import dk.magenta.datafordeler.geo.data.GeoEntity;
-import dk.magenta.datafordeler.geo.data.locality.LocalityEntity;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
 import java.util.Objects;
 

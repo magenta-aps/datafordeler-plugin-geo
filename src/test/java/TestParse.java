@@ -4,6 +4,9 @@ import dk.magenta.datafordeler.core.database.SessionManager;
 import dk.magenta.datafordeler.core.exception.DataFordelerException;
 import dk.magenta.datafordeler.core.fapi.ParameterMap;
 import dk.magenta.datafordeler.core.io.ImportMetadata;
+import dk.magenta.datafordeler.geo.data.building.BuildingEntity;
+import dk.magenta.datafordeler.geo.data.building.BuildingEntityManager;
+import dk.magenta.datafordeler.geo.data.building.BuildingService;
 import dk.magenta.datafordeler.geo.data.locality.LocalityEntity;
 import dk.magenta.datafordeler.geo.data.locality.LocalityEntityManager;
 import dk.magenta.datafordeler.geo.data.locality.LocalityService;
@@ -63,6 +66,12 @@ public class TestParse {
 
     @Autowired
     private RoadEntityManager roadEntityManager;
+
+    @Autowired
+    private BuildingService buildingService;
+
+    @Autowired
+    private BuildingEntityManager buildingEntityManager;
 
     private ResponseEntity<String> restSearch(ParameterMap parameters, String type) {
         HttpHeaders headers = new HttpHeaders();
@@ -164,6 +173,41 @@ public class TestParse {
             Assert.assertEquals(OffsetDateTime.parse("2018-07-23T06:25:18Z"), pujooriarfik.getName().iterator().next().getRegistrationFrom());
 
             ResponseEntity<String> aadarujuupAqqusernaResponse = this.uuidSearch("DDF9075A-0B47-442B-BC0C-EFC296F67417", "locality");
+            Assert.assertEquals(200, aadarujuupAqqusernaResponse.getStatusCode().value());
+
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            importMetadata.setTransactionInProgress(false);
+            session.close();
+        }
+    }
+
+
+    @Test
+    public void testBuilding() throws DataFordelerException, IOException {
+        FileInputStream data = new FileInputStream(new File("fixtures/Bygning.json"));
+        ImportMetadata importMetadata = new ImportMetadata();
+        Session session = sessionManager.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        importMetadata.setTransactionInProgress(true);
+        importMetadata.setSession(session);
+        try {
+            buildingEntityManager.parseData(data, importMetadata);
+
+            BuildingEntity b1025 = QueryManager.getEntity(session, UUID.fromString("3250B104-5F67-43A5-B6A8-1BEC88476C26"), BuildingEntity.class);
+            Assert.assertNotNull(b1025);
+            Assert.assertEquals(null, b1025.getAnr());
+            Assert.assertEquals("B-1025", b1025.getBnr());
+            Assert.assertEquals(OffsetDateTime.parse("2018-07-19T07:21:03Z"), b1025.getCreationDate());
+            Assert.assertEquals("IRKS", b1025.getCreator());
+            Assert.assertEquals(1, b1025.getUsage().size());
+            Assert.assertEquals(Integer.valueOf(0), b1025.getUsage().iterator().next().getUsage());
+            Assert.assertEquals(OffsetDateTime.parse("2018-07-19T07:23:27Z"), b1025.getUsage().iterator().next().getRegistrationFrom());
+
+            ResponseEntity<String> aadarujuupAqqusernaResponse = this.uuidSearch("3250B104-5F67-43A5-B6A8-1BEC88476C26", "locality");
             Assert.assertEquals(200, aadarujuupAqqusernaResponse.getStatusCode().value());
 
             transaction.commit();

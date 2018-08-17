@@ -77,7 +77,7 @@ public class RoadEntity extends SumiffiikEntity implements IdentifiedEntity {
             @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_EFFECT_FROM),
             @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_EFFECT_TO)
     })*/
-    @JsonProperty(IO_FIELD_MUNICIPALITY)
+    @JsonProperty(IO_FIELD_LOCALITY)
     Set<RoadLocalityRecord> locality = new HashSet<>();
 
     public Set<RoadLocalityRecord> getLocality() {

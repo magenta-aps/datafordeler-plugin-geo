@@ -184,6 +184,8 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
         timer.clear();
         parseJsonStream(jsonData, "features", this.objectMapper, jsonNode -> {
             try {
+
+
                 timer.start(TASK_PARSE);
                 T rawData = objectMapper.readerFor(this.getRawClass()).readValue(jsonNode);
                 timer.measure(TASK_PARSE);
@@ -211,6 +213,8 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
                 timer.measure(TASK_SAVE);
 
             } catch (IOException e) {
+                System.out.println(jsonNode.toString());
+
                 e.printStackTrace();
             }
         });
