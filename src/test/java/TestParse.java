@@ -4,6 +4,9 @@ import dk.magenta.datafordeler.core.database.SessionManager;
 import dk.magenta.datafordeler.core.exception.DataFordelerException;
 import dk.magenta.datafordeler.core.fapi.ParameterMap;
 import dk.magenta.datafordeler.core.io.ImportMetadata;
+import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressEntity;
+import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressEntityManager;
+import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressService;
 import dk.magenta.datafordeler.geo.data.building.BuildingEntity;
 import dk.magenta.datafordeler.geo.data.building.BuildingEntityManager;
 import dk.magenta.datafordeler.geo.data.building.BuildingService;
@@ -72,6 +75,12 @@ public class TestParse {
 
     @Autowired
     private BuildingEntityManager buildingEntityManager;
+
+    @Autowired
+    private AccessAddressService accessAddressService;
+
+    @Autowired
+    private AccessAddressEntityManager accessAddressEntityManager;
 
     private ResponseEntity<String> restSearch(ParameterMap parameters, String type) {
         HttpHeaders headers = new HttpHeaders();
@@ -207,8 +216,39 @@ public class TestParse {
             Assert.assertEquals(Integer.valueOf(0), b1025.getUsage().iterator().next().getUsage());
             Assert.assertEquals(OffsetDateTime.parse("2018-07-19T07:23:27Z"), b1025.getUsage().iterator().next().getRegistrationFrom());
 
-            ResponseEntity<String> aadarujuupAqqusernaResponse = this.uuidSearch("3250B104-5F67-43A5-B6A8-1BEC88476C26", "locality");
-            Assert.assertEquals(200, aadarujuupAqqusernaResponse.getStatusCode().value());
+            ResponseEntity<String> b1025Response = this.uuidSearch("3250B104-5F67-43A5-B6A8-1BEC88476C26", "building");
+            Assert.assertEquals(200, b1025Response.getStatusCode().value());
+
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            importMetadata.setTransactionInProgress(false);
+            session.close();
+        }
+    }
+
+
+    @Test
+    public void testAccessAddress() throws DataFordelerException, IOException {
+        FileInputStream data = new FileInputStream(new File("fixtures/Adgangsadresse.json"));
+        ImportMetadata importMetadata = new ImportMetadata();
+        Session session = sessionManager.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        importMetadata.setTransactionInProgress(true);
+        importMetadata.setSession(session);
+        try {
+            accessAddressEntityManager.parseData(data, importMetadata);
+
+            AccessAddressEntity b841 = QueryManager.getEntity(session, UUID.fromString("3E2C0668-E4C3-46A5-AEE8-AFEE74158DBE"), AccessAddressEntity.class);
+            Assert.assertNotNull(b841);
+            Assert.assertEquals("B-841", b841.getBnr());
+            Assert.assertEquals(OffsetDateTime.parse("2018-07-19T10:15:31Z"), b841.getCreationDate());
+            Assert.assertEquals("IRKS", b841.getCreator());
+
+            ResponseEntity<String> b841Response = this.uuidSearch("3E2C0668-E4C3-46A5-AEE8-AFEE74158DBE", "accessaddress");
+            Assert.assertEquals(200, b841Response.getStatusCode().value());
 
             transaction.commit();
         } catch (Exception e) {
