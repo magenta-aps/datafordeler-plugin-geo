@@ -4,6 +4,7 @@ import com.vividsolutions.jts.geom.Point;
 import dk.magenta.datafordeler.core.database.DatabaseEntry;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.common.PointRecord;
+import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.Index;
@@ -16,7 +17,7 @@ import javax.persistence.Table;
                 columnList = AccessAddressShapeRecord.DB_FIELD_ENTITY + DatabaseEntry.REF
         ),
 })
-public class AccessAddressShapeRecord extends PointRecord<AccessAddressEntity> {
+public class AccessAddressShapeRecord extends PointRecord<UnitAddressEntity> {
 
     public static final String TABLE_NAME = "geo_access_address_shape";
 

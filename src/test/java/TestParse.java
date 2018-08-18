@@ -19,6 +19,9 @@ import dk.magenta.datafordeler.geo.data.municipality.MunicipalityService;
 import dk.magenta.datafordeler.geo.data.road.RoadEntity;
 import dk.magenta.datafordeler.geo.data.road.RoadEntityManager;
 import dk.magenta.datafordeler.geo.data.road.RoadService;
+import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressEntity;
+import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressEntityManager;
+import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressService;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.junit.Assert;
@@ -81,6 +84,12 @@ public class TestParse {
 
     @Autowired
     private AccessAddressEntityManager accessAddressEntityManager;
+
+    @Autowired
+    private UnitAddressService unitAddressService;
+
+    @Autowired
+    private UnitAddressEntityManager unitAddressEntityManager;
 
     private ResponseEntity<String> restSearch(ParameterMap parameters, String type) {
         HttpHeaders headers = new HttpHeaders();
@@ -249,6 +258,36 @@ public class TestParse {
 
             ResponseEntity<String> b841Response = this.uuidSearch("3E2C0668-E4C3-46A5-AEE8-AFEE74158DBE", "accessaddress");
             Assert.assertEquals(200, b841Response.getStatusCode().value());
+
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            importMetadata.setTransactionInProgress(false);
+            session.close();
+        }
+    }
+
+
+    @Test
+    public void testUnitAddress() throws DataFordelerException, IOException {
+        FileInputStream data = new FileInputStream(new File("fixtures/Enhedsadresse.json"));
+        ImportMetadata importMetadata = new ImportMetadata();
+        Session session = sessionManager.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        importMetadata.setTransactionInProgress(true);
+        importMetadata.setSession(session);
+        try {
+            unitAddressEntityManager.parseData(data, importMetadata);
+
+            UnitAddressEntity unit = QueryManager.getEntity(session, UUID.fromString("A77B5AD0-D54F-46D6-8641-2BF47EA1C9D6"), UnitAddressEntity.class);
+            Assert.assertNotNull(unit);
+            Assert.assertEquals(OffsetDateTime.parse("2018-07-19T10:09:13Z"), unit.getCreationDate());
+            Assert.assertEquals("IRKS", unit.getCreator());
+
+            ResponseEntity<String> unitResponse = this.uuidSearch("A77B5AD0-D54F-46D6-8641-2BF47EA1C9D6", "accessaddress");
+            Assert.assertEquals(200, unitResponse.getStatusCode().value());
 
             transaction.commit();
         } catch (Exception e) {

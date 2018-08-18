@@ -1,6 +1,7 @@
 package dk.magenta.datafordeler.geo.data.locality;
 
 import dk.magenta.datafordeler.geo.data.GeoEntityManager;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -52,7 +53,7 @@ public class LocalityEntityManager extends GeoEntityManager<LocalityEntity, Loca
     }
 
     @Override
-    protected LocalityEntity createBasicEntity(LocalityRawData record) {
+    protected LocalityEntity createBasicEntity(LocalityRawData record, Session session) {
         return new LocalityEntity(record);
     }
 

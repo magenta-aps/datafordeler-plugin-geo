@@ -170,7 +170,7 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
     protected abstract Class<E> getEntityClass();
     protected abstract Class<T> getRawClass();
     protected abstract UUID generateUUID(T rawData);
-    protected abstract E createBasicEntity(T record);
+    protected abstract E createBasicEntity(T record, Session session);
 
     @Override
     public List<? extends Registration> parseData(InputStream jsonData, ImportMetadata importMetadata) throws DataFordelerException {
@@ -197,7 +197,7 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
                     Identification identification = QueryManager.getOrCreateIdentification(session, uuid, this.getDomain());
                     entity = QueryManager.getEntity(session, identification, this.getEntityClass());
                     if (entity == null) {
-                        entity = this.createBasicEntity(rawData);
+                        entity = this.createBasicEntity(rawData, session);
                         entity.setIdentification(identification);
                     }
                     entityCache.put(uuid, entity);

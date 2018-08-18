@@ -16,7 +16,14 @@ import java.util.UUID;
 
 @Entity
 @Table(name = GeoPlugin.DEBUG_TABLE_PREFIX + RoadEntity.TABLE_NAME, indexes = {
-        @Index(name = GeoPlugin.DEBUG_TABLE_PREFIX + RoadEntity.TABLE_NAME + RoadEntity.DB_FIELD_CODE, columnList = RoadEntity.DB_FIELD_CODE),
+        @Index(
+                name = GeoPlugin.DEBUG_TABLE_PREFIX + RoadEntity.TABLE_NAME + RoadEntity.DB_FIELD_SUMIFFIIK_ID,
+                columnList = RoadEntity.DB_FIELD_SUMIFFIIK_ID
+        ),
+        @Index(
+                name = GeoPlugin.DEBUG_TABLE_PREFIX + RoadEntity.TABLE_NAME + RoadEntity.DB_FIELD_CODE,
+                columnList = RoadEntity.DB_FIELD_CODE
+        ),
 })
 public class RoadEntity extends SumiffiikEntity implements IdentifiedEntity {
 

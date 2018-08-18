@@ -1,6 +1,7 @@
 package dk.magenta.datafordeler.geo.data.road;
 
 import dk.magenta.datafordeler.geo.data.GeoEntityManager;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -52,7 +53,7 @@ public class RoadEntityManager extends GeoEntityManager<RoadEntity, RoadRawData>
     }
 
     @Override
-    protected RoadEntity createBasicEntity(RoadRawData record) {
+    protected RoadEntity createBasicEntity(RoadRawData record, Session session) {
         return new RoadEntity(record);
     }
 

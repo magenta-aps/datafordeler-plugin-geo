@@ -12,7 +12,14 @@ import java.util.*;
 
 @Entity
 @Table(name = GeoPlugin.DEBUG_TABLE_PREFIX + MunicipalityEntity.TABLE_NAME, indexes = {
-        @Index(name = GeoPlugin.DEBUG_TABLE_PREFIX + MunicipalityEntity.TABLE_NAME + MunicipalityEntity.DB_FIELD_CODE, columnList = MunicipalityEntity.DB_FIELD_CODE),
+        @Index(
+                name = GeoPlugin.DEBUG_TABLE_PREFIX + MunicipalityEntity.TABLE_NAME + MunicipalityEntity.DB_FIELD_SUMIFFIIK_ID,
+                columnList = MunicipalityEntity.DB_FIELD_SUMIFFIIK_ID
+        ),
+        @Index(
+                name = GeoPlugin.DEBUG_TABLE_PREFIX + MunicipalityEntity.TABLE_NAME + MunicipalityEntity.DB_FIELD_CODE,
+                columnList = MunicipalityEntity.DB_FIELD_CODE
+        ),
 })
 public class MunicipalityEntity extends SumiffiikEntity implements IdentifiedEntity {
 

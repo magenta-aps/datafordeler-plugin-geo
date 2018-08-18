@@ -16,7 +16,14 @@ import java.util.UUID;
 
 @Entity
 @Table(name = GeoPlugin.DEBUG_TABLE_PREFIX + LocalityEntity.TABLE_NAME, indexes = {
-        @Index(name = GeoPlugin.DEBUG_TABLE_PREFIX + LocalityEntity.TABLE_NAME + LocalityEntity.DB_FIELD_CODE, columnList = LocalityEntity.DB_FIELD_CODE),
+        @Index(
+                name = GeoPlugin.DEBUG_TABLE_PREFIX + LocalityEntity.TABLE_NAME + LocalityEntity.DB_FIELD_SUMIFFIIK_ID,
+                columnList = LocalityEntity.DB_FIELD_SUMIFFIIK_ID
+        ),
+        @Index(
+                name = GeoPlugin.DEBUG_TABLE_PREFIX + LocalityEntity.TABLE_NAME + LocalityEntity.DB_FIELD_CODE,
+                columnList = LocalityEntity.DB_FIELD_CODE
+        ),
 })
 public class LocalityEntity extends SumiffiikEntity implements IdentifiedEntity {
 

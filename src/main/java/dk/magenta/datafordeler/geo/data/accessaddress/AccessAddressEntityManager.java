@@ -1,6 +1,7 @@
 package dk.magenta.datafordeler.geo.data.accessaddress;
 
 import dk.magenta.datafordeler.geo.data.GeoEntityManager;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -52,7 +53,7 @@ public class AccessAddressEntityManager extends GeoEntityManager<AccessAddressEn
     }
 
     @Override
-    protected AccessAddressEntity createBasicEntity(AccessAddressRawData record) {
+    protected AccessAddressEntity createBasicEntity(AccessAddressRawData record, Session session) {
         return new AccessAddressEntity(record);
     }
 

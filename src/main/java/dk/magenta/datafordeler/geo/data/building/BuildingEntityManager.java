@@ -1,6 +1,7 @@
 package dk.magenta.datafordeler.geo.data.building;
 
 import dk.magenta.datafordeler.geo.data.GeoEntityManager;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -52,7 +53,7 @@ public class BuildingEntityManager extends GeoEntityManager<BuildingEntity, Buil
     }
 
     @Override
-    protected BuildingEntity createBasicEntity(BuildingRawData record) {
+    protected BuildingEntity createBasicEntity(BuildingRawData record, Session session) {
         return new BuildingEntity(record);
     }
 

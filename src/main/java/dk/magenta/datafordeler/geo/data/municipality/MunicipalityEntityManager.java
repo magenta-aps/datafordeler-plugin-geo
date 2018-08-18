@@ -1,6 +1,7 @@
 package dk.magenta.datafordeler.geo.data.municipality;
 
 import dk.magenta.datafordeler.geo.data.GeoEntityManager;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -52,7 +53,7 @@ public class MunicipalityEntityManager extends GeoEntityManager<MunicipalityEnti
     }
 
     @Override
-    protected MunicipalityEntity createBasicEntity(MunicipalityRawData record) {
+    protected MunicipalityEntity createBasicEntity(MunicipalityRawData record, Session session) {
         return new MunicipalityEntity(record);
     }
 

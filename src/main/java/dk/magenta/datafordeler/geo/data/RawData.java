@@ -34,11 +34,9 @@ public abstract class RawData {
 
         @JsonIgnore
         public UUID getSumiffiikAsUUID() {
-            if (this.sumiffiikId != null && this.sumiffiikId.length() == 38) {
-                return UUID.fromString(this.sumiffiikId.substring(1, 37));
-            }
-            return null;
+            return RawData.getSumiffiikAsUUID(this.sumiffiikId);
         }
+
     }
 
     public abstract class RawLineProperties extends RawProperties {
@@ -64,4 +62,11 @@ public abstract class RawData {
     public abstract List<GeoMonotemporalRecord> getMonotemporalRecords();
 
     public abstract RawProperties getProperties();
+
+    public static UUID getSumiffiikAsUUID(String sumiffiikId) {
+        if (sumiffiikId != null && sumiffiikId.length() == 38) {
+            return UUID.fromString(sumiffiikId.substring(1, 37));
+        }
+        return null;
+    }
 }
