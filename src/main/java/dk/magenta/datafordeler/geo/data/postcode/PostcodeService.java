@@ -1,4 +1,4 @@
-package dk.magenta.datafordeler.geo.data.building;
+package dk.magenta.datafordeler.geo.data.postcode;
 
 import dk.magenta.datafordeler.core.MonitorService;
 import dk.magenta.datafordeler.core.arearestriction.AreaRestriction;
@@ -15,7 +15,6 @@ import dk.magenta.datafordeler.core.user.DafoUserDetails;
 import dk.magenta.datafordeler.geo.GeoAreaRestrictionDefinition;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.GeoRolesDefinition;
-import dk.magenta.datafordeler.geo.data.postcode.PostcodeQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,9 +26,9 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.stream.Stream;
 
-@RestController("BuildingService")
-@RequestMapping("/geo/building/1/rest")
-public class BuildingService extends FapiBaseService<BuildingEntity, PostcodeQuery> {
+@RestController("PostcodeService")
+@RequestMapping("/geo/postcode/1/rest")
+public class PostcodeService extends FapiBaseService<PostcodeEntity, PostcodeQuery> {
 
     @Autowired
     private GeoPlugin geoPlugin;
@@ -39,8 +38,8 @@ public class BuildingService extends FapiBaseService<BuildingEntity, PostcodeQue
 
     @PostConstruct
     public void init() {
-        this.monitorService.addAccessCheckPoint("/geo/building/1/rest/1234");
-        this.monitorService.addAccessCheckPoint("/geo/building/1/rest/search?bnr=1234");
+        this.monitorService.addAccessCheckPoint("/geo/postcode/1/rest/1234");
+        this.monitorService.addAccessCheckPoint("/geo/postcode/1/rest/search?bnr=1234");
 
         //this.setOutputWrapper(this.personRecordOutputWrapper);
     }
@@ -57,12 +56,12 @@ public class BuildingService extends FapiBaseService<BuildingEntity, PostcodeQue
 
     @Override
     public String getServiceName() {
-        return "building";
+        return "postcode";
     }
 
     @Override
-    protected Class<BuildingEntity> getEntityClass() {
-        return BuildingEntity.class;
+    protected Class<PostcodeEntity> getEntityClass() {
+        return PostcodeEntity.class;
     }
 
     @Override
@@ -81,7 +80,7 @@ public class BuildingService extends FapiBaseService<BuildingEntity, PostcodeQue
     }
 
     @Override
-    protected void sendAsCSV(Stream<BuildingEntity> stream, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException, HttpNotFoundException {
+    protected void sendAsCSV(Stream<PostcodeEntity> stream, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException, HttpNotFoundException {
 
     }
 

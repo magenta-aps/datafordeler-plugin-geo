@@ -10,6 +10,9 @@ import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressService;
 import dk.magenta.datafordeler.geo.data.building.BuildingEntity;
 import dk.magenta.datafordeler.geo.data.building.BuildingEntityManager;
 import dk.magenta.datafordeler.geo.data.building.BuildingService;
+import dk.magenta.datafordeler.geo.data.postcode.PostcodeEntity;
+import dk.magenta.datafordeler.geo.data.postcode.PostcodeEntityManager;
+import dk.magenta.datafordeler.geo.data.postcode.PostcodeService;
 import dk.magenta.datafordeler.geo.data.locality.LocalityEntity;
 import dk.magenta.datafordeler.geo.data.locality.LocalityEntityManager;
 import dk.magenta.datafordeler.geo.data.locality.LocalityService;
@@ -90,6 +93,12 @@ public class TestParse {
 
     @Autowired
     private UnitAddressEntityManager unitAddressEntityManager;
+
+    @Autowired
+    private PostcodeService postcodeService;
+
+    @Autowired
+    private PostcodeEntityManager postcodeEntityManager;
 
     private ResponseEntity<String> restSearch(ParameterMap parameters, String type) {
         HttpHeaders headers = new HttpHeaders();
@@ -217,6 +226,7 @@ public class TestParse {
 
             BuildingEntity b1025 = QueryManager.getEntity(session, UUID.fromString("3250B104-5F67-43A5-B6A8-1BEC88476C26"), BuildingEntity.class);
             Assert.assertNotNull(b1025);
+            System.out.println(b1025.getAnr());
             Assert.assertEquals(null, b1025.getAnr());
             Assert.assertEquals("B-1025", b1025.getBnr());
             Assert.assertEquals(OffsetDateTime.parse("2018-07-19T07:21:03Z"), b1025.getCreationDate());
@@ -287,6 +297,34 @@ public class TestParse {
             Assert.assertEquals("IRKS", unit.getCreator());
 
             ResponseEntity<String> unitResponse = this.uuidSearch("A77B5AD0-D54F-46D6-8641-2BF47EA1C9D6", "accessaddress");
+            Assert.assertEquals(200, unitResponse.getStatusCode().value());
+
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            importMetadata.setTransactionInProgress(false);
+            session.close();
+        }
+    }
+
+    @Test
+    public void testPostcode() throws DataFordelerException, IOException {
+        FileInputStream data = new FileInputStream(new File("fixtures/Postnummer.json"));
+        ImportMetadata importMetadata = new ImportMetadata();
+        Session session = sessionManager.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        importMetadata.setTransactionInProgress(true);
+        importMetadata.setSession(session);
+        try {
+            postcodeEntityManager.parseData(data, importMetadata);
+
+            PostcodeEntity santa = QueryManager.getEntity(session, PostcodeEntity.generateUUID(2412), PostcodeEntity.class);
+            Assert.assertNotNull(santa);
+            Assert.assertEquals(2412, santa.getCode());
+
+            ResponseEntity<String> unitResponse = this.uuidSearch(PostcodeEntity.generateUUID(2412).toString(), "postcode");
             Assert.assertEquals(200, unitResponse.getStatusCode().value());
 
             transaction.commit();

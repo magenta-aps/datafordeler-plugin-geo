@@ -3,6 +3,7 @@ package dk.magenta.datafordeler.geo.data.accessaddress;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import dk.magenta.datafordeler.geo.data.RawData;
+import dk.magenta.datafordeler.geo.data.SumiffiikRawData;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
 import org.geojson.Point;
 
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AccessAddressRawData extends RawData {
+public class AccessAddressRawData extends SumiffiikRawData {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public class AccessAddressRawProperties extends RawProperties {

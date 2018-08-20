@@ -11,7 +11,7 @@ public abstract class SumiffiikEntity extends GeoEntity implements IdentifiedEnt
     public SumiffiikEntity() {
     }
 
-    public SumiffiikEntity(RawData record) {
+    public SumiffiikEntity(SumiffiikRawData record) {
         this.setSumiffiikId(record.getProperties().sumiffiikId);
         this.setObjectId(record.getProperties().objectId);
         this.setCreator(record.getProperties().creator);

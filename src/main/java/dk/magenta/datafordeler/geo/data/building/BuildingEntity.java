@@ -7,6 +7,7 @@ import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 import dk.magenta.datafordeler.geo.data.SumiffiikEntity;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
+import dk.magenta.datafordeler.geo.data.postcode.PostcodeRawData;
 
 import javax.persistence.*;
 import java.util.Collection;

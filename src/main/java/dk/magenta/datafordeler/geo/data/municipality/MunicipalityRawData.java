@@ -2,6 +2,7 @@ package dk.magenta.datafordeler.geo.data.municipality;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import dk.magenta.datafordeler.geo.data.SumiffiikRawData;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
 import dk.magenta.datafordeler.geo.data.RawData;
 import org.geojson.MultiPolygon;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class MunicipalityRawData extends RawData {
+public class MunicipalityRawData extends SumiffiikRawData {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public class MunicipalityRawProperties extends RawAreaProperties {
