@@ -1,6 +1,7 @@
 package dk.magenta.datafordeler.geo.data.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import dk.magenta.datafordeler.core.database.Registration;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 
 import javax.persistence.Column;
@@ -16,6 +17,9 @@ import java.util.Objects;
 
 @MappedSuperclass
 public class GeoMonotemporalRecord<E extends GeoEntity> extends GeoNontemporalRecord<E> {
+
+    public static final String FILTER_REGISTRATION_AFTER = "(" + GeoMonotemporalRecord.DB_FIELD_REGISTRATION_FROM + " >= :" + Registration.FILTERPARAM_REGISTRATION_FROM + " OR " + GeoMonotemporalRecord.DB_FIELD_REGISTRATION_FROM + " is null)";
+    public static final String FILTER_REGISTRATION_BEFORE = "(" + GeoMonotemporalRecord.DB_FIELD_REGISTRATION_FROM + " < :" + Registration.FILTERPARAM_REGISTRATION_TO + " OR " + GeoMonotemporalRecord.DB_FIELD_REGISTRATION_FROM + " is null)";
 
 
     // For storing the calculated endRegistration time, ie. when the next registration "overrides" us

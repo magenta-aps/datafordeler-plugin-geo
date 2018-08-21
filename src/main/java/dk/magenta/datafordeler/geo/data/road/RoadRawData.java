@@ -31,7 +31,7 @@ public class RoadRawData extends SumiffiikRawData {
         public int code;
 
         @JsonProperty("Lokalitetskode")
-        public Integer locality;
+        public String locality;
 
         @JsonProperty("Kommunekode")
         public Integer municipality;
@@ -51,9 +51,15 @@ public class RoadRawData extends SumiffiikRawData {
         );
 
         records.add(
+                new RoadLocalityRecord(this.properties.locality)
+                        .setEditor(this.properties.editor)
+                        .setRegistrationFrom(this.properties.editDate)
+        );
+
+        records.add(
                 new RoadMunicipalityRecord(this.properties.municipality)
-                .setEditor(this.properties.editor)
-                .setRegistrationFrom(this.properties.editDate)
+                        .setEditor(this.properties.editor)
+                        .setRegistrationFrom(this.properties.editDate)
         );
 
         MultiLineString multiLineString = null;

@@ -30,11 +30,12 @@ public class AccessAddressEntity extends SumiffiikEntity implements IdentifiedEn
 
     public AccessAddressEntity(AccessAddressRawData record) {
         super(record);
+        System.out.println("Create AccessAddressEntity");
         this.setBnr(record.properties.bnr);
     }
 
-    public static UUID generateUUID(int localityCode) {
-        String uuidInput = "adgangsadresse:"+localityCode;
+    public static UUID generateUUID(String bnr) {
+        String uuidInput = "adgangsadresse:"+bnr;
         return UUID.nameUUIDFromBytes(uuidInput.getBytes());
     }
 
@@ -56,6 +57,34 @@ public class AccessAddressEntity extends SumiffiikEntity implements IdentifiedEn
     }
 
 
+    public static final String DB_FIELD_HOUSE_NUMBER = "houseNumber";
+    public static final String IO_FIELD_HOUSE_NUMBER = "husNummer";
+    @OneToMany(mappedBy = AccessAddressLocalityRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
+    /*@Filters({
+            @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_EFFECT_FROM),
+            @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_EFFECT_TO)
+    })*/
+    @JsonProperty(IO_FIELD_HOUSE_NUMBER)
+    Set<AccessAddressHouseNumberRecord> houseNumber = new HashSet<>();
+
+    public Set<AccessAddressHouseNumberRecord> getHouseNumber() {
+        return this.houseNumber;
+    }
+
+
+    public static final String DB_FIELD_ROAD = "road";
+    public static final String IO_FIELD_ROAD = "vej";
+    @OneToMany(mappedBy = AccessAddressRoadRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
+    /*@Filters({
+            @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_EFFECT_FROM),
+            @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_EFFECT_TO)
+    })*/
+    @JsonProperty(IO_FIELD_ROAD)
+    Set<AccessAddressRoadRecord> road = new HashSet<>();
+
+    public Set<AccessAddressRoadRecord> getRoad() {
+        return this.road;
+    }
 
 
 
@@ -116,6 +145,14 @@ public class AccessAddressEntity extends SumiffiikEntity implements IdentifiedEn
 
     public void addMonotemporalRecord(GeoMonotemporalRecord record) {
         boolean added = false;
+        System.out.println("Add "+record.getClass().getSimpleName()+" to AccessAddressEntity");
+        if (record instanceof AccessAddressRoadRecord) {
+            System.out.println("roadCode "+((AccessAddressRoadRecord) record).getCode());
+            added = addItem(this.road, record);
+        }
+        if (record instanceof AccessAddressHouseNumberRecord) {
+            added = addItem(this.houseNumber, record);
+        }
         if (record instanceof AccessAddressMunicipalityRecord) {
             added = addItem(this.municipality, record);
         }
@@ -126,7 +163,11 @@ public class AccessAddressEntity extends SumiffiikEntity implements IdentifiedEn
             added = addItem(this.shape, record);
         }
         if (added) {
+            System.out.println("adding");
             record.setEntity(this);
+        } else {
+
+            System.out.println("not adding");
         }
     }
 

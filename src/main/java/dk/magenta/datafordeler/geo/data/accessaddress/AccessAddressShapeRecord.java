@@ -17,7 +17,7 @@ import javax.persistence.Table;
                 columnList = AccessAddressShapeRecord.DB_FIELD_ENTITY + DatabaseEntry.REF
         ),
 })
-public class AccessAddressShapeRecord extends PointRecord<UnitAddressEntity> {
+public class AccessAddressShapeRecord extends PointRecord<AccessAddressEntity> {
 
     public static final String TABLE_NAME = "geo_access_address_shape";
 

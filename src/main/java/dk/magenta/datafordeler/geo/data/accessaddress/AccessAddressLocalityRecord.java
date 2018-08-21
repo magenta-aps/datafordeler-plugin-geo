@@ -26,7 +26,7 @@ public class AccessAddressLocalityRecord extends LocalityReferenceRecord<AccessA
     public AccessAddressLocalityRecord() {
     }
 
-    public AccessAddressLocalityRecord(Integer code) {
+    public AccessAddressLocalityRecord(String code) {
         super(code);
     }
 

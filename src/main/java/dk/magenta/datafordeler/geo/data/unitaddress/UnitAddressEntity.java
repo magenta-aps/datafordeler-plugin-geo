@@ -43,6 +43,8 @@ public class UnitAddressEntity extends SumiffiikEntity implements IdentifiedEnti
 
 
 
+    public static final String DB_FIELD_ACCESS_ADDRESS = "accessAddress";
+    public static final String IO_FIELD_ACCESS_ADDRESS = "adgangsAdresse";
     @ManyToOne(targetEntity = Identification.class)
     private Identification accessAddress;
 

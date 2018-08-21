@@ -50,7 +50,7 @@ public class PostcodeEntity extends SumiffiikEntity implements IdentifiedEntity 
 
 
     public static final String DB_FIELD_CODE = "code";
-    public static final String IO_FIELD_CODE = "code";
+    public static final String IO_FIELD_CODE = "kode";
     @Column(name = DB_FIELD_CODE)
     @JsonProperty
     private int code;

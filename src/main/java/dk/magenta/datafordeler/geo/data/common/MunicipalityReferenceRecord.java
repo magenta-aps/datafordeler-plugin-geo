@@ -1,8 +1,10 @@
 package dk.magenta.datafordeler.geo.data.common;
 
+import dk.magenta.datafordeler.core.database.Identification;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 
 import javax.persistence.Column;
+import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import java.util.Objects;
 
@@ -17,7 +19,7 @@ public class MunicipalityReferenceRecord<E extends GeoEntity> extends GeoMonotem
     }
 
     public static final String DB_FIELD_CODE = "code";
-    @Column(name = DB_FIELD_CODE)
+    @Column(name = DB_FIELD_CODE, nullable = true)
     private Integer code;
 
     public Integer getCode() {

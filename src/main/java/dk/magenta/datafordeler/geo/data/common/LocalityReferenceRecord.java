@@ -1,8 +1,12 @@
 package dk.magenta.datafordeler.geo.data.common;
 
+import dk.magenta.datafordeler.core.database.Identification;
+import dk.magenta.datafordeler.core.database.QueryManager;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
+import org.hibernate.Session;
 
 import javax.persistence.Column;
+import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import java.util.Objects;
 
@@ -12,21 +16,33 @@ public class LocalityReferenceRecord<E extends GeoEntity> extends GeoMonotempora
     public LocalityReferenceRecord() {
     }
 
-    public LocalityReferenceRecord(Integer code) {
+    public LocalityReferenceRecord(String code) {
         this.code = code;
     }
 
     public static final String DB_FIELD_CODE = "code";
+    public static final String IO_FIELD_CODE = "lokalitetskode";
     @Column(name = DB_FIELD_CODE)
-    private Integer code;
+    private String code;
 
-    public Integer getCode() {
+    public String getCode() {
         return this.code;
     }
 
-    public void setCode(Integer code) {
+    public void setCode(String code) {
         this.code = code;
     }
+
+
+/*
+    public static final String DB_FIELD_REFERENCE = "reference";
+    @ManyToOne
+    private Identification reference;
+
+    public void wire(Session session) {
+        this.reference = QueryManager.getOrCreateIdentification(session, )
+    }
+*/
 
     public boolean equalData(Object o) {
         if (this == o) return true;

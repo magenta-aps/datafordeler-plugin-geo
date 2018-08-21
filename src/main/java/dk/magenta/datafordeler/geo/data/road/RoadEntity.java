@@ -40,11 +40,6 @@ public class RoadEntity extends SumiffiikEntity implements IdentifiedEntity {
         this.setCode(record.properties.code);
     }
 
-    public static UUID generateUUID(int localityCode) {
-        String uuidInput = "vej:"+localityCode;
-        return UUID.nameUUIDFromBytes(uuidInput.getBytes());
-    }
-
 
     public static final String DB_FIELD_CODE = "code";
     public static final String IO_FIELD_CODE = "kode";
@@ -60,6 +55,7 @@ public class RoadEntity extends SumiffiikEntity implements IdentifiedEntity {
     public void setCode(int code) {
         this.code = code;
     }
+
 
     public static final String DB_FIELD_NAME = "name";
     public static final String IO_FIELD_NAME = "navn";
@@ -134,6 +130,9 @@ public class RoadEntity extends SumiffiikEntity implements IdentifiedEntity {
         boolean added = false;
         if (record instanceof RoadNameRecord) {
             added = addItem(this.name, record);
+        }
+        if (record instanceof RoadLocalityRecord) {
+            added = addItem(this.locality, record);
         }
         if (record instanceof RoadMunicipalityRecord) {
             added = addItem(this.municipality, record);

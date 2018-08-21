@@ -14,6 +14,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 @MappedSuperclass
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -32,6 +33,10 @@ public abstract class GeoEntity extends DatabaseEntry implements IdentifiedEntit
 
     public void setIdentification(Identification identification) {
         this.identification = identification;
+    }
+
+    public UUID getUUID() {
+        return this.identification.getUuid();
     }
 
     public static final String DB_FIELD_CREATOR = "creator";

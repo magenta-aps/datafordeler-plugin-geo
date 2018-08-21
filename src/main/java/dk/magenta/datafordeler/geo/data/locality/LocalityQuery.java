@@ -17,12 +17,16 @@ public class LocalityQuery extends SumiffiikQuery<LocalityEntity> {
 
     public static final String CODE = LocalityEntity.IO_FIELD_CODE;
     public static final String NAME = LocalityEntity.IO_FIELD_NAME;
+    public static final String MUNICIPALITY = LocalityEntity.IO_FIELD_MUNICIPALITY;
 
-    @QueryField(type = QueryField.FieldType.INT, queryName = CODE)
+    @QueryField(type = QueryField.FieldType.STRING, queryName = CODE)
     private List<String> code = new ArrayList<>();
 
     @QueryField(type = QueryField.FieldType.STRING, queryName = NAME)
     private List<String> name = new ArrayList<>();
+
+    @QueryField(type = QueryField.FieldType.STRING, queryName = CODE)
+    private List<String> municipality = new ArrayList<>();
 
     public List<String> getCode() {
         return code;
@@ -56,11 +60,29 @@ public class LocalityQuery extends SumiffiikQuery<LocalityEntity> {
         }
     }
 
+    public List<String> getMunicipality() {
+        return municipality;
+    }
+
+    public void setMunicipality(String municipality) {
+        this.municipality.clear();
+        this.addMunicipality(municipality);
+    }
+
+    public void addMunicipality(String municipality) {
+        if (municipality != null) {
+            this.municipality.add(municipality);
+            this.increaseDataParamCount();
+        }
+    }
+
+
     @Override
     public Map<String, Object> getSearchParameters() {
         HashMap<String, Object> map = new HashMap<>(super.getSearchParameters());
         map.put(CODE, this.code);
         map.put(NAME, this.name);
+        map.put(MUNICIPALITY, this.municipality);
         return map;
     }
 
@@ -68,10 +90,13 @@ public class LocalityQuery extends SumiffiikQuery<LocalityEntity> {
     public BaseLookupDefinition getLookupDefinition() {
         BaseLookupDefinition lookupDefinition = super.getLookupDefinition();
         if (this.code != null && !this.code.isEmpty()) {
-            lookupDefinition.put(LocalityEntity.DB_FIELD_CODE, this.code, Integer.class);
+            lookupDefinition.put(LocalityEntity.DB_FIELD_CODE, this.code, String.class);
         }
         if (this.name != null && !this.name.isEmpty()) {
             lookupDefinition.put(LocalityEntity.DB_FIELD_NAME, this.name, String.class);
+        }
+        if (this.municipality != null && !this.municipality.isEmpty()) {
+            lookupDefinition.put(LocalityEntity.DB_FIELD_MUNICIPALITY + BaseLookupDefinition.separator + LocalityMunicipalityRecord.DB_FIELD_CODE, this.municipality, Integer.class);
         }
         return lookupDefinition;
     }
@@ -81,6 +106,7 @@ public class LocalityQuery extends SumiffiikQuery<LocalityEntity> {
         super.setFromParameters(parameters);
         this.setCode(parameters.getFirst(CODE));
         this.setName(parameters.getFirst(NAME));
+        this.setMunicipality(parameters.getFirst(MUNICIPALITY));
     }
 
 }

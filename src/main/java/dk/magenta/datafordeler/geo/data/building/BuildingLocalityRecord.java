@@ -26,7 +26,7 @@ public class BuildingLocalityRecord extends LocalityReferenceRecord<BuildingEnti
     public BuildingLocalityRecord() {
     }
 
-    public BuildingLocalityRecord(Integer code) {
+    public BuildingLocalityRecord(String code) {
         super(code);
     }
 

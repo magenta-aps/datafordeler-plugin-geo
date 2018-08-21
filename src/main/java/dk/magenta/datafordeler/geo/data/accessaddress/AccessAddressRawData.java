@@ -40,8 +40,14 @@ public class AccessAddressRawData extends SumiffiikRawData {
         @JsonProperty("Postnummer")
         public Integer postcode;
 
+        public Integer roadcode;
+
         @JsonProperty("Vejkode")
-        public String roadcode;
+        public void setRoadcode(String roadCode) {
+            System.out.println("setRoadCode: "+roadCode);
+            this.roadcode = Integer.parseInt(roadCode, 10);
+            System.out.println("raw code: "+this.roadcode);
+        }
 
         @JsonProperty("DataKilde")
         public Integer dataSource;
@@ -60,13 +66,19 @@ public class AccessAddressRawData extends SumiffiikRawData {
                 .setRegistrationFrom(this.properties.editDate)
         );
 
+        records.add(
+                new AccessAddressRoadRecord(this.properties.roadcode)
+                        .setEditor(this.properties.editor)
+                        .setRegistrationFrom(this.properties.editDate)
+        );
+
         /*records.add(
                 new AccessAddressLocalityRecord(this.properties.locality)
                 .setEditor(this.properties.editor)
                 .setRegistrationFrom(this.properties.editDate)
         );*/
 
-        if (this.shape instanceof Point) {
+        /*if (this.shape instanceof Point) {
             Point point = (Point) this.shape;
 
             records.add(
@@ -74,7 +86,7 @@ public class AccessAddressRawData extends SumiffiikRawData {
                             .setEditor(this.properties.editor)
                             .setRegistrationFrom(this.properties.editDate)
             );
-        }
+        }*/
 
         return records;
     }

@@ -27,7 +27,7 @@ public class BuildingRawData extends SumiffiikRawData {
         public String bnr;
 
         @JsonProperty("Lokalitetskode")
-        public Integer locality;
+        public String locality;
 
         @JsonProperty("Anvendelse")
         public Integer usage;
