@@ -29,7 +29,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.*;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
 
 @Component
