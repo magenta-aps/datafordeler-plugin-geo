@@ -1,5 +1,3 @@
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dk.magenta.datafordeler.core.Application;
 import dk.magenta.datafordeler.core.Engine;
 import dk.magenta.datafordeler.core.Pull;
@@ -7,56 +5,39 @@ import dk.magenta.datafordeler.core.database.QueryManager;
 import dk.magenta.datafordeler.core.database.SessionManager;
 import dk.magenta.datafordeler.core.exception.DataFordelerException;
 import dk.magenta.datafordeler.core.fapi.ParameterMap;
-import dk.magenta.datafordeler.core.io.ImportMetadata;
 import dk.magenta.datafordeler.geo.GeoPlugin;
-import dk.magenta.datafordeler.geo.data.GeoEntityManager;
 import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressEntity;
 import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressEntityManager;
-import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressService;
 import dk.magenta.datafordeler.geo.data.building.BuildingEntity;
 import dk.magenta.datafordeler.geo.data.building.BuildingEntityManager;
-import dk.magenta.datafordeler.geo.data.building.BuildingService;
-import dk.magenta.datafordeler.geo.data.postcode.PostcodeEntity;
-import dk.magenta.datafordeler.geo.data.postcode.PostcodeEntityManager;
-import dk.magenta.datafordeler.geo.data.postcode.PostcodeService;
 import dk.magenta.datafordeler.geo.data.locality.LocalityEntity;
 import dk.magenta.datafordeler.geo.data.locality.LocalityEntityManager;
-import dk.magenta.datafordeler.geo.data.locality.LocalityService;
 import dk.magenta.datafordeler.geo.data.municipality.MunicipalityEntity;
 import dk.magenta.datafordeler.geo.data.municipality.MunicipalityEntityManager;
-import dk.magenta.datafordeler.geo.data.municipality.MunicipalityService;
+import dk.magenta.datafordeler.geo.data.postcode.PostcodeEntity;
+import dk.magenta.datafordeler.geo.data.postcode.PostcodeEntityManager;
 import dk.magenta.datafordeler.geo.data.road.RoadEntity;
 import dk.magenta.datafordeler.geo.data.road.RoadEntityManager;
-import dk.magenta.datafordeler.geo.data.road.RoadService;
 import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressEntity;
 import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressEntityManager;
-import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressService;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.UUID;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = Application.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class TestParse {
+public class TestParse extends GeoTest {
 
     @Autowired
     private Engine engine;
@@ -65,88 +46,35 @@ public class TestParse {
     private GeoPlugin plugin;
 
     @Autowired
-    private TestRestTemplate restTemplate;
-
-    @Autowired
     private SessionManager sessionManager;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private MunicipalityService municipalityService;
 
     @Autowired
     private MunicipalityEntityManager municipalityEntityManager;
 
     @Autowired
-    private LocalityService localityService;
-
-    @Autowired
     private LocalityEntityManager localityEntityManager;
-
-    @Autowired
-    private RoadService roadService;
 
     @Autowired
     private RoadEntityManager roadEntityManager;
 
     @Autowired
-    private BuildingService buildingService;
-
-    @Autowired
     private BuildingEntityManager buildingEntityManager;
-
-    @Autowired
-    private AccessAddressService accessAddressService;
 
     @Autowired
     private AccessAddressEntityManager accessAddressEntityManager;
 
     @Autowired
-    private UnitAddressService unitAddressService;
-
-    @Autowired
     private UnitAddressEntityManager unitAddressEntityManager;
-
-    @Autowired
-    private PostcodeService postcodeService;
 
     @Autowired
     private PostcodeEntityManager postcodeEntityManager;
 
-    private void load(GeoEntityManager entityManager, String filename) throws IOException {
-        FileInputStream data = new FileInputStream(new File(filename));
-        Session session = sessionManager.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
-        ImportMetadata importMetadata = new ImportMetadata();
-        try {
-            importMetadata.setTransactionInProgress(true);
-            importMetadata.setSession(session);
-            entityManager.parseData(data, importMetadata);
-            transaction.commit();
-        } catch (Exception e) {
-            transaction.rollback();
-            e.printStackTrace();
-        } finally {
-            importMetadata.setTransactionInProgress(false);
-            session.close();
-            data.close();
-        }
-    }
-
     private ResponseEntity<String> restSearch(ParameterMap parameters, String type) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Accept", "application/json");
-        HttpEntity<String> httpEntity = new HttpEntity<String>("", headers);
-        return this.restTemplate.exchange("/geo/"+type+"/1/rest/search?" + parameters.asUrlParams(), HttpMethod.GET, httpEntity, String.class);
+        return this.lookup("/geo/"+type+"/1/rest/search?" + parameters.asUrlParams());
     }
 
     private ResponseEntity<String> uuidSearch(String id, String type) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Accept", "application/json");
-        HttpEntity<String> httpEntity = new HttpEntity<String>("", headers);
-        return this.restTemplate.exchange("/geo/"+type+"/1/rest/" + id, HttpMethod.GET, httpEntity, String.class);
+        return this.lookup("/geo/"+type+"/1/rest/" + id);
     }
 
     @Test
@@ -277,7 +205,7 @@ public class TestParse {
             session.close();
         }
 
-        ResponseEntity<String> response = this.uuidSearch("3E2C0668-E4C3-46A5-AEE8-AFEE74158DBE", "accessaddress");
+        ResponseEntity<String> response = this.uuidSearch("FA17D08C-D51C-4CE5-8036-D24C06DAE5C6", "accessaddress");
         Assert.assertEquals(200, response.getStatusCode().value());
     }
 

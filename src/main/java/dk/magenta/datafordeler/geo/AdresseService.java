@@ -117,7 +117,7 @@ public class AdresseService {
     @RequestMapping("/lokalitet")
     public void getLocalities(HttpServletRequest request, HttpServletResponse response) throws DataFordelerException, IOException {
         String payload = this.getLocalities(request);
-        setHeaders(response);
+        this.setHeaders(response);
         response.getWriter().write(payload);
     }
 
@@ -173,15 +173,15 @@ public class AdresseService {
     }
 
     public String getRoads(HttpServletRequest request) throws DataFordelerException {
-        String localityUUID = request.getParameter(PARAM_LOCALITY);
+        String locality = request.getParameter(PARAM_LOCALITY);
         DafoUserDetails user = dafoUserManager.getUserFromRequest(request);
         LoggerHelper loggerHelper = new LoggerHelper(log, request, user);
         loggerHelper.info(
-                "Incoming REST request for AddressService.road with locality {}", localityUUID
+                "Incoming REST request for AddressService.road with locality {}", locality
         );
-        checkParameterExistence(PARAM_LOCALITY, localityUUID);
-        UUID locality = parameterAsUUID(PARAM_LOCALITY, localityUUID);
-        return this.getRoads(locality.toString());
+        checkParameterExistence(PARAM_LOCALITY, locality);
+        //UUID locality = parameterAsUUID(PARAM_LOCALITY, locality);
+        return this.getRoads(locality);
     }
 
     public String getRoads(String locality) throws DataFordelerException {
@@ -200,9 +200,6 @@ public class AdresseService {
                 roadNode.put(OUTPUT_UUID, road.getUUID().toString());
                 roadNode.put(OUTPUT_ROADCODE, road.getCode());
                 roadNode.set(OUTPUT_NAME, null);
-                /*roadNode.set(OUTPUT_ALTNAME, null);
-                roadNode.set(OUTPUT_CPRNAME, null);
-                roadNode.set(OUTPUT_SHORTNAME, null);*/
 
                 for (RoadNameRecord nameRecord : road.getName()) {
                     roadNode.put(OUTPUT_ROADNAME, nameRecord.getName());
@@ -383,9 +380,7 @@ public class AdresseService {
                 }
                 //addressNode.set(OUTPUT_BCALLNAME, null);
 
-
                 addressNode.put(OUTPUT_BNUMBER, accessAddressEntity.getBnr());
-
 
                 for (UnitAddressFloorRecord floor : unitAddressEntity.getFloor()) {
                     addressNode.put(OUTPUT_FLOOR, floor.getFloor());
@@ -399,9 +394,6 @@ public class AdresseService {
 
                 results.add(addressNode);
             }
-
-
-
 
             return results.toString();
         } finally {
