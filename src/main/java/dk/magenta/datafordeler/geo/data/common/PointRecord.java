@@ -1,15 +1,14 @@
 package dk.magenta.datafordeler.geo.data.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 import org.geojson.LngLatAlt;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @MappedSuperclass
 public abstract class PointRecord<E extends GeoEntity> extends GeoMonotemporalRecord<E> {

@@ -3,7 +3,6 @@ package dk.magenta.datafordeler.geo.data.accessaddress;
 import dk.magenta.datafordeler.core.database.DatabaseEntry;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
-import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

@@ -1,9 +1,15 @@
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dk.magenta.datafordeler.core.Application;
+import dk.magenta.datafordeler.core.Engine;
+import dk.magenta.datafordeler.core.Pull;
 import dk.magenta.datafordeler.core.database.QueryManager;
 import dk.magenta.datafordeler.core.database.SessionManager;
 import dk.magenta.datafordeler.core.exception.DataFordelerException;
 import dk.magenta.datafordeler.core.fapi.ParameterMap;
 import dk.magenta.datafordeler.core.io.ImportMetadata;
+import dk.magenta.datafordeler.geo.GeoPlugin;
+import dk.magenta.datafordeler.geo.data.GeoEntityManager;
 import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressEntity;
 import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressEntityManager;
 import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressService;
@@ -42,6 +48,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -51,12 +58,20 @@ import java.util.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class TestParse {
 
+    @Autowired
+    private Engine engine;
+
+    @Autowired
+    private GeoPlugin plugin;
 
     @Autowired
     private TestRestTemplate restTemplate;
 
     @Autowired
     private SessionManager sessionManager;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private MunicipalityService municipalityService;
@@ -100,6 +115,26 @@ public class TestParse {
     @Autowired
     private PostcodeEntityManager postcodeEntityManager;
 
+    private void load(GeoEntityManager entityManager, String filename) throws IOException {
+        FileInputStream data = new FileInputStream(new File(filename));
+        Session session = sessionManager.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        ImportMetadata importMetadata = new ImportMetadata();
+        try {
+            importMetadata.setTransactionInProgress(true);
+            importMetadata.setSession(session);
+            entityManager.parseData(data, importMetadata);
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            importMetadata.setTransactionInProgress(false);
+            session.close();
+            data.close();
+        }
+    }
+
     private ResponseEntity<String> restSearch(ParameterMap parameters, String type) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", "application/json");
@@ -116,225 +151,186 @@ public class TestParse {
 
     @Test
     public void testMunicipality() throws DataFordelerException, IOException {
-        FileInputStream data = new FileInputStream(new File("fixtures/Kommune.json"));
-        ImportMetadata importMetadata = new ImportMetadata();
+        this.load(municipalityEntityManager, "fixtures/Kommune.json");
+        this.load(municipalityEntityManager, "fixtures/Kommune.json");
+
         Session session = sessionManager.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
-        importMetadata.setTransactionInProgress(true);
-        importMetadata.setSession(session);
         try {
-            municipalityEntityManager.parseData(data, importMetadata);
-
-            MunicipalityEntity kujalleq = QueryManager.getEntity(session, UUID.fromString("96C57A43-5761-45E6-83D0-F329A10B0AEC"), MunicipalityEntity.class);
-            Assert.assertNotNull(kujalleq);
-            Assert.assertEquals(955, kujalleq.getCode());
-            Assert.assertEquals(OffsetDateTime.parse("2018-07-19T11:11:05Z"), kujalleq.getCreationDate());
-            Assert.assertEquals("GREENADMIN", kujalleq.getCreator());
-            Assert.assertEquals(1, kujalleq.getName().size());
-            Assert.assertEquals("Kommune Kujalleq", kujalleq.getName().iterator().next().getName());
-
-            ResponseEntity<String> kujalleqResponse = this.uuidSearch("96C57A43-5761-45E6-83D0-F329A10B0AEC", "municipality");
-            Assert.assertEquals(200, kujalleqResponse.getStatusCode().value());
-
-            transaction.commit();
-        } catch (Exception e) {
-            transaction.rollback();
-            e.printStackTrace();
+            MunicipalityEntity entity = QueryManager.getEntity(session, UUID.fromString("96C57A43-5761-45E6-83D0-F329A10B0AEC"), MunicipalityEntity.class);
+            Assert.assertNotNull(entity);
+            Assert.assertEquals(955, entity.getCode());
+            Assert.assertTrue(OffsetDateTime.parse("2018-07-19T11:11:05Z").isEqual(entity.getCreationDate()));
+            Assert.assertEquals("GREENADMIN", entity.getCreator());
+            Assert.assertEquals(1, entity.getName().size());
+            Assert.assertEquals(1, entity.getShape().size());
+            Assert.assertEquals("Kommune Kujalleq", entity.getName().iterator().next().getName());
+            Assert.assertTrue(OffsetDateTime.parse("2018-07-19T11:11:05Z").isEqual(entity.getName().iterator().next().getRegistrationFrom()));
         } finally {
-            importMetadata.setTransactionInProgress(false);
             session.close();
         }
+
+        ResponseEntity<String> response = this.uuidSearch("96C57A43-5761-45E6-83D0-F329A10B0AEC", "municipality");
+        Assert.assertEquals(200, response.getStatusCode().value());
+        //JsonNode kujalleqNode = objectMapper.readTree(response.getBody());
+        //System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(kujalleqNode));
     }
+
 
     @Test
     public void testLocality() throws DataFordelerException, IOException {
-        FileInputStream data = new FileInputStream(new File("fixtures/Lokalitet.json"));
-        ImportMetadata importMetadata = new ImportMetadata();
+        this.load(localityEntityManager, "fixtures/Lokalitet.json");
+        this.load(localityEntityManager, "fixtures/Lokalitet.json");
+
         Session session = sessionManager.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
-        importMetadata.setTransactionInProgress(true);
-        importMetadata.setSession(session);
         try {
-            localityEntityManager.parseData(data, importMetadata);
-
-            LocalityEntity aadarujuupAqquserna = QueryManager.getEntity(session, UUID.fromString("32C1849A-6AB6-4358-B293-7D5EC69C3A19"), LocalityEntity.class);
-            Assert.assertNotNull(aadarujuupAqquserna);
-            Assert.assertEquals(null, aadarujuupAqquserna.getCode());
-            Assert.assertEquals(OffsetDateTime.parse("2018-07-19T10:57:39Z"), aadarujuupAqquserna.getCreationDate());
-            Assert.assertEquals("GREENADMIN", aadarujuupAqquserna.getCreator());
-            Assert.assertEquals(1, aadarujuupAqquserna.getName().size());
-            Assert.assertEquals("Aadarujuup Aqquserna nord", aadarujuupAqquserna.getName().iterator().next().getName());
-
-            ResponseEntity<String> aadarujuupAqqusernaResponse = this.uuidSearch("32C1849A-6AB6-4358-B293-7D5EC69C3A19", "locality");
-            Assert.assertEquals(200, aadarujuupAqqusernaResponse.getStatusCode().value());
-
-            transaction.commit();
-        } catch (Exception e) {
-            transaction.rollback();
-            e.printStackTrace();
+            LocalityEntity entity = QueryManager.getEntity(session, UUID.fromString("32C1849A-6AB6-4358-B293-7D5EC69C3A19"), LocalityEntity.class);
+            Assert.assertNotNull(entity);
+            Assert.assertEquals(null, entity.getCode());
+            Assert.assertTrue(OffsetDateTime.parse("2018-07-19T10:57:39Z").isEqual(entity.getCreationDate()));
+            Assert.assertEquals("GREENADMIN", entity.getCreator());
+            Assert.assertEquals(1, entity.getName().size());
+            Assert.assertEquals(1, entity.getShape().size());
+            Assert.assertEquals("Aadarujuup Aqquserna nord", entity.getName().iterator().next().getName());
+            Assert.assertTrue(OffsetDateTime.parse("2018-07-19T10:57:39Z").isEqual(entity.getName().iterator().next().getRegistrationFrom()));
         } finally {
-            importMetadata.setTransactionInProgress(false);
             session.close();
         }
+
+        ResponseEntity<String> response = this.uuidSearch("32C1849A-6AB6-4358-B293-7D5EC69C3A19", "locality");
+        Assert.assertEquals(200, response.getStatusCode().value());
     }
 
 
     @Test
     public void testRoad() throws DataFordelerException, IOException {
-        FileInputStream data = new FileInputStream(new File("fixtures/Vejmidte.json"));
-        ImportMetadata importMetadata = new ImportMetadata();
+        this.load(roadEntityManager, "fixtures/Vejmidte.json");
+        this.load(roadEntityManager, "fixtures/Vejmidte.json");
+
         Session session = sessionManager.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
-        importMetadata.setTransactionInProgress(true);
-        importMetadata.setSession(session);
         try {
-            roadEntityManager.parseData(data, importMetadata);
-
-            RoadEntity pujooriarfik = QueryManager.getEntity(session, UUID.fromString("DDF9075A-0B47-442B-BC0C-EFC296F67417"), RoadEntity.class);
-            Assert.assertNotNull(pujooriarfik);
-            Assert.assertEquals(0, pujooriarfik.getCode());
-            Assert.assertEquals(OffsetDateTime.parse("2018-07-23T06:25:18Z"), pujooriarfik.getCreationDate());
-            Assert.assertEquals("GREENADMIN", pujooriarfik.getCreator());
-            Assert.assertEquals(1, pujooriarfik.getName().size());
-            Assert.assertEquals("Pujooriarfik", pujooriarfik.getName().iterator().next().getName());
-            Assert.assertEquals(OffsetDateTime.parse("2018-07-23T06:25:18Z"), pujooriarfik.getName().iterator().next().getRegistrationFrom());
-
-            ResponseEntity<String> aadarujuupAqqusernaResponse = this.uuidSearch("DDF9075A-0B47-442B-BC0C-EFC296F67417", "locality");
-            Assert.assertEquals(200, aadarujuupAqqusernaResponse.getStatusCode().value());
-
-            transaction.commit();
-        } catch (Exception e) {
-            transaction.rollback();
-            e.printStackTrace();
+            RoadEntity entity = QueryManager.getEntity(session, UUID.fromString("DDF9075A-0B47-442B-BC0C-EFC296F67417"), RoadEntity.class);
+            Assert.assertNotNull(entity);
+            Assert.assertEquals(0, entity.getCode());
+            Assert.assertTrue(OffsetDateTime.parse("2018-07-23T06:25:18Z").isEqual(entity.getCreationDate()));
+            Assert.assertEquals("GREENADMIN", entity.getCreator());
+            Assert.assertEquals(1, entity.getName().size());
+            Assert.assertEquals(1, entity.getShape().size());
+            Assert.assertEquals("Pujooriarfik", entity.getName().iterator().next().getName());
+            Assert.assertTrue(OffsetDateTime.parse("2018-07-23T06:25:18Z").isEqual(entity.getName().iterator().next().getRegistrationFrom()));
         } finally {
-            importMetadata.setTransactionInProgress(false);
             session.close();
         }
+
+        ResponseEntity<String> response = this.uuidSearch("DDF9075A-0B47-442B-BC0C-EFC296F67417", "locality");
+        Assert.assertEquals(200, response.getStatusCode().value());
     }
 
 
     @Test
     public void testBuilding() throws DataFordelerException, IOException {
-        FileInputStream data = new FileInputStream(new File("fixtures/Bygning.json"));
-        ImportMetadata importMetadata = new ImportMetadata();
+        this.load(buildingEntityManager, "fixtures/Bygning.json");
+        this.load(buildingEntityManager, "fixtures/Bygning.json");
+
         Session session = sessionManager.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
-        importMetadata.setTransactionInProgress(true);
-        importMetadata.setSession(session);
         try {
-            buildingEntityManager.parseData(data, importMetadata);
-
-            BuildingEntity b1025 = QueryManager.getEntity(session, UUID.fromString("3250B104-5F67-43A5-B6A8-1BEC88476C26"), BuildingEntity.class);
-            Assert.assertNotNull(b1025);
-            System.out.println(b1025.getAnr());
-            Assert.assertEquals(null, b1025.getAnr());
-            Assert.assertEquals("B-1025", b1025.getBnr());
-            Assert.assertEquals(OffsetDateTime.parse("2018-07-19T07:21:03Z"), b1025.getCreationDate());
-            Assert.assertEquals("IRKS", b1025.getCreator());
-            Assert.assertEquals(1, b1025.getUsage().size());
-            Assert.assertEquals(Integer.valueOf(0), b1025.getUsage().iterator().next().getUsage());
-            Assert.assertEquals(OffsetDateTime.parse("2018-07-19T07:23:27Z"), b1025.getUsage().iterator().next().getRegistrationFrom());
-
-            ResponseEntity<String> b1025Response = this.uuidSearch("3250B104-5F67-43A5-B6A8-1BEC88476C26", "building");
-            Assert.assertEquals(200, b1025Response.getStatusCode().value());
-
-            transaction.commit();
-        } catch (Exception e) {
-            transaction.rollback();
-            e.printStackTrace();
+            BuildingEntity entity = QueryManager.getEntity(session, UUID.fromString("3250B104-5F67-43A5-B6A8-1BEC88476C26"), BuildingEntity.class);
+            Assert.assertNotNull(entity);
+            System.out.println(entity.getAnr());
+            Assert.assertEquals(null, entity.getAnr());
+            Assert.assertEquals("B-1025", entity.getBnr());
+            Assert.assertTrue(OffsetDateTime.parse("2018-07-19T07:21:03Z").isEqual(entity.getCreationDate()));
+            Assert.assertEquals("IRKS", entity.getCreator());
+            Assert.assertEquals(1, entity.getUsage().size());
+            Assert.assertEquals(1, entity.getShape().size());
+            Assert.assertEquals(Integer.valueOf(0), entity.getUsage().iterator().next().getUsage());
+            Assert.assertTrue(OffsetDateTime.parse("2018-07-19T07:23:27Z"). isEqual(entity.getUsage().iterator().next().getRegistrationFrom()));
         } finally {
-            importMetadata.setTransactionInProgress(false);
             session.close();
         }
+
+        ResponseEntity<String> response = this.uuidSearch("3250B104-5F67-43A5-B6A8-1BEC88476C26", "building");
+        Assert.assertEquals(200, response.getStatusCode().value());
     }
 
 
     @Test
     public void testAccessAddress() throws DataFordelerException, IOException {
-        FileInputStream data = new FileInputStream(new File("fixtures/Adgangsadresse.json"));
-        ImportMetadata importMetadata = new ImportMetadata();
+        this.load(accessAddressEntityManager, "fixtures/Adgangsadresse.json");
+        this.load(accessAddressEntityManager, "fixtures/Adgangsadresse.json");
+
         Session session = sessionManager.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
-        importMetadata.setTransactionInProgress(true);
-        importMetadata.setSession(session);
         try {
-            accessAddressEntityManager.parseData(data, importMetadata);
-
-            AccessAddressEntity b841 = QueryManager.getEntity(session, UUID.fromString("3E2C0668-E4C3-46A5-AEE8-AFEE74158DBE"), AccessAddressEntity.class);
-            Assert.assertNotNull(b841);
-            Assert.assertEquals("B-841", b841.getBnr());
-            Assert.assertEquals(OffsetDateTime.parse("2018-07-19T10:15:31Z"), b841.getCreationDate());
-            Assert.assertEquals("IRKS", b841.getCreator());
-
-            ResponseEntity<String> b841Response = this.uuidSearch("3E2C0668-E4C3-46A5-AEE8-AFEE74158DBE", "accessaddress");
-            Assert.assertEquals(200, b841Response.getStatusCode().value());
-
-            transaction.commit();
-        } catch (Exception e) {
-            transaction.rollback();
-            e.printStackTrace();
+            AccessAddressEntity entity = QueryManager.getEntity(session, UUID.fromString("FA17D08C-D51C-4CE5-8036-D24C06DAE5C6"), AccessAddressEntity.class);
+            Assert.assertNotNull(entity);
+            Assert.assertEquals("B-0000", entity.getBnr());
+            Assert.assertTrue(OffsetDateTime.parse("2018-07-19T10:15:31Z").isEqual(entity.getCreationDate()));
+            Assert.assertEquals("IRKS", entity.getCreator());
+            Assert.assertEquals(1, entity.getShape().size());
+            Assert.assertEquals(1, entity.getHouseNumber().size());
+            Assert.assertEquals(1, entity.getBlockName().size());
+            Assert.assertEquals(1, entity.getLocality().size());
+            Assert.assertEquals(1, entity.getStatus().size());
+            Assert.assertEquals(1, entity.getImportStatus().size());
+            Assert.assertEquals(1, entity.getMunicipality().size());
+            Assert.assertEquals(1, entity.getRoad().size());
         } finally {
-            importMetadata.setTransactionInProgress(false);
             session.close();
         }
+
+        ResponseEntity<String> response = this.uuidSearch("3E2C0668-E4C3-46A5-AEE8-AFEE74158DBE", "accessaddress");
+        Assert.assertEquals(200, response.getStatusCode().value());
     }
 
 
     @Test
     public void testUnitAddress() throws DataFordelerException, IOException {
-        FileInputStream data = new FileInputStream(new File("fixtures/Enhedsadresse.json"));
-        ImportMetadata importMetadata = new ImportMetadata();
+        this.load(unitAddressEntityManager, "fixtures/Enhedsadresse.json");
+        this.load(unitAddressEntityManager, "fixtures/Enhedsadresse.json");
+
         Session session = sessionManager.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
-        importMetadata.setTransactionInProgress(true);
-        importMetadata.setSession(session);
         try {
-            unitAddressEntityManager.parseData(data, importMetadata);
-
-            UnitAddressEntity unit = QueryManager.getEntity(session, UUID.fromString("A77B5AD0-D54F-46D6-8641-2BF47EA1C9D6"), UnitAddressEntity.class);
-            Assert.assertNotNull(unit);
-            Assert.assertEquals(OffsetDateTime.parse("2018-07-19T10:09:13Z"), unit.getCreationDate());
-            Assert.assertEquals("IRKS", unit.getCreator());
-
-            ResponseEntity<String> unitResponse = this.uuidSearch("A77B5AD0-D54F-46D6-8641-2BF47EA1C9D6", "accessaddress");
-            Assert.assertEquals(200, unitResponse.getStatusCode().value());
-
-            transaction.commit();
-        } catch (Exception e) {
-            transaction.rollback();
-            e.printStackTrace();
+            UnitAddressEntity entity = QueryManager.getEntity(session, UUID.fromString("A77B5AD0-D54F-46D6-8641-2BF47EA1C9D6"), UnitAddressEntity.class);
+            Assert.assertNotNull(entity);
+            Assert.assertTrue(OffsetDateTime.parse("2018-07-19T10:09:13Z").isEqual(entity.getCreationDate()));
+            Assert.assertEquals("IRKS", entity.getCreator());
+            Assert.assertEquals(1, entity.getUsage().size());
+            Assert.assertEquals(1, entity.getFloor().size());
+            Assert.assertEquals(1, entity.getDoor().size());
+            Assert.assertEquals(1, entity.getImportStatus().size());
+            Assert.assertEquals(1, entity.getNumber().size());
+            Assert.assertEquals(1, entity.getSource().size());
+            Assert.assertEquals(1, entity.getStatus().size());
         } finally {
-            importMetadata.setTransactionInProgress(false);
             session.close();
         }
+
+        ResponseEntity<String> response = this.uuidSearch("A77B5AD0-D54F-46D6-8641-2BF47EA1C9D6", "accessaddress");
+        Assert.assertEquals(200, response.getStatusCode().value());
     }
 
     @Test
     public void testPostcode() throws DataFordelerException, IOException {
-        FileInputStream data = new FileInputStream(new File("fixtures/Postnummer.json"));
-        ImportMetadata importMetadata = new ImportMetadata();
+        this.load(postcodeEntityManager, "fixtures/Postnummer.json");
+        this.load(postcodeEntityManager, "fixtures/Postnummer.json");
+
         Session session = sessionManager.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
-        importMetadata.setTransactionInProgress(true);
-        importMetadata.setSession(session);
         try {
-            postcodeEntityManager.parseData(data, importMetadata);
-
-            PostcodeEntity santa = QueryManager.getEntity(session, PostcodeEntity.generateUUID(2412), PostcodeEntity.class);
-            Assert.assertNotNull(santa);
-            Assert.assertEquals(2412, santa.getCode());
-
-            ResponseEntity<String> unitResponse = this.uuidSearch(PostcodeEntity.generateUUID(2412).toString(), "postcode");
-            Assert.assertEquals(200, unitResponse.getStatusCode().value());
-
-            transaction.commit();
-        } catch (Exception e) {
-            transaction.rollback();
-            e.printStackTrace();
+            PostcodeEntity entity = QueryManager.getEntity(session, PostcodeEntity.generateUUID(2412), PostcodeEntity.class);
+            Assert.assertNotNull(entity);
+            Assert.assertEquals(2412, entity.getCode());
+            Assert.assertEquals("Santa Claus/Julemanden", entity.getName());
         } finally {
-            importMetadata.setTransactionInProgress(false);
             session.close();
         }
+
+        ResponseEntity<String> response = this.uuidSearch(PostcodeEntity.generateUUID(2412).toString(), "postcode");
+        Assert.assertEquals(200, response.getStatusCode().value());
+    }
+
+    @Test
+    public void pull() {
+        Pull pull = new Pull(engine, plugin);
+        pull.run();
     }
 
 }

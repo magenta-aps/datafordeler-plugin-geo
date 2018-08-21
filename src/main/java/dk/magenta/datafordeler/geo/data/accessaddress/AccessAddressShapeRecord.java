@@ -4,7 +4,6 @@ import com.vividsolutions.jts.geom.Point;
 import dk.magenta.datafordeler.core.database.DatabaseEntry;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.common.PointRecord;
-import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.Index;

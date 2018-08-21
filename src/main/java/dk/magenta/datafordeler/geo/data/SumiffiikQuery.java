@@ -1,6 +1,8 @@
 package dk.magenta.datafordeler.geo.data;
 
-import dk.magenta.datafordeler.core.database.*;
+import dk.magenta.datafordeler.core.database.BaseLookupDefinition;
+import dk.magenta.datafordeler.core.database.DataItem;
+import dk.magenta.datafordeler.core.database.Identification;
 import dk.magenta.datafordeler.core.fapi.BaseQuery;
 import dk.magenta.datafordeler.core.fapi.ParameterMap;
 import dk.magenta.datafordeler.core.fapi.QueryField;

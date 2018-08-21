@@ -1,6 +1,5 @@
 package dk.magenta.datafordeler.geo.data.unitaddress;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import dk.magenta.datafordeler.core.database.QueryManager;
 import dk.magenta.datafordeler.geo.data.GeoEntityManager;
 import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressEntityManager;

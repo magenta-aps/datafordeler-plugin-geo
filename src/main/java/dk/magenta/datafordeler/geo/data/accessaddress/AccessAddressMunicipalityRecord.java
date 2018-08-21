@@ -3,7 +3,6 @@ package dk.magenta.datafordeler.geo.data.accessaddress;
 import dk.magenta.datafordeler.core.database.DatabaseEntry;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.common.MunicipalityReferenceRecord;
-import dk.magenta.datafordeler.geo.data.locality.LocalityEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.Index;

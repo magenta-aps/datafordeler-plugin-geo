@@ -6,6 +6,13 @@ import dk.magenta.datafordeler.core.plugin.Plugin;
 import dk.magenta.datafordeler.core.plugin.RegisterManager;
 import dk.magenta.datafordeler.core.plugin.RolesDefinition;
 import dk.magenta.datafordeler.geo.configuration.GeoConfigurationManager;
+import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressEntityManager;
+import dk.magenta.datafordeler.geo.data.building.BuildingEntityManager;
+import dk.magenta.datafordeler.geo.data.locality.LocalityEntityManager;
+import dk.magenta.datafordeler.geo.data.municipality.MunicipalityEntityManager;
+import dk.magenta.datafordeler.geo.data.postcode.PostcodeEntityManager;
+import dk.magenta.datafordeler.geo.data.road.RoadEntityManager;
+import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressEntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +38,28 @@ public class GeoPlugin extends Plugin {
     @Autowired
     private GeoRegisterManager registerManager;
 
+
+    @Autowired
+    private MunicipalityEntityManager municipalityEntityManager;
+
+    @Autowired
+    private LocalityEntityManager localityEntityManager;
+
+    @Autowired
+    private RoadEntityManager roadEntityManager;
+
+    @Autowired
+    private BuildingEntityManager buildingEntityManager;
+
+    @Autowired
+    private AccessAddressEntityManager accessAddressEntityManager;
+
+    @Autowired
+    private UnitAddressEntityManager unitAddressEntityManager;
+
+    @Autowired
+    private PostcodeEntityManager postcodeEntityManager;
+
     private GeoRolesDefinition rolesDefinition = new GeoRolesDefinition();
 
     private GeoAreaRestrictionDefinition areaRestrictionDefinition;
@@ -44,6 +73,13 @@ public class GeoPlugin extends Plugin {
      */
     @PostConstruct
     public void init() {
+        this.registerManager.addEntityManager(this.accessAddressEntityManager);
+        this.registerManager.addEntityManager(this.buildingEntityManager);
+        this.registerManager.addEntityManager(this.localityEntityManager);
+        this.registerManager.addEntityManager(this.municipalityEntityManager);
+        this.registerManager.addEntityManager(this.postcodeEntityManager);
+        this.registerManager.addEntityManager(this.roadEntityManager);
+        this.registerManager.addEntityManager(this.unitAddressEntityManager);
     }
 
     /**

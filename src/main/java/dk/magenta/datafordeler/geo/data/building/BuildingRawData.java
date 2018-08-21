@@ -1,13 +1,9 @@
 package dk.magenta.datafordeler.geo.data.building;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import dk.magenta.datafordeler.geo.data.RawData;
 import dk.magenta.datafordeler.geo.data.SumiffiikRawData;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
-import org.geojson.LineString;
-import org.geojson.MultiLineString;
 import org.geojson.MultiPolygon;
 import org.geojson.Polygon;
 
@@ -42,14 +38,10 @@ public class BuildingRawData extends SumiffiikRawData {
 
         records.add(
                 new BuildingUsageRecord(this.properties.usage)
-                .setEditor(this.properties.editor)
-                .setRegistrationFrom(this.properties.editDate)
         );
 
         records.add(
                 new BuildingLocalityRecord(this.properties.locality)
-                .setEditor(this.properties.editor)
-                .setRegistrationFrom(this.properties.editDate)
         );
 
         MultiPolygon multiPolygon = null;
@@ -63,9 +55,12 @@ public class BuildingRawData extends SumiffiikRawData {
         if (multiPolygon != null) {
             records.add(
                     new BuildingShapeRecord(this.properties.area, this.properties.length, multiPolygon)
-                            .setEditor(this.properties.editor)
-                            .setRegistrationFrom(this.properties.editDate)
             );
+        }
+
+        for (GeoMonotemporalRecord record : records) {
+            record.setEditor(this.properties.editor);
+            record.setRegistrationFrom(this.properties.editDate);
         }
 
         return records;

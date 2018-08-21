@@ -3,7 +3,6 @@ package dk.magenta.datafordeler.geo.data.accessaddress;
 import dk.magenta.datafordeler.core.database.DatabaseEntry;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
-import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,7 +17,7 @@ import java.util.Objects;
                 columnList = AccessAddressHouseNumberRecord.DB_FIELD_ENTITY + DatabaseEntry.REF
         ),
 })
-public class AccessAddressHouseNumberRecord extends GeoMonotemporalRecord<UnitAddressEntity> {
+public class AccessAddressHouseNumberRecord extends GeoMonotemporalRecord<AccessAddressEntity> {
 
     public static final String TABLE_NAME = "geo_access_address_house_number";
 

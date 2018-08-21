@@ -1,7 +1,6 @@
 package dk.magenta.datafordeler.geo.data.building;
 
 import dk.magenta.datafordeler.geo.data.GeoEntityManager;
-import dk.magenta.datafordeler.geo.data.postcode.PostcodeService;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,7 +11,7 @@ import java.util.UUID;
 public class BuildingEntityManager extends GeoEntityManager<BuildingEntity, BuildingRawData> {
 
     @Autowired
-    private PostcodeService buildingService;
+    private BuildingService buildingService;
 
     public BuildingEntityManager() {
     }
@@ -23,7 +22,7 @@ public class BuildingEntityManager extends GeoEntityManager<BuildingEntity, Buil
     }
 
     @Override
-    public PostcodeService getEntityService() {
+    public BuildingService getEntityService() {
         return this.buildingService;
     }
 

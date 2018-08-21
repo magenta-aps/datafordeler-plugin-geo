@@ -12,7 +12,6 @@ import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 @Entity
 @Table(name = GeoPlugin.DEBUG_TABLE_PREFIX + RoadEntity.TABLE_NAME, indexes = {

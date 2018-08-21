@@ -2,7 +2,6 @@ package dk.magenta.datafordeler.geo.data.accessaddress;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import dk.magenta.datafordeler.geo.data.RawData;
 import dk.magenta.datafordeler.geo.data.SumiffiikRawData;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
 import org.geojson.Point;
@@ -44,9 +43,7 @@ public class AccessAddressRawData extends SumiffiikRawData {
 
         @JsonProperty("Vejkode")
         public void setRoadcode(String roadCode) {
-            System.out.println("setRoadCode: "+roadCode);
             this.roadcode = Integer.parseInt(roadCode, 10);
-            System.out.println("raw code: "+this.roadcode);
         }
 
         @JsonProperty("DataKilde")
@@ -62,31 +59,46 @@ public class AccessAddressRawData extends SumiffiikRawData {
 
         records.add(
                 new AccessAddressMunicipalityRecord(this.properties.municipality)
-                .setEditor(this.properties.editor)
-                .setRegistrationFrom(this.properties.editDate)
         );
 
         records.add(
                 new AccessAddressRoadRecord(this.properties.roadcode)
-                        .setEditor(this.properties.editor)
-                        .setRegistrationFrom(this.properties.editDate)
         );
 
-        /*records.add(
+        records.add(
+                new AccessAddressHouseNumberRecord(this.properties.houseNumber)
+        );
+
+        records.add(
+                new AccessAddressBlockNameRecord(this.properties.blockName)
+        );
+
+        records.add(
                 new AccessAddressLocalityRecord(this.properties.locality)
-                .setEditor(this.properties.editor)
-                .setRegistrationFrom(this.properties.editDate)
-        );*/
+        );
 
-        /*if (this.shape instanceof Point) {
-            Point point = (Point) this.shape;
+        records.add(
+                new AccessAddressStatusRecord(this.properties.objectStatus)
+        );
 
+        records.add(
+                new AccessAddressImportRecord(this.properties.importComplete)
+        );
+
+        records.add(
+                new AccessAddressSourceRecord(this.properties.dataSource)
+        );
+
+        if (this.shape instanceof Point) {
             records.add(
-                    new AccessAddressShapeRecord(point)
-                            .setEditor(this.properties.editor)
-                            .setRegistrationFrom(this.properties.editDate)
+                    new AccessAddressShapeRecord((Point) this.shape)
             );
-        }*/
+        }
+
+        for (GeoMonotemporalRecord record : records) {
+            record.setEditor(this.properties.editor);
+            record.setRegistrationFrom(this.properties.editDate);
+        }
 
         return records;
     }

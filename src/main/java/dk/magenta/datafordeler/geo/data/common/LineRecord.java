@@ -1,7 +1,10 @@
 package dk.magenta.datafordeler.geo.data.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 import org.geojson.LngLatAlt;
 

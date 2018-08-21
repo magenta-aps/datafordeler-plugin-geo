@@ -26,7 +26,6 @@ public class AccessAddressRoadRecord extends GeoMonotemporalRecord<AccessAddress
 
     public AccessAddressRoadRecord(Integer code) {
         this.code = code;
-        System.out.println("record: "+code);
     }
 
 

@@ -142,7 +142,7 @@ public class UnitAddressQuery extends SumiffiikQuery<UnitAddressEntity> {
             lookupDefinition.put(UnitAddressEntity.DB_FIELD_ACCESS_ADDRESS + AccessAddressEntity.DB_FIELD_BNR, this.bnr, String.class);
         }
         /*if (this.houseNumber != null && !this.houseNumber.isEmpty()) {
-            lookupDefinition.put(AccessAddressEntity.DB_FIELD_HOUSE_NUMBER + BaseLookupDefinition.separator + AccessAddressHouseNumberRecord.DB_FIELD_NUMBER, this.houseNumber, String.class);
+            lookupDefinition.put(AccessAddressEntity.DB_FIELD_HOUSE_NUMBER + BaseLookupDefinition.separator + AccessAddressHouseNumberRecord.DB_FIELD_NAME, this.houseNumber, String.class);
         }
         if (this.road != null && !this.road.isEmpty()) {
             lookupDefinition.put(AccessAddressEntity.DB_FIELD_ROAD + BaseLookupDefinition.separator + AccessAddressRoadRecord.DB_FIELD_CODE, this.road, Integer.class);

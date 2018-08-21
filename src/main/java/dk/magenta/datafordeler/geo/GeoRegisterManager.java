@@ -3,6 +3,7 @@ package dk.magenta.datafordeler.geo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dk.magenta.datafordeler.core.database.SessionManager;
 import dk.magenta.datafordeler.core.exception.DataFordelerException;
+import dk.magenta.datafordeler.core.exception.DataStreamException;
 import dk.magenta.datafordeler.core.io.ImportInputStream;
 import dk.magenta.datafordeler.core.io.ImportMetadata;
 import dk.magenta.datafordeler.core.io.PluginSourceData;
@@ -12,6 +13,13 @@ import dk.magenta.datafordeler.core.plugin.Plugin;
 import dk.magenta.datafordeler.core.plugin.RegisterManager;
 import dk.magenta.datafordeler.core.util.ItemInputStream;
 import dk.magenta.datafordeler.geo.configuration.GeoConfigurationManager;
+import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressEntity;
+import dk.magenta.datafordeler.geo.data.building.BuildingEntity;
+import dk.magenta.datafordeler.geo.data.locality.LocalityEntity;
+import dk.magenta.datafordeler.geo.data.municipality.MunicipalityEntity;
+import dk.magenta.datafordeler.geo.data.postcode.PostcodeEntity;
+import dk.magenta.datafordeler.geo.data.road.RoadEntity;
+import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +27,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
 
 @Component
@@ -102,6 +109,25 @@ public class GeoRegisterManager extends RegisterManager {
 
     @Override
     public URI getEventInterface(EntityManager entityManager) throws DataFordelerException {
+        // Hardcoded loading from fixtures
+        switch (entityManager.getSchema()) {
+
+            case AccessAddressEntity.schema:
+                return new File("fixtures/Adgangsadresse.json").toURI();
+            case BuildingEntity.schema:
+                return new File("fixtures/Bygning.json").toURI();
+            case LocalityEntity.schema:
+                return new File("fixtures/Lokalitet.json").toURI();
+            case MunicipalityEntity.schema:
+                return new File("fixtures/Kommune.json").toURI();
+            case PostcodeEntity.schema:
+                return new File("fixtures/Postnummer.json").toURI();
+            case RoadEntity.schema:
+                return new File("fixtures/Vejmidte.json").toURI();
+            case UnitAddressEntity.schema:
+                return new File("fixtures/Enhedsadresse.json").toURI();
+
+        }
         return null;
     }
 
@@ -122,7 +148,23 @@ public class GeoRegisterManager extends RegisterManager {
 
     @Override
     public ImportInputStream pullRawData(URI eventInterface, EntityManager entityManager, ImportMetadata importMetadata) throws DataFordelerException {
-        return null;
+        String scheme = eventInterface.getScheme();
+        this.log.info("scheme: "+scheme);
+        this.log.info("eventInterface: "+eventInterface);
+        ImportInputStream responseBody = null;
+        switch (scheme) {
+            case "file":
+                try {
+                    File file = new File(eventInterface);
+                    responseBody = new ImportInputStream(new FileInputStream(file));
+                    responseBody.addCacheFile(file);
+                } catch (FileNotFoundException e) {
+                    this.log.error(e);
+                    throw new DataStreamException(e);
+                }
+                break;
+        }
+        return responseBody;
     }
 
     @Override

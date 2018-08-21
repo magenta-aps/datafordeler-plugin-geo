@@ -1,12 +1,8 @@
 package dk.magenta.datafordeler.geo.data.common;
 
-import dk.magenta.datafordeler.core.database.Identification;
-import dk.magenta.datafordeler.core.database.QueryManager;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
-import org.hibernate.Session;
 
 import javax.persistence.Column;
-import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import java.util.Objects;
 

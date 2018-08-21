@@ -2,10 +2,8 @@ package dk.magenta.datafordeler.geo.data.unitaddress;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import dk.magenta.datafordeler.geo.data.RawData;
 import dk.magenta.datafordeler.geo.data.SumiffiikRawData;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
-import org.geojson.Point;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,39 +53,31 @@ public class UnitAddressRawData extends SumiffiikRawData {
         ArrayList<GeoMonotemporalRecord> records = new ArrayList<>();
         records.add(
                 new UnitAddressFloorRecord(this.properties.floor)
-                        .setEditor(this.properties.editor)
-                        .setRegistrationFrom(this.properties.editDate)
         );
         records.add(
                 new UnitAddressDoorRecord(this.properties.door)
-                        .setEditor(this.properties.editor)
-                        .setRegistrationFrom(this.properties.editDate)
         );
         records.add(
                 new UnitAddressUsageRecord(this.properties.usage)
-                        .setEditor(this.properties.editor)
-                        .setRegistrationFrom(this.properties.editDate)
         );
         records.add(
                 new UnitAddressNumberRecord(this.properties.unitNumber)
-                        .setEditor(this.properties.editor)
-                        .setRegistrationFrom(this.properties.editDate)
         );
         records.add(
                 new UnitAddressStatusRecord(this.properties.objectStatus)
-                        .setEditor(this.properties.editor)
-                        .setRegistrationFrom(this.properties.editDate)
         );
         records.add(
                 new UnitAddressImportRecord(this.properties.importComplete)
-                        .setEditor(this.properties.importComplete)
-                        .setRegistrationFrom(this.properties.editDate)
         );
         records.add(
                 new UnitAddressSourceRecord(this.properties.source)
-                        .setEditor(this.properties.editor)
-                        .setRegistrationFrom(this.properties.editDate)
         );
+
+        for (GeoMonotemporalRecord record : records) {
+            record.setEditor(this.properties.editor);
+            record.setRegistrationFrom(this.properties.editDate);
+        }
+
         return records;
     }
 
