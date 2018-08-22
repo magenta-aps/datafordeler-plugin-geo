@@ -12,8 +12,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
-import java.util.Collection;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = GeoPlugin.DEBUG_TABLE_PREFIX + PostcodeEntity.TABLE_NAME, indexes = {
@@ -93,5 +92,8 @@ public class PostcodeEntity extends SumiffiikEntity implements IdentifiedEntity 
     @Override
     public IdentifiedEntity getNewest(Collection<IdentifiedEntity> collection) {
         return null;
+    }@Override
+    public Set<Set<? extends GeoMonotemporalRecord>> getAllRecords() {
+        return Collections.emptySet();
     }
 }

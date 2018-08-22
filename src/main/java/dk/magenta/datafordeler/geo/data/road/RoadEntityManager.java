@@ -54,7 +54,9 @@ public class RoadEntityManager extends GeoEntityManager<RoadEntity, RoadRawData>
 
     @Override
     protected RoadEntity createBasicEntity(RoadRawData record, Session session) {
-        return new RoadEntity(record);
+        RoadEntity r = new RoadEntity(record);
+        System.out.println(r.getCode());
+        return r;
     }
 
 }

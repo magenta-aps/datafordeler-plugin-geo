@@ -16,8 +16,8 @@ import java.util.Map;
  */
 public class UnitAddressQuery extends SumiffiikQuery<UnitAddressEntity> {
 
-
-    public static final String BNR = AccessAddressEntity.IO_FIELD_BNR;
+/*
+    public static final String BNR = UnitAddressEntity.IO_FIELD_BNR;
 
     @QueryField(type = QueryField.FieldType.STRING, queryName = BNR)
     private List<String> bnr = new ArrayList<>();
@@ -33,7 +33,7 @@ public class UnitAddressQuery extends SumiffiikQuery<UnitAddressEntity> {
 
     @QueryField(type = QueryField.FieldType.INT, queryName = MUNICIPALITY)
     private List<String> municipality = new ArrayList<>();
-
+*/
 
 
     public static final String HOUSE_NUMBER = AccessAddressEntity.IO_FIELD_HOUSE_NUMBER;
@@ -42,7 +42,7 @@ public class UnitAddressQuery extends SumiffiikQuery<UnitAddressEntity> {
     private List<String> houseNumber = new ArrayList<>();
 
 
-
+/*
     public List<String> getBnr() {
         return bnr;
     }
@@ -103,7 +103,7 @@ public class UnitAddressQuery extends SumiffiikQuery<UnitAddressEntity> {
             this.increaseDataParamCount();
         }
     }
-
+*/
 
 
 
@@ -130,21 +130,22 @@ public class UnitAddressQuery extends SumiffiikQuery<UnitAddressEntity> {
     @Override
     public Map<String, Object> getSearchParameters() {
         HashMap<String, Object> map = new HashMap<>(super.getSearchParameters());
-        map.put(BNR, this.bnr);
-        map.put(ROAD, this.road);
+        //map.put(BNR, this.bnr);
+        //map.put(ROAD, this.road);
+        map.put(HOUSE_NUMBER, this.houseNumber);
         return map;
     }
 
     @Override
     public BaseLookupDefinition getLookupDefinition() {
         BaseLookupDefinition lookupDefinition = super.getLookupDefinition();
-        if (this.bnr != null && !this.bnr.isEmpty()) {
+        /*if (this.bnr != null && !this.bnr.isEmpty()) {
             lookupDefinition.put(UnitAddressEntity.DB_FIELD_ACCESS_ADDRESS + AccessAddressEntity.DB_FIELD_BNR, this.bnr, String.class);
-        }
+        }*/
         /*if (this.houseNumber != null && !this.houseNumber.isEmpty()) {
-            lookupDefinition.put(AccessAddressEntity.DB_FIELD_HOUSE_NUMBER + BaseLookupDefinition.separator + AccessAddressHouseNumberRecord.DB_FIELD_NAME, this.houseNumber, String.class);
-        }
-        if (this.road != null && !this.road.isEmpty()) {
+            lookupDefinition.put(UnitAddressEntity.DB_ + BaseLookupDefinition.separator + AccessAddressHouseNumberRecord.DB_FIELD_NAME, this.houseNumber, String.class);
+        }*/
+        /*if (this.road != null && !this.road.isEmpty()) {
             lookupDefinition.put(AccessAddressEntity.DB_FIELD_ROAD + BaseLookupDefinition.separator + AccessAddressRoadRecord.DB_FIELD_CODE, this.road, Integer.class);
         }
         if (this.municipality != null && !this.municipality.isEmpty()) {
@@ -156,8 +157,8 @@ public class UnitAddressQuery extends SumiffiikQuery<UnitAddressEntity> {
     @Override
     public void setFromParameters(ParameterMap parameters) {
         super.setFromParameters(parameters);
-        this.setBnr(parameters.getFirst(BNR));
-        this.setRoad(parameters.getFirst(ROAD));
+        //this.setBnr(parameters.getFirst(BNR));
+        //this.setRoad(parameters.getFirst(ROAD));
     }
 
 }

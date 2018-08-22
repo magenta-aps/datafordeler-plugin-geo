@@ -15,6 +15,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = Application.class)
@@ -72,6 +73,18 @@ public class TestService extends GeoTest {
         this.load(accessAddressEntityManager, "fixtures/Adgangsadresse.json");
         this.load(unitAddressEntityManager, "fixtures/Enhedsadresse.json");
         ResponseEntity<String> response = this.lookup("/adresse/adresse?bnr=B-1234");
+        Assert.assertEquals(200, response.getStatusCode().value());
+        String addresses = response.getBody();
+        System.out.println(addresses);
+    }
+
+    @Test
+    public void testUnitAddressDetails() throws DataFordelerException, IOException {
+        this.load(localityEntityManager,"fixtures/Lokalitet.json");
+        this.load(roadEntityManager,"fixtures/Vejmidte.json");
+        this.load(accessAddressEntityManager, "fixtures/Adgangsadresse.json");
+        this.load(unitAddressEntityManager, "fixtures/Enhedsadresse.json");
+        ResponseEntity<String> response = this.lookup("/adresse/adresseoplysninger?adresse=FF2F9C69-40C1-4377-A630-9C0F743FD2D1");
         Assert.assertEquals(200, response.getStatusCode().value());
         String addresses = response.getBody();
         System.out.println(addresses);

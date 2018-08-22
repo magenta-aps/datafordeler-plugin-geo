@@ -199,7 +199,6 @@ public class TestParse extends GeoTest {
             Assert.assertEquals(1, entity.getLocality().size());
             Assert.assertEquals(1, entity.getStatus().size());
             Assert.assertEquals(1, entity.getImportStatus().size());
-            Assert.assertEquals(1, entity.getMunicipality().size());
             Assert.assertEquals(1, entity.getRoad().size());
         } finally {
             session.close();

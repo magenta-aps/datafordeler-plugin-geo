@@ -1,13 +1,15 @@
 package dk.magenta.datafordeler.geo.data.accessaddress;
 
 import dk.magenta.datafordeler.core.database.DatabaseEntry;
+import dk.magenta.datafordeler.core.database.Identification;
+import dk.magenta.datafordeler.core.database.QueryManager;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
+import dk.magenta.datafordeler.geo.data.road.RoadEntity;
+import dk.magenta.datafordeler.geo.data.road.RoadQuery;
+import org.hibernate.Session;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
@@ -24,28 +26,70 @@ public class AccessAddressRoadRecord extends GeoMonotemporalRecord<AccessAddress
     public AccessAddressRoadRecord() {
     }
 
-    public AccessAddressRoadRecord(Integer code) {
-        this.code = code;
+    public AccessAddressRoadRecord(Integer municipalityCode, Integer roadCode) {
+        this.municipalityCode = municipalityCode;
+        this.roadCode = roadCode;
     }
 
 
-    public static final String DB_FIELD_CODE = "code";
-    @Column(name = DB_FIELD_CODE)
-    private Integer code;
+    public static final String DB_FIELD_MUNICIPALITY_CODE = "municipalityCode";
+    public static final String IO_FIELD_MUNICIPALITY_CODE = "kommune";
+    @Column(name = DB_FIELD_MUNICIPALITY_CODE, nullable = true)
+    private Integer municipalityCode;
 
-    public Integer getCode() {
-        return this.code;
+    public Integer getMunicipalityCode() {
+        return this.municipalityCode;
     }
 
-    public void setCode(Integer code) {
-        this.code = code;
+    public void setMunicipalityCode(Integer municipalityCode) {
+        this.municipalityCode = municipalityCode;
     }
+
+
+
+    public static final String DB_FIELD_ROAD_CODE = "roadCode";
+    @Column(name = DB_FIELD_ROAD_CODE)
+    private Integer roadCode;
+
+    public Integer getRoadCode() {
+        return this.roadCode;
+    }
+
+    public void setRoadCode(Integer roadCode) {
+        this.roadCode = roadCode;
+    }
+
+
+    @ManyToOne
+    private Identification reference;
+
+    public Identification getReference() {
+        return this.reference;
+    }
+
+    public void wire(Session session) {
+        if (this.reference == null && this.municipalityCode != null && this.roadCode != null) {
+            RoadQuery query = new RoadQuery();
+            //query.setMunicipality(Integer.toString(this.municipalityCode));
+            query.setCode(Integer.toString(this.roadCode));
+            System.out.println("Wiring...");
+            for (RoadEntity road : QueryManager.getAllEntities(session, query, RoadEntity.class)) {
+                System.out.println("found!");
+                System.out.println(road.getMunicipality()+"|"+road.getCode());
+                this.reference = road.getIdentification();
+                return;
+            }
+            System.out.println("not found");
+        }
+    }
+
+
 
     public boolean equalData(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equalData(o)) return false;
         AccessAddressRoadRecord that = (AccessAddressRoadRecord) o;
-        return Objects.equals(this.code, that.code);
+        return Objects.equals(this.roadCode, that.roadCode);
     }
 }

@@ -18,6 +18,7 @@ public class RoadQuery extends SumiffiikQuery<RoadEntity> {
     public static final String CODE = RoadEntity.IO_FIELD_CODE;
     public static final String NAME = RoadEntity.IO_FIELD_NAME;
     public static final String ADDRESSING_NAME = RoadNameRecord.IO_FIELD_ADDRESSING_NAME;
+    public static final String MUNICIPALITY = RoadMunicipalityRecord.IO_FIELD_CODE;
     public static final String LOCALITY = RoadLocalityRecord.IO_FIELD_CODE;
 
     @QueryField(type = QueryField.FieldType.INT, queryName = CODE)
@@ -31,6 +32,9 @@ public class RoadQuery extends SumiffiikQuery<RoadEntity> {
 
     @QueryField(type = QueryField.FieldType.STRING, queryName = LOCALITY)
     private List<String> locality = new ArrayList<>();
+
+    @QueryField(type = QueryField.FieldType.STRING, queryName = MUNICIPALITY)
+    private List<String> municipality = new ArrayList<>();
 
 
     public List<String> getCode() {
@@ -98,6 +102,21 @@ public class RoadQuery extends SumiffiikQuery<RoadEntity> {
         }
     }
 
+    public List<String> getMunicipality() {
+        return municipality;
+    }
+
+    public void setMunicipality(String municipality) {
+        this.municipality.clear();
+        this.addMunicipality(municipality);
+    }
+
+    public void addMunicipality(String municipality) {
+        if (municipality != null) {
+            this.municipality.add(municipality);
+            this.increaseDataParamCount();
+        }
+    }
 
     @Override
     public Map<String, Object> getSearchParameters() {
@@ -106,6 +125,7 @@ public class RoadQuery extends SumiffiikQuery<RoadEntity> {
         map.put(NAME, this.name);
         map.put(ADDRESSING_NAME, this.addressingName);
         map.put(LOCALITY, this.locality);
+        map.put(MUNICIPALITY, this.municipality);
         return map;
     }
 
@@ -141,6 +161,13 @@ public class RoadQuery extends SumiffiikQuery<RoadEntity> {
                     RoadEntity.DB_FIELD_LOCALITY + BaseLookupDefinition.separator + RoadLocalityRecord.DB_FIELD_CODE,
                     this.locality,
                     String.class
+            );
+        }
+        if (this.municipality != null && !this.municipality.isEmpty()) {
+            lookupDefinition.put(
+                    RoadEntity.DB_FIELD_MUNICIPALITY + BaseLookupDefinition.separator + RoadMunicipalityRecord.DB_FIELD_CODE,
+                    this.municipality,
+                    Integer.class
             );
         }
         return lookupDefinition;

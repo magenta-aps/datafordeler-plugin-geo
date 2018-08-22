@@ -7,6 +7,7 @@ import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 import dk.magenta.datafordeler.geo.data.SumiffiikEntity;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
+import org.hibernate.Session;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -99,22 +100,6 @@ public class AccessAddressEntity extends SumiffiikEntity implements IdentifiedEn
 
     public Set<AccessAddressRoadRecord> getRoad() {
         return this.road;
-    }
-
-
-
-    public static final String DB_FIELD_MUNICIPALITY = "municipality";
-    public static final String IO_FIELD_MUNICIPALITY = "kommune";
-    @OneToMany(mappedBy = AccessAddressMunicipalityRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
-    /*@Filters({
-            @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_EFFECT_FROM),
-            @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_EFFECT_TO)
-    })*/
-    @JsonProperty(IO_FIELD_MUNICIPALITY)
-    Set<AccessAddressMunicipalityRecord> municipality = new HashSet<>();
-
-    public Set<AccessAddressMunicipalityRecord> getMunicipality() {
-        return this.municipality;
     }
 
 
@@ -214,9 +199,6 @@ public class AccessAddressEntity extends SumiffiikEntity implements IdentifiedEn
         if (record instanceof AccessAddressBlockNameRecord) {
             added = addItem(this.blockName, record);
         }
-        if (record instanceof AccessAddressMunicipalityRecord) {
-            added = addItem(this.municipality, record);
-        }
         if (record instanceof AccessAddressLocalityRecord) {
             added = addItem(this.locality, record);
         }
@@ -240,5 +222,19 @@ public class AccessAddressEntity extends SumiffiikEntity implements IdentifiedEn
     @Override
     public IdentifiedEntity getNewest(Collection<IdentifiedEntity> collection) {
         return null;
+    }
+
+    @Override
+    public Set<Set<? extends GeoMonotemporalRecord>> getAllRecords() {
+        HashSet<Set<? extends GeoMonotemporalRecord>> records = new HashSet<>();
+        records.add(this.locality);
+        records.add(this.road);
+        records.add(this.blockName);
+        records.add(this.houseNumber);
+        records.add(this.importStatus);
+        records.add(this.source);
+        records.add(this.status);
+        records.add(this.shape);
+        return records;
     }
 }

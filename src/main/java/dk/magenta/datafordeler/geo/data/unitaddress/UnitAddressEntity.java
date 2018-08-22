@@ -209,4 +209,17 @@ public class UnitAddressEntity extends SumiffiikEntity implements IdentifiedEnti
     public IdentifiedEntity getNewest(Collection<IdentifiedEntity> collection) {
         return null;
     }
+
+    @Override
+    public Set<Set<? extends GeoMonotemporalRecord>> getAllRecords() {
+        HashSet<Set<? extends GeoMonotemporalRecord>> records = new HashSet<>();
+        records.add(this.door);
+        records.add(this.floor);
+        records.add(this.number);
+        records.add(this.usage);
+        records.add(this.importStatus);
+        records.add(this.source);
+        records.add(this.status);
+        return records;
+    }
 }

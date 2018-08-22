@@ -206,6 +206,7 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
 
                 timer.start(TASK_POPULATE_DATA);
                 this.updateEntity(entity, rawData);
+                entity.wire(session);
                 timer.measure(TASK_POPULATE_DATA);
 
                 timer.start(TASK_SAVE);

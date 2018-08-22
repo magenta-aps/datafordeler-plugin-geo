@@ -7,6 +7,7 @@ import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 import dk.magenta.datafordeler.geo.data.SumiffiikEntity;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
+import org.hibernate.Session;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -147,5 +148,15 @@ public class RoadEntity extends SumiffiikEntity implements IdentifiedEntity {
     @Override
     public IdentifiedEntity getNewest(Collection<IdentifiedEntity> collection) {
         return null;
+    }
+
+    @Override
+    public Set<Set<? extends GeoMonotemporalRecord>> getAllRecords() {
+        HashSet<Set<? extends GeoMonotemporalRecord>> records = new HashSet<>();
+        records.add(this.locality);
+        records.add(this.municipality);
+        records.add(this.name);
+        records.add(this.shape);
+        return records;
     }
 }

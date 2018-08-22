@@ -140,4 +140,13 @@ public class LocalityEntity extends SumiffiikEntity implements IdentifiedEntity 
     public IdentifiedEntity getNewest(Collection<IdentifiedEntity> collection) {
         return null;
     }
+
+    @Override
+    public Set<Set<? extends GeoMonotemporalRecord>> getAllRecords() {
+        HashSet<Set<? extends GeoMonotemporalRecord>> records = new HashSet<>();
+        records.add(this.name);
+        records.add(this.shape);
+        records.add(this.municipality);
+        return records;
+    }
 }

@@ -27,7 +27,7 @@ public class AccessAddressQuery extends SumiffiikQuery<AccessAddressEntity> {
     private List<String> road = new ArrayList<>();
 
 
-    public static final String MUNICIPALITY = AccessAddressEntity.IO_FIELD_MUNICIPALITY;
+    public static final String MUNICIPALITY = AccessAddressRoadRecord.DB_FIELD_MUNICIPALITY_CODE;
 
     @QueryField(type = QueryField.FieldType.INT, queryName = MUNICIPALITY)
     private List<String> municipality = new ArrayList<>();
@@ -143,10 +143,10 @@ public class AccessAddressQuery extends SumiffiikQuery<AccessAddressEntity> {
             lookupDefinition.put(AccessAddressEntity.DB_FIELD_HOUSE_NUMBER + BaseLookupDefinition.separator + AccessAddressHouseNumberRecord.DB_FIELD_NUMBER, this.houseNumber, String.class);
         }
         if (this.road != null && !this.road.isEmpty()) {
-            lookupDefinition.put(AccessAddressEntity.DB_FIELD_ROAD + BaseLookupDefinition.separator + AccessAddressRoadRecord.DB_FIELD_CODE, this.road, Integer.class);
+            lookupDefinition.put(AccessAddressEntity.DB_FIELD_ROAD + BaseLookupDefinition.separator + AccessAddressRoadRecord.DB_FIELD_ROAD_CODE, this.road, Integer.class);
         }
         if (this.municipality != null && !this.municipality.isEmpty()) {
-            lookupDefinition.put(AccessAddressEntity.DB_FIELD_MUNICIPALITY + BaseLookupDefinition.separator + AccessAddressMunicipalityRecord.DB_FIELD_CODE, this.municipality, Integer.class);
+            lookupDefinition.put(AccessAddressEntity.DB_FIELD_ROAD + BaseLookupDefinition.separator + AccessAddressRoadRecord.DB_FIELD_MUNICIPALITY_CODE, this.municipality, Integer.class);
         }
         return lookupDefinition;
     }

@@ -17,6 +17,7 @@ public class MunicipalityReferenceRecord<E extends GeoEntity> extends GeoMonotem
     }
 
     public static final String DB_FIELD_CODE = "code";
+    public static final String IO_FIELD_CODE = "kommunekode";
     @Column(name = DB_FIELD_CODE, nullable = true)
     private Integer code;
 

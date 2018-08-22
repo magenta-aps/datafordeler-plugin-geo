@@ -58,11 +58,7 @@ public class AccessAddressRawData extends SumiffiikRawData {
         ArrayList<GeoMonotemporalRecord> records = new ArrayList<>();
 
         records.add(
-                new AccessAddressMunicipalityRecord(this.properties.municipality)
-        );
-
-        records.add(
-                new AccessAddressRoadRecord(this.properties.roadcode)
+                new AccessAddressRoadRecord(this.properties.municipality, this.properties.roadcode)
         );
 
         records.add(

@@ -2,7 +2,9 @@ package dk.magenta.datafordeler.geo.data.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import dk.magenta.datafordeler.core.database.Registration;
+import dk.magenta.datafordeler.core.database.SessionManager;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
+import org.hibernate.Session;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
@@ -151,5 +153,9 @@ public class GeoMonotemporalRecord<E extends GeoEntity> extends GeoNontemporalRe
         GeoNontemporalRecord.copy(from, to);
         to.registrationFrom = from.registrationFrom;
         to.registrationTo = from.registrationTo;
+    }
+
+    public void wire(Session session) {
+        // Implement in subclasses as needed
     }
 }

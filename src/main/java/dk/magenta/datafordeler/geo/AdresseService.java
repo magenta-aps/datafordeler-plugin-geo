@@ -3,6 +3,7 @@ package dk.magenta.datafordeler.geo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import dk.magenta.datafordeler.core.database.Identification;
 import dk.magenta.datafordeler.core.database.QueryManager;
 import dk.magenta.datafordeler.core.database.SessionManager;
 import dk.magenta.datafordeler.core.exception.DataFordelerException;
@@ -12,9 +13,7 @@ import dk.magenta.datafordeler.core.fapi.BaseQuery;
 import dk.magenta.datafordeler.core.user.DafoUserDetails;
 import dk.magenta.datafordeler.core.user.DafoUserManager;
 import dk.magenta.datafordeler.core.util.LoggerHelper;
-import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressEntity;
-import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressHouseNumberRecord;
-import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressQuery;
+import dk.magenta.datafordeler.geo.data.accessaddress.*;
 import dk.magenta.datafordeler.geo.data.locality.LocalityEntity;
 import dk.magenta.datafordeler.geo.data.locality.LocalityNameRecord;
 import dk.magenta.datafordeler.geo.data.locality.LocalityQuery;
@@ -40,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -132,10 +132,6 @@ public class AdresseService {
         );
         checkParameterExistence(PARAM_MUNICIPALITY, municipalityCode);
         int code = parameterAsInt(PARAM_MUNICIPALITY, municipalityCode);
-        /*UUID municipality = this.municipalities.get(code);
-        if (municipality == null) {
-            throw new HttpNotFoundException("Municipality with code "+code+" not found");
-        }*/
         return this.getLocalities(Integer.toString(code));
     }
 
@@ -282,8 +278,8 @@ public class AdresseService {
                             if (bNumberEntity != null) {
                                 for (DataItem bNumberDataItem : bNumberEntity.getCurrent()) {
                                     BNumberData bNumberData = (BNumberData) bNumberDataItem;
-                                    if (bNumberData.getCode() != null) {
-                                        addressNode.put(OUTPUT_BNUMBER, bNumberData.getCode());
+                                    if (bNumberData.getRoadCode() != null) {
+                                        addressNode.put(OUTPUT_BNUMBER, bNumberData.getRoadCode());
                                     }
                                     if (bNumberData.getCallname() != null && !bNumberData.getCallname().isEmpty()) {
                                         addressNode.put(OUTPUT_BCALLNAME, bNumberData.getCallname());
@@ -410,7 +406,7 @@ public class AdresseService {
      *                and optionally a house parameter or bnr parameter
      * @return Json-formatted string containing a list of found objects
      */
-    /*@RequestMapping("/adresseoplysninger")
+    @RequestMapping("/adresseoplysninger")
     public void getAddressData(HttpServletRequest request, HttpServletResponse response) throws DataFordelerException, IOException {
         String payload = this.getAddressData(request);
         setHeaders(response);
@@ -426,6 +422,10 @@ public class AdresseService {
         );
         checkParameterExistence(PARAM_ADDRESS, addressUUID);
         UUID address = parameterAsUUID(PARAM_ADDRESS, addressUUID);
+        return this.getAddressData(address);
+    }
+
+    public String getAddressData(UUID unitAddressUUID) throws DataFordelerException {
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {
@@ -433,13 +433,41 @@ public class AdresseService {
 
             ObjectNode addressNode = objectMapper.createObjectNode();
 
-            AddressEntity addressEntity = QueryManager.getEntity(session, address, AddressEntity.class);
-            if (addressEntity != null) {
-                HashMap<Identification, BNumberEntity> bNumberMap = getBNumbers(session, Collections.singletonList(addressEntity));
-                HashMap<Identification, RoadEntity> roadMap = getRoads(session, Collections.singletonList(addressEntity));
-                HashMap<Identification, LocalityEntity> localityMap = getLocalities(session, roadMap.values());
 
-                addressNode.put(OUTPUT_UUID, addressEntity.getUUID().toString());
+            org.hibernate.query.Query databaseQuery = session.createQuery(
+                    "SELECT DISTINCT unit, access, road, locality "+
+                    "FROM "+UnitAddressEntity.class.getCanonicalName()+" unit "+
+                    "JOIN unit.identification unit_identification "+
+
+                    "LEFT JOIN "+AccessAddressEntity.class.getCanonicalName()+" access ON unit.accessAddress = access.identification "+
+
+                    "LEFT JOIN access.road access_road "+
+                    "LEFT JOIN "+RoadEntity.class.getCanonicalName()+" road ON access_road.reference = road.identification "+
+
+                    "LEFT JOIN road.locality road_locality "+
+                    "LEFT JOIN "+LocalityEntity.class.getCanonicalName()+" locality ON road_locality.reference = locality.identification "+
+
+                    "WHERE unit_identification.uuid = :uuid "
+            );
+            //databaseQuery.setParameter("bnr", "B-0000");
+            databaseQuery.setParameter("uuid", unitAddressUUID);
+            databaseQuery.setFlushMode(FlushModeType.COMMIT);
+
+
+            for (Object result : databaseQuery.getResultList()) {
+                Object[] results = (Object[]) result;
+                UnitAddressEntity unitAddress = results.length > 0 ? (UnitAddressEntity) results[0] : null;
+                AccessAddressEntity accessAddress = results.length > 1 ? (AccessAddressEntity) results[1] : null;
+                RoadEntity road = results.length > 2 ? (RoadEntity) results[2] : null;
+                LocalityEntity locality = results.length > 3 ? (LocalityEntity) results[3] : null;
+
+
+                System.out.println("unitAddress: "+unitAddress);
+                System.out.println("accessAddress: "+accessAddress);
+                System.out.println("road: "+road);
+                System.out.println("locality: "+locality);
+
+                addressNode.put(OUTPUT_UUID, unitAddress.getUUID().toString());
                 addressNode.set(OUTPUT_HOUSENUMBER, null);
                 addressNode.set(OUTPUT_FLOOR, null);
                 addressNode.set(OUTPUT_DOOR, null);
@@ -451,76 +479,52 @@ public class AdresseService {
                 addressNode.set(OUTPUT_LOCALITYNAME, null);
                 addressNode.set(OUTPUT_MUNICIPALITYCODE, null);
                 addressNode.set(OUTPUT_USAGE, null);
-                for (DataItem dataItem : addressEntity.getCurrent()) {
-                    AddressData addressData = (AddressData) dataItem;
-                    if (addressData.getHouseNumber() != null) {
-                        addressNode.put(OUTPUT_HOUSENUMBER, addressData.getHouseNumber());
-                    }
-                    if (addressData.getFloor() != null && !addressData.getFloor().isEmpty()) {
-                        addressNode.put(OUTPUT_FLOOR, addressData.getFloor());
-                    }
-                    if (addressData.getRoom() != null && !addressData.getRoom().isEmpty()) {
-                        addressNode.put(OUTPUT_DOOR, addressData.getRoom());
-                    }
-                    if (addressData.getResidence() != null) {
-                        addressNode.put(OUTPUT_USAGE, addressData.getResidence());
-                    }
-                    if (addressData.getbNumber() != null) {
-                        BNumberEntity bNumberEntity = bNumberMap.get(addressData.getbNumber());
-                        if (bNumberEntity != null) {
-                            for (DataItem bNumberDataItem : bNumberEntity.getCurrent()) {
-                                BNumberData bNumberData = (BNumberData) bNumberDataItem;
-                                if (bNumberData.getCode() != null) {
-                                    addressNode.put(OUTPUT_BNUMBER, bNumberData.getCode());
-                                }
-                            }
-                        }
-                    }
-                    if (addressData.getRoad() != null && roadMap.keySet().contains(addressData.getRoad())) {
-                        RoadEntity roadEntity = roadMap.get(addressData.getRoad());
-                        if (roadEntity != null) {
-                            addressNode.put(OUTPUT_ROADUUID, roadEntity.getUUID().toString());
-                            for (DataItem roadDataItem : roadEntity.getCurrent()) {
-                                RoadData roadData = (RoadData) roadDataItem;
-                                if (roadData.getCode() != 0) {
-                                    addressNode.put(OUTPUT_ROADCODE, roadData.getCode());
-                                }
-                                if (roadData.getName() != null && !roadData.getName().isEmpty()) {
-                                    addressNode.put(OUTPUT_ROADNAME, roadData.getName());
-                                }
-                                if (roadData.getLocation() != null) {
-                                    LocalityEntity localityEntity = localityMap.get(roadData.getLocation());
-                                    if (localityEntity != null) {
-                                        addressNode.put(OUTPUT_LOCALITYUUID, localityEntity.getUUID().toString());
-                                        for (DataItem localityDataItem : localityEntity.getCurrent()) {
-                                            LocalityData localityData = (LocalityData) localityDataItem;
-                                            if (localityData.getName() != null && !localityData.getName().isEmpty()) {
-                                                addressNode.put(OUTPUT_LOCALITYNAME, localityData.getName());
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
 
-                    // No need to look up in the municipality table, because we already loaded all municipalities
-                    if (addressData.getMunicipality() != null) {
-                        for (Map.Entry<Integer, UUID> municipalityEntry : this.municipalities.entrySet()) {
-                            if (municipalityEntry.getValue() != null && municipalityEntry.getValue().equals(addressData.getMunicipality().getUuid())) {
-                                addressNode.put(OUTPUT_MUNICIPALITYCODE, municipalityEntry.getKey());
-                                break;
-                            }
-                        }
-                    }
+                for (UnitAddressFloorRecord floor : unitAddress.getFloor()) {
+                    addressNode.put(OUTPUT_FLOOR, floor.getFloor());
                 }
+                for (UnitAddressDoorRecord door : unitAddress.getDoor()) {
+                    addressNode.put(OUTPUT_DOOR, door.getDoor());
+                }
+                for (UnitAddressUsageRecord usage : unitAddress.getUsage()) {
+                    addressNode.put(OUTPUT_USAGE, usage.getUsage());
+                }
+
+                for (AccessAddressHouseNumberRecord houseNumber : accessAddress.getHouseNumber()) {
+                    addressNode.put(OUTPUT_HOUSENUMBER, houseNumber.getNumber());
+                }
+
+                addressNode.put(OUTPUT_BNUMBER, accessAddress.getBnr());
+
+                for (AccessAddressBlockNameRecord blockName : accessAddress.getBlockName()) {
+                    addressNode.put(OUTPUT_BCALLNAME, blockName.getName());
+                }
+
+                addressNode.put(OUTPUT_ROADUUID, road.getUUID().toString());
+
+                addressNode.put(OUTPUT_ROADCODE, road.getCode());
+
+                for (RoadNameRecord roadName : road.getName()) {
+                    addressNode.put(OUTPUT_ROADNAME, roadName.getName());
+                }
+
+                addressNode.put(OUTPUT_LOCALITYUUID, locality.getUUID().toString());
+
+                for (LocalityNameRecord localityName : locality.getName()) {
+                    addressNode.put(OUTPUT_LOCALITYNAME, localityName.getName());
+                }
+
+                for (RoadMunicipalityRecord municipality : road.getMunicipality()) {
+                    addressNode.put(OUTPUT_MUNICIPALITYCODE, municipality.getCode());
+                }
+
             }
             return addressNode.toString();
         } finally {
             session.close();
         }
     }
-*/
+
 
     /*
     private static HashMap<Identification, BNumberEntity> getBNumbers(Session session, Collection<AddressEntity> addressEntities) {

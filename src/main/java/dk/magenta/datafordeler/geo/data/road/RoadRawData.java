@@ -23,8 +23,13 @@ public class RoadRawData extends SumiffiikRawData {
         @JsonProperty("Vejadresseringsnavn")
         public String addressingName;
 
-        //@JsonProperty("Vejkode")
-        @JsonIgnore
+        @JsonProperty("Vejkode")
+        public void setCode(String code) {
+            try {
+                this.code = Integer.parseInt(code, 10);
+            } catch (NumberFormatException e) {}
+        }
+
         public int code;
 
         @JsonProperty("Lokalitetskode")

@@ -89,4 +89,14 @@ public abstract class GeoEntity extends DatabaseEntry implements IdentifiedEntit
     }
 
     public abstract void addMonotemporalRecord(GeoMonotemporalRecord record);
+
+    public void wire(Session session) {
+        for (Set<? extends GeoMonotemporalRecord> set : this.getAllRecords()) {
+            for (GeoMonotemporalRecord record : set) {
+                record.wire(session);
+            }
+        }
+    }
+
+    public abstract Set<Set<? extends GeoMonotemporalRecord>> getAllRecords();
 }

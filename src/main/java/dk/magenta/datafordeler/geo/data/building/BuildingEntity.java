@@ -155,7 +155,17 @@ public class BuildingEntity extends SumiffiikEntity implements IdentifiedEntity 
     }
 
     @Override
+    public Set<Set<? extends GeoMonotemporalRecord>> getAllRecords() {
+        HashSet<Set<? extends GeoMonotemporalRecord>> records = new HashSet<>();
+        records.add(this.locality);
+        records.add(this.usage);
+        records.add(this.shape);
+        return records;
+    }
+
+    @Override
     public IdentifiedEntity getNewest(Collection<IdentifiedEntity> collection) {
         return null;
     }
+
 }
