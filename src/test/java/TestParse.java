@@ -99,8 +99,8 @@ public class TestParse extends GeoTest {
 
         ResponseEntity<String> response = this.uuidSearch("96C57A43-5761-45E6-83D0-F329A10B0AEC", "municipality");
         Assert.assertEquals(200, response.getStatusCode().value());
-        //JsonNode kujalleqNode = objectMapper.readTree(response.getBody());
-        //System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(kujalleqNode));
+        System.out.println(response.getBody());
+
     }
 
 
@@ -252,6 +252,7 @@ public class TestParse extends GeoTest {
 
         ResponseEntity<String> response = this.uuidSearch(PostcodeEntity.generateUUID(2412).toString(), "postcode");
         Assert.assertEquals(200, response.getStatusCode().value());
+        System.out.println(response.getBody());
     }
 
     @Test

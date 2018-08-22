@@ -1,5 +1,6 @@
 package dk.magenta.datafordeler.geo.data.common;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 
 import javax.persistence.Column;
@@ -17,7 +18,9 @@ public class NameRecord<E extends GeoEntity> extends GeoMonotemporalRecord<E> {
     }
 
     public static final String DB_FIELD_NAME = "name";
+    public static final String IO_FIELD_NAME = "navn";
     @Column(name = DB_FIELD_NAME)
+    @JsonProperty(IO_FIELD_NAME)
     private String name;
 
     public String getName() {
