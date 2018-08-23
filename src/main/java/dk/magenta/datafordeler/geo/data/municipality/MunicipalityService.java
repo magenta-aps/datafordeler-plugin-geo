@@ -49,7 +49,7 @@ public class MunicipalityService extends FapiBaseService<MunicipalityEntity, Mun
 
     @Override
     protected OutputWrapper.Mode getDefaultMode() {
-        return OutputWrapper.Mode.RVD;
+        return OutputWrapper.Mode.DRV;
     }
 
     @Override

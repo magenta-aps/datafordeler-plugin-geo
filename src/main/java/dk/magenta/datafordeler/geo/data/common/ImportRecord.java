@@ -1,5 +1,6 @@
 package dk.magenta.datafordeler.geo.data.common;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 
 import javax.persistence.Column;
@@ -18,7 +19,9 @@ public class ImportRecord<E extends GeoEntity> extends GeoMonotemporalRecord<E> 
 
 
     public static final String DB_FIELD_IMPORT = "importComplete";
+    public static final String IO_FIELD_IMPORT = "importeretKomplette";
     @Column(name = DB_FIELD_IMPORT)
+    @JsonProperty(value = IO_FIELD_IMPORT)
     private String importComplete;
 
     public String getImportComplete() {

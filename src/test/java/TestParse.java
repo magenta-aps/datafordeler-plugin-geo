@@ -1,3 +1,4 @@
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dk.magenta.datafordeler.core.Application;
 import dk.magenta.datafordeler.core.Engine;
 import dk.magenta.datafordeler.core.Pull;
@@ -47,6 +48,9 @@ public class TestParse extends GeoTest {
 
     @Autowired
     private SessionManager sessionManager;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private MunicipalityEntityManager municipalityEntityManager;
@@ -99,7 +103,7 @@ public class TestParse extends GeoTest {
 
         ResponseEntity<String> response = this.uuidSearch("96C57A43-5761-45E6-83D0-F329A10B0AEC", "municipality");
         Assert.assertEquals(200, response.getStatusCode().value());
-        System.out.println(response.getBody());
+        System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(objectMapper.readTree(response.getBody())));
 
     }
 
@@ -149,8 +153,10 @@ public class TestParse extends GeoTest {
             session.close();
         }
 
-        ResponseEntity<String> response = this.uuidSearch("DDF9075A-0B47-442B-BC0C-EFC296F67417", "locality");
+        ResponseEntity<String> response = this.uuidSearch("DDF9075A-0B47-442B-BC0C-EFC296F67417", "road");
         Assert.assertEquals(200, response.getStatusCode().value());
+        System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(objectMapper.readTree(response.getBody())));
+
     }
 
 
@@ -231,8 +237,9 @@ public class TestParse extends GeoTest {
             session.close();
         }
 
-        ResponseEntity<String> response = this.uuidSearch("A77B5AD0-D54F-46D6-8641-2BF47EA1C9D6", "accessaddress");
+        ResponseEntity<String> response = this.uuidSearch("A77B5AD0-D54F-46D6-8641-2BF47EA1C9D6", "unitaddress");
         Assert.assertEquals(200, response.getStatusCode().value());
+        System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(objectMapper.readTree(response.getBody())));
     }
 
     @Test

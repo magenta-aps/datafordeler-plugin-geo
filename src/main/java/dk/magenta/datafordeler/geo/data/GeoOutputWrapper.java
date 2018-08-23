@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 @Component
@@ -69,7 +70,7 @@ public abstract class GeoOutputWrapper<E extends GeoEntity> extends OutputWrappe
 
     protected abstract void fillMetadataContainer(OutputContainer container, E item);
 
-    public abstract List<String> getRemoveFieldNames();
+    public abstract Set<String> getRemoveFieldNames();
 
 
 
@@ -99,22 +100,44 @@ public abstract class GeoOutputWrapper<E extends GeoEntity> extends OutputWrappe
         }
 
         public <T extends GeoMonotemporalRecord> void addMonotemporal(String key, Set<T> records, Function<T, JsonNode> converter, boolean unwrapSingle, boolean forceArray) {
+            this.addTemporal(key, records, converter, unwrapSingle, forceArray, t -> t.getMonotemporality().asBitemporality());
+        }
+        /*
+        public <T extends GeoMonotemporalRecord> void addBitemporal(String key, Set<T> records) {
+            this.addBitemporal(key, records, null, false, false);
+        }
+
+        public <T extends GeoMonotemporalRecord> void addBitemporal(String key, Set<T> records, boolean unwrapSingle) {
+            this.addBitemporal(key, records, null, unwrapSingle, false);
+        }
+
+        public <T extends GeoMonotemporalRecord> void addBitemporal(String key, Set<T> records, Function<T, JsonNode> converter) {
+            this.addBitemporal(key, records, converter, false, false);
+        }
+
+        public <T extends GeoMonotemporalRecord> void addBitemporal(String key, Set<T> records, Function<T, JsonNode> converter, boolean unwrapSingle, boolean forceArray) {
+            this.addTemporal(key, records, converter, unwrapSingle, forceArray, t -> t.getMonotemporality().asBitemporality());
+        }
+        */
+
+        private <T extends GeoMonotemporalRecord> void addTemporal(String key, Set<T> records, Function<T, JsonNode> converter, boolean unwrapSingle, boolean forceArray, Function<T, Bitemporality> bitemporalityExtractor) {
             ObjectMapper objectMapper = GeoOutputWrapper.this.getObjectMapper();
             for (T record : records) {
                 if (record != null) {
                     JsonNode value = (converter != null) ? converter.apply(record) : objectMapper.valueToTree(record);
+                    Bitemporality bitemporality = bitemporalityExtractor.apply(record);
                     if (value instanceof ObjectNode) {
                         ObjectNode oValue = (ObjectNode) value;
-                        List<String> removeFieldNames = GeoOutputWrapper.this.getRemoveFieldNames();
+                        Set<String> removeFieldNames = GeoOutputWrapper.this.getRemoveFieldNames();
                         if (removeFieldNames != null) {
                             oValue.remove(removeFieldNames);
                         }
                         if (unwrapSingle && value.size() == 1) {
-                            this.bitemporalData.add(record.getMonotemporality().asBitemporality(), key, oValue.get(oValue.fieldNames().next()));
+                            this.bitemporalData.add(bitemporality, key, oValue.get(oValue.fieldNames().next()));
                             continue;
                         }
                     }
-                    this.bitemporalData.add(record.getMonotemporality().asBitemporality(), key, value);
+                    this.bitemporalData.add(bitemporality, key, value);
                 }
             }
             if (forceArray) {
@@ -177,6 +200,13 @@ public abstract class GeoOutputWrapper<E extends GeoEntity> extends OutputWrappe
         }
 
         // RVD
+        private final Set<String> rvdNodeRemoveFields = new HashSet<>(Arrays.asList(new String[]{
+                "registreringFra",
+                "registreringTil",
+                "registrationFrom",
+                "registrationTo"
+        }));
+
         public ArrayNode getRegistrations(Bitemporality mustOverlap) {
 
             ObjectMapper objectMapper = GeoOutputWrapper.this.getObjectMapper();
@@ -239,7 +269,14 @@ public abstract class GeoOutputWrapper<E extends GeoEntity> extends OutputWrappe
                                 effectNode.put(EFFECT_TO, formatTime(bitemporality.effectTo, true));
                                 HashMap<String, ArrayList<JsonNode>> records = this.bitemporalData.get(bitemporality);
                                 for (String key : records.keySet()) {
-                                    this.setValue(objectMapper, effectNode, key, records.get(key));
+                                    List<JsonNode> nodes = records.get(key);
+                                    this.filterNodes(nodes, node -> {
+                                        if (node instanceof ObjectNode) {
+                                            ObjectNode objectNode = (ObjectNode) node;
+                                            objectNode.remove(rvdNodeRemoveFields);
+                                        }
+                                    });
+                                    this.setValue(objectMapper, effectNode, key, nodes);
                                 }
                                 lastEffect = bitemporality;
                                 //}
@@ -289,6 +326,12 @@ public abstract class GeoOutputWrapper<E extends GeoEntity> extends OutputWrappe
                 for (JsonNode value : values) {
                     array.add(value);
                 }
+            }
+        }
+
+        private void filterNodes(List<JsonNode> nodes, Consumer<JsonNode> filterMethod) {
+            for (JsonNode node : nodes) {
+                filterMethod.accept(node);
             }
         }
     }

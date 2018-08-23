@@ -1,21 +1,22 @@
-package dk.magenta.datafordeler.geo.data.municipality;
+package dk.magenta.datafordeler.geo.data.road;
 
 import dk.magenta.datafordeler.geo.data.GeoOutputWrapper;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
-import dk.magenta.datafordeler.geo.data.postcode.PostcodeEntity;
+import dk.magenta.datafordeler.geo.data.municipality.MunicipalityEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Component
-public class MunicipalityOutputWrapper extends GeoOutputWrapper<MunicipalityEntity> {
+public class RoadOutputWrapper extends GeoOutputWrapper<RoadEntity> {
 
     @Override
-    protected void fillMetadataContainer(OutputContainer container, MunicipalityEntity item) {
-        container.addNontemporal("kommunekode", item.getCode());
+    protected void fillMetadataContainer(OutputContainer container, RoadEntity item) {
+        container.addNontemporal("vejkode", item.getCode());
         container.addMonotemporal("navn", item.getName());
+        container.addMonotemporal("lokalitet", item.getLocality());
+        container.addMonotemporal("kommune", item.getMunicipality());
     }
 
     @Override

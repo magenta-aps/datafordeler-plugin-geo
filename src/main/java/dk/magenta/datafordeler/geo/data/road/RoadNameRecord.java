@@ -1,13 +1,11 @@
 package dk.magenta.datafordeler.geo.data.road;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import dk.magenta.datafordeler.core.database.DatabaseEntry;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.common.NameRecord;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = GeoPlugin.DEBUG_TABLE_PREFIX + RoadNameRecord.TABLE_NAME, indexes = {
@@ -40,6 +38,7 @@ public class RoadNameRecord extends NameRecord<RoadEntity> {
     public static final String DB_FIELD_ADDRESSING_NAME = "addressingName";
     public static final String IO_FIELD_ADDRESSING_NAME = "addresseringsNavn";
     @Column(name = DB_FIELD_ADDRESSING_NAME)
+    @JsonProperty(IO_FIELD_ADDRESSING_NAME)
     private String addressingName;
 
     public String getAddressingName() {

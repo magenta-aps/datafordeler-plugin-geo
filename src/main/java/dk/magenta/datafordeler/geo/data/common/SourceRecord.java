@@ -1,5 +1,6 @@
 package dk.magenta.datafordeler.geo.data.common;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 
 import javax.persistence.Column;
@@ -18,7 +19,9 @@ public class SourceRecord<E extends GeoEntity> extends GeoMonotemporalRecord<E> 
 
 
     public static final String DB_FIELD_SOURCE = "source";
+    public static final String IO_FIELD_SOURCE = "dataKilde";
     @Column(name = DB_FIELD_SOURCE)
+    @JsonProperty(value = IO_FIELD_SOURCE)
     private Integer source;
 
     public Integer getSource() {

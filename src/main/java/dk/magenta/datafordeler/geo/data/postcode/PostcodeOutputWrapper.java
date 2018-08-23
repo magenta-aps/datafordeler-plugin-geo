@@ -4,6 +4,7 @@ import dk.magenta.datafordeler.geo.data.GeoOutputWrapper;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class PostcodeOutputWrapper extends GeoOutputWrapper<PostcodeEntity> {
@@ -15,7 +16,7 @@ public class PostcodeOutputWrapper extends GeoOutputWrapper<PostcodeEntity> {
     }
 
     @Override
-    public List<String> getRemoveFieldNames() {
+    public Set<String> getRemoveFieldNames() {
         return null;
     }
 }
