@@ -235,21 +235,32 @@ public class AdresseService {
         loggerHelper.info(
                 "Incoming REST request for AddressService.building with road {}", roadUUID
         );
-        //checkParameterExistence(PARAM_ROAD, roadUUID);
-        //UUID road = parameterAsUUID(PARAM_ROAD, roadUUID);
-        //return this.getAccessAddresses(road.toString());
-        return null;
+        checkParameterExistence(PARAM_ROAD, roadUUID);
+        UUID road = parameterAsUUID(PARAM_ROAD, roadUUID);
+        return this.getAccessAddresses(road.toString());
     }
 
-    public String getAccessAddresses(int municipality, int road) throws DataFordelerException {
+    //public String getAccessAddresses(int municipality, int road) throws DataFordelerException {
+    public String getAccessAddresses(String road) throws DataFordelerException {
+
+        Session session = sessionManager.getSessionFactory().openSession();
 
         AccessAddressQuery accessAddressQuery = new AccessAddressQuery();
         setQueryNow(accessAddressQuery);
         setQueryNoLimit(accessAddressQuery);
-        accessAddressQuery.setMunicipality(Integer.toString(municipality));
-        accessAddressQuery.setRoad(Integer.toString(road));
+        //accessAddressQuery.setMunicipality(Integer.toString(municipality));
+        accessAddressQuery.setRoadUUID(road);
 
-        Session session = sessionManager.getSessionFactory().openSession();
+
+        /*org.hibernate.query.Query databaseQuery = session.createQuery(
+                "SELECT DISTINCT access, building FROM "+AccessAddressEntity.class.getCanonicalName()+" access "+
+                   "JOIN access.reference building "+
+                   "WHERE access. = :bnr "
+        );*/
+        //databaseQuery.setParameter("bnr", "B-0000");
+        //databaseQuery.setParameterList("hnr", query.getHouseNumber());
+        //databaseQuery.setFlushMode(FlushModeType.COMMIT);
+
         try {
             ArrayNode results = objectMapper.createArrayNode();
 
@@ -262,9 +273,7 @@ public class AdresseService {
                     ObjectNode addressNode = objectMapper.createObjectNode();
                     addressNode.set(OUTPUT_HOUSENUMBER, null);
                     addressNode.set(OUTPUT_BNUMBER, null);
-                    //addressNode.set(OUTPUT_BCALLNAME, null);
-
-
+                    addressNode.set(OUTPUT_BCALLNAME, null);
 
                     for (AccessAddressHouseNumberRecord houseNumber : addressEntity.getHouseNumber()) {
                         addressNode.put(OUTPUT_HOUSENUMBER, houseNumber.getNumber());
@@ -272,25 +281,10 @@ public class AdresseService {
 
                     addressNode.put(OUTPUT_BNUMBER, addressEntity.getBnr());
 
-
-/*
-                    for (DataItem dataItem : addressDataItems) {
-                        if (addressData.getbNumber() != null) {
-                            BNumberEntity bNumberEntity = bNumberMap.get(addressData.getbNumber());
-                            if (bNumberEntity != null) {
-                                for (DataItem bNumberDataItem : bNumberEntity.getCurrent()) {
-                                    BNumberData bNumberData = (BNumberData) bNumberDataItem;
-                                    if (bNumberData.getRoadCode() != null) {
-                                        addressNode.put(OUTPUT_BNUMBER, bNumberData.getRoadCode());
-                                    }
-                                    if (bNumberData.getCallname() != null && !bNumberData.getCallname().isEmpty()) {
-                                        addressNode.put(OUTPUT_BCALLNAME, bNumberData.getCallname());
-                                    }
-                                }
-                            }
-                        }
+                    for (AccessAddressBlockNameRecord blockName : addressEntity.getBlockName()) {
+                        addressNode.put(OUTPUT_BCALLNAME, blockName.getName());
                     }
-                    */
+
                     results.add(addressNode);
                 }
             }

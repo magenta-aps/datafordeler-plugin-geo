@@ -1,6 +1,7 @@
 package dk.magenta.datafordeler.geo.data.accessaddress;
 
 import dk.magenta.datafordeler.core.database.BaseLookupDefinition;
+import dk.magenta.datafordeler.core.database.Identification;
 import dk.magenta.datafordeler.core.fapi.ParameterMap;
 import dk.magenta.datafordeler.core.fapi.QueryField;
 import dk.magenta.datafordeler.geo.data.SumiffiikQuery;
@@ -31,6 +32,12 @@ public class AccessAddressQuery extends SumiffiikQuery<AccessAddressEntity> {
 
     @QueryField(type = QueryField.FieldType.INT, queryName = MUNICIPALITY)
     private List<String> municipality = new ArrayList<>();
+
+
+    public static final String ROAD_UUID = AccessAddressEntity.IO_FIELD_ROAD + "_uuid";
+
+    @QueryField(type = QueryField.FieldType.STRING, queryName = ROAD_UUID)
+    private List<String> roadUUID = new ArrayList<>();
 
 
 
@@ -105,6 +112,25 @@ public class AccessAddressQuery extends SumiffiikQuery<AccessAddressEntity> {
 
 
 
+    public List<String> getRoadUUID() {
+        return road;
+    }
+
+    public void setRoadUUID(String roadUUID) {
+        this.roadUUID.clear();
+        this.addRoad(roadUUID);
+    }
+
+    public void addRoadUUID(String roadUUID) {
+        if (roadUUID != null) {
+            this.roadUUID.add(roadUUID);
+            this.increaseDataParamCount();
+        }
+    }
+
+
+
+
     public List<String> getHouseNumber() {
         return houseNumber;
     }
@@ -145,6 +171,9 @@ public class AccessAddressQuery extends SumiffiikQuery<AccessAddressEntity> {
         if (this.road != null && !this.road.isEmpty()) {
             lookupDefinition.put(AccessAddressEntity.DB_FIELD_ROAD + BaseLookupDefinition.separator + AccessAddressRoadRecord.DB_FIELD_ROAD_CODE, this.road, Integer.class);
         }
+        if (this.roadUUID != null && !this.roadUUID.isEmpty()) {
+            lookupDefinition.put(AccessAddressEntity.DB_FIELD_ROAD + BaseLookupDefinition.separator + AccessAddressRoadRecord.DB_FIELD_ROAD_REFERENCE + BaseLookupDefinition.separator + Identification.DB_FIELD_UUID, this.road, Integer.class);
+        }
         if (this.municipality != null && !this.municipality.isEmpty()) {
             lookupDefinition.put(AccessAddressEntity.DB_FIELD_ROAD + BaseLookupDefinition.separator + AccessAddressRoadRecord.DB_FIELD_MUNICIPALITY_CODE, this.municipality, Integer.class);
         }
@@ -156,6 +185,7 @@ public class AccessAddressQuery extends SumiffiikQuery<AccessAddressEntity> {
         super.setFromParameters(parameters);
         this.setBnr(parameters.getFirst(BNR));
         this.setRoad(parameters.getFirst(ROAD));
+        this.setRoadUUID(parameters.getFirst(ROAD_UUID));
     }
 
 }

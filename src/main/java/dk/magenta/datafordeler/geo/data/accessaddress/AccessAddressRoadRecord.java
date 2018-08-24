@@ -65,6 +65,8 @@ public class AccessAddressRoadRecord extends GeoMonotemporalRecord<AccessAddress
     }
 
 
+    public static final String DB_FIELD_ROAD_REFERENCE = "reference";
+    public static final String IO_FIELD_ROAD_REFERENCE = "reference";
     @ManyToOne
     @JsonIgnore
     private Identification reference;

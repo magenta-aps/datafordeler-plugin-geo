@@ -1,12 +1,18 @@
 package dk.magenta.datafordeler.geo.data.accessaddress;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import dk.magenta.datafordeler.core.database.Identification;
 import dk.magenta.datafordeler.core.database.IdentifiedEntity;
+import dk.magenta.datafordeler.core.database.QueryManager;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 import dk.magenta.datafordeler.geo.data.SumiffiikEntity;
+import dk.magenta.datafordeler.geo.data.building.BuildingEntity;
+import dk.magenta.datafordeler.geo.data.building.BuildingQuery;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
+import org.hibernate.Session;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -236,4 +242,5 @@ public class AccessAddressEntity extends SumiffiikEntity implements IdentifiedEn
         records.add(this.shape);
         return records;
     }
+
 }

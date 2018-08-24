@@ -34,7 +34,6 @@ public class TestService extends GeoTest {
     @Autowired
     private UnitAddressEntityManager unitAddressEntityManager;
 
-
     @Autowired
     private AdresseService adresseService;
 
@@ -62,9 +61,9 @@ public class TestService extends GeoTest {
     @Test
     public void testAccessAddress() throws DataFordelerException, IOException {
         this.load(accessAddressEntityManager, "fixtures/Adgangsadresse.json");
-        ResponseEntity<String> response = this.lookup("/adresse/hus?lokalitet=1234");
+        ResponseEntity<String> response = this.lookup("/adresse/hus?vej=F45872EF-8D59-4465-BC7B-E81E906F2662");
         Assert.assertEquals(200, response.getStatusCode().value());
-        String buildings = adresseService.getAccessAddresses(956, 158);
+        String buildings = response.getBody();
         System.out.println(buildings);
     }
 
