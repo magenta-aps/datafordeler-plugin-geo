@@ -2,7 +2,6 @@ package dk.magenta.datafordeler.geo.data.road;
 
 import dk.magenta.datafordeler.geo.data.GeoOutputWrapper;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
-import dk.magenta.datafordeler.geo.data.municipality.MunicipalityEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;

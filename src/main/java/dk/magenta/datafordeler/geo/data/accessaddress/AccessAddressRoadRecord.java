@@ -73,6 +73,7 @@ public class AccessAddressRoadRecord extends GeoMonotemporalRecord<AccessAddress
         return this.reference;
     }
 
+
     public void wire(Session session) {
         if (this.reference == null && this.municipalityCode != null && this.roadCode != null) {
             RoadQuery query = new RoadQuery();

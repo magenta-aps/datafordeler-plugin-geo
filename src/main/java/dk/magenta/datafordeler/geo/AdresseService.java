@@ -3,7 +3,6 @@ package dk.magenta.datafordeler.geo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import dk.magenta.datafordeler.core.database.Identification;
 import dk.magenta.datafordeler.core.database.QueryManager;
 import dk.magenta.datafordeler.core.database.SessionManager;
 import dk.magenta.datafordeler.core.exception.DataFordelerException;
@@ -13,7 +12,10 @@ import dk.magenta.datafordeler.core.fapi.BaseQuery;
 import dk.magenta.datafordeler.core.user.DafoUserDetails;
 import dk.magenta.datafordeler.core.user.DafoUserManager;
 import dk.magenta.datafordeler.core.util.LoggerHelper;
-import dk.magenta.datafordeler.geo.data.accessaddress.*;
+import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressBlockNameRecord;
+import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressEntity;
+import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressHouseNumberRecord;
+import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressQuery;
 import dk.magenta.datafordeler.geo.data.locality.LocalityEntity;
 import dk.magenta.datafordeler.geo.data.locality.LocalityNameRecord;
 import dk.magenta.datafordeler.geo.data.locality.LocalityQuery;
@@ -39,7 +41,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.OffsetDateTime;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -254,7 +255,6 @@ public class AdresseService {
 
             //List<AccessAddressEntity> addressEntities = QueryManager.getAllEntities(session, accessAddressQuery, AccessAddressEntity.class);
             List<AccessAddressEntity> addressEntities = QueryManager.getAllEntities(session, AccessAddressEntity.class);
-            System.out.println(addressEntities.size()+" found");
             if (!addressEntities.isEmpty()) {
                 //HashMap<Identification, BNumberEntity> bNumberMap = getBNumbers(session, addressEntities);
 
@@ -263,6 +263,8 @@ public class AdresseService {
                     addressNode.set(OUTPUT_HOUSENUMBER, null);
                     addressNode.set(OUTPUT_BNUMBER, null);
                     //addressNode.set(OUTPUT_BCALLNAME, null);
+
+
 
                     for (AccessAddressHouseNumberRecord houseNumber : addressEntity.getHouseNumber()) {
                         addressNode.put(OUTPUT_HOUSENUMBER, houseNumber.getNumber());
@@ -460,12 +462,6 @@ public class AdresseService {
                 AccessAddressEntity accessAddress = results.length > 1 ? (AccessAddressEntity) results[1] : null;
                 RoadEntity road = results.length > 2 ? (RoadEntity) results[2] : null;
                 LocalityEntity locality = results.length > 3 ? (LocalityEntity) results[3] : null;
-
-
-                System.out.println("unitAddress: "+unitAddress);
-                System.out.println("accessAddress: "+accessAddress);
-                System.out.println("road: "+road);
-                System.out.println("locality: "+locality);
 
                 addressNode.put(OUTPUT_UUID, unitAddress.getUUID().toString());
                 addressNode.set(OUTPUT_HOUSENUMBER, null);

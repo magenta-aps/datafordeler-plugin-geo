@@ -28,10 +28,6 @@ public class RoadLocalityRecord extends LocalityReferenceRecord<RoadEntity> {
 
     public RoadLocalityRecord(String code) {
         super(code);
-        if (code != null) {
-            System.out.println("got code: " + code);
-        }
-
     }
 
 }

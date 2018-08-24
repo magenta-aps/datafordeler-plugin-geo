@@ -3,11 +3,13 @@ package dk.magenta.datafordeler.geo.data;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.*;
-import dk.magenta.datafordeler.core.database.Entity;
 import dk.magenta.datafordeler.core.database.Identification;
 import dk.magenta.datafordeler.core.fapi.BaseQuery;
 import dk.magenta.datafordeler.core.fapi.OutputWrapper;
-import dk.magenta.datafordeler.core.util.*;
+import dk.magenta.datafordeler.core.util.Bitemporality;
+import dk.magenta.datafordeler.core.util.BitemporalityComparator;
+import dk.magenta.datafordeler.core.util.DoubleListHashMap;
+import dk.magenta.datafordeler.core.util.ListHashMap;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
 import dk.magenta.datafordeler.geo.data.common.GeoNontemporalRecord;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,6 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 @Component
@@ -47,10 +48,7 @@ public abstract class GeoOutputWrapper<E extends GeoEntity> extends OutputWrappe
         Bitemporality overlap = new Bitemporality(query.getRegistrationFrom(), query.getRegistrationTo(), query.getEffectFrom(), query.getEffectTo());
         OutputContainer outputContainer = new OutputContainer();
         this.fillMetadataContainer(outputContainer, input);
-
-        System.out.println("mode: "+mode);
         root.setAll(outputContainer.getBase());
-
         switch (mode) {
             case DRV:
                 root.setAll(outputContainer.getDataNodes(overlap));
@@ -208,7 +206,9 @@ public abstract class GeoOutputWrapper<E extends GeoEntity> extends OutputWrappe
                 "registreringFra",
                 "registreringTil",
                 "registrationFrom",
-                "registrationTo"
+                "registrationTo",
+                "sidstOpdateret",
+                "lastUpdated"
         }));
 
         public ArrayNode getRegistrations(Bitemporality mustOverlap) {
@@ -274,11 +274,15 @@ public abstract class GeoOutputWrapper<E extends GeoEntity> extends OutputWrappe
                                 HashMap<String, ArrayList<JsonNode>> records = this.bitemporalData.get(bitemporality);
                                 for (String key : records.keySet()) {
                                     List<JsonNode> nodes = records.get(key);
-                                    this.filterNodes(nodes, node -> {
+                                    nodes = this.filterNodes(nodes, node -> {
                                         if (node instanceof ObjectNode) {
                                             ObjectNode objectNode = (ObjectNode) node;
                                             objectNode.remove(rvdNodeRemoveFields);
+                                            if (objectNode.size() == 1) {
+                                                node = objectNode.get(objectNode.fieldNames().next());
+                                            }
                                         }
+                                        return node;
                                     });
                                     this.setValue(objectMapper, effectNode, key, nodes);
                                 }
@@ -297,9 +301,6 @@ public abstract class GeoOutputWrapper<E extends GeoEntity> extends OutputWrappe
         public ObjectNode getDataNodes(Bitemporality mustOverlap) {
             ObjectMapper objectMapper = GeoOutputWrapper.this.getObjectMapper();
             ObjectNode objectNode = objectMapper.createObjectNode();
-
-            System.out.println(this.bitemporalData);
-
             for (Bitemporality bitemporality : this.bitemporalData.keySet()) {
                 if (bitemporality.overlaps(mustOverlap)) {
                     HashMap<String, ArrayList<JsonNode>> data = this.bitemporalData.get(bitemporality);
@@ -310,7 +311,6 @@ public abstract class GeoOutputWrapper<E extends GeoEntity> extends OutputWrappe
                     }
                 }
             }
-
             return objectNode;
         }
 
@@ -335,10 +335,12 @@ public abstract class GeoOutputWrapper<E extends GeoEntity> extends OutputWrappe
             }
         }
 
-        private void filterNodes(List<JsonNode> nodes, Consumer<JsonNode> filterMethod) {
+        private List<JsonNode> filterNodes(List<JsonNode> nodes, Function<JsonNode, JsonNode> filterMethod) {
+            List<JsonNode> outNodes = new ArrayList<>();
             for (JsonNode node : nodes) {
-                filterMethod.accept(node);
+                outNodes.add(filterMethod.apply(node));
             }
+            return outNodes;
         }
     }
 

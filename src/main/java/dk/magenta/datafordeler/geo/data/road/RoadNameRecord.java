@@ -5,7 +5,10 @@ import dk.magenta.datafordeler.core.database.DatabaseEntry;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.common.NameRecord;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = GeoPlugin.DEBUG_TABLE_PREFIX + RoadNameRecord.TABLE_NAME, indexes = {

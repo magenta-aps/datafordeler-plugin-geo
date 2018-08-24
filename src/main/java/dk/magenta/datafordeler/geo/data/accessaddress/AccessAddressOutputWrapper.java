@@ -1,7 +1,6 @@
 package dk.magenta.datafordeler.geo.data.accessaddress;
 
 import dk.magenta.datafordeler.geo.data.GeoOutputWrapper;
-import dk.magenta.datafordeler.geo.data.building.BuildingEntity;
 import org.springframework.stereotype.Component;
 
 @Component
