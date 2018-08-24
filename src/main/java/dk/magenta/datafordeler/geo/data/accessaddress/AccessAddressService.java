@@ -49,7 +49,7 @@ public class AccessAddressService extends FapiBaseService<AccessAddressEntity, A
 
     @Override
     protected OutputWrapper.Mode getDefaultMode() {
-        return OutputWrapper.Mode.RVD;
+        return OutputWrapper.Mode.RDV;
     }
 
     @Override

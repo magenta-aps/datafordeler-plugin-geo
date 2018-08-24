@@ -49,18 +49,23 @@ public abstract class GeoOutputWrapper<E extends GeoEntity> extends OutputWrappe
         OutputContainer outputContainer = new OutputContainer();
         this.fillMetadataContainer(outputContainer, input);
         root.setAll(outputContainer.getBase());
+        ArrayNode registrations;
         switch (mode) {
             case DRV:
                 root.setAll(outputContainer.getDataNodes(overlap));
                 break;
             case RVD:
             case LEGACY:
-                ArrayNode registrations = outputContainer.getRegistrations(overlap);
+                registrations = outputContainer.getRVDRegistrations(overlap);
                 if (registrations.size() > 0) {
                     root.set(REGISTRATIONS, registrations);
                 }
                 break;
             case RDV:
+                registrations = outputContainer.getRDVRegistrations(overlap);
+                if (registrations.size() > 0) {
+                    root.set(REGISTRATIONS, registrations);
+                }
                 break;
         }
         return root;
@@ -211,7 +216,7 @@ public abstract class GeoOutputWrapper<E extends GeoEntity> extends OutputWrappe
                 "lastUpdated"
         }));
 
-        public ArrayNode getRegistrations(Bitemporality mustOverlap) {
+        public ArrayNode getRVDRegistrations(Bitemporality mustOverlap) {
 
             ObjectMapper objectMapper = GeoOutputWrapper.this.getObjectMapper();
             ArrayNode registrationsNode = objectMapper.createArrayNode();
@@ -288,6 +293,93 @@ public abstract class GeoOutputWrapper<E extends GeoEntity> extends OutputWrappe
                                 }
                                 lastEffect = bitemporality;
                                 //}
+                            }
+                        }
+                    }
+                }
+            }
+            return registrationsNode;
+        }
+
+
+        public ArrayNode getRDVRegistrations(Bitemporality mustOverlap) {
+
+            ObjectMapper objectMapper = GeoOutputWrapper.this.getObjectMapper();
+            ArrayNode registrationsNode = objectMapper.createArrayNode();
+            ArrayList<Bitemporality> bitemporalities = new ArrayList<>(this.bitemporalData.keySet());
+
+            ListHashMap<OffsetDateTime, Bitemporality> startTerminators = new ListHashMap<>();
+            ListHashMap<OffsetDateTime, Bitemporality> endTerminators = new ListHashMap<>();
+
+            for (Bitemporality bitemporality : bitemporalities) {
+                startTerminators.add(bitemporality.registrationFrom, bitemporality);
+                endTerminators.add(bitemporality.registrationTo, bitemporality);
+            }
+
+            HashSet<OffsetDateTime> allTerminators = new HashSet<>();
+            allTerminators.addAll(startTerminators.keySet());
+            allTerminators.addAll(endTerminators.keySet());
+            // Create a sorted list of all timestamps where Bitemporalities either begin or end
+            ArrayList<OffsetDateTime> terminators = new ArrayList<>(allTerminators);
+            terminators.sort(Comparator.nullsFirst(OffsetDateTime::compareTo));
+            terminators.add(null);
+
+            HashSet<Bitemporality> presentBitemporalities = new HashSet<>();
+
+            for (int i=0; i<terminators.size(); i++) {
+                OffsetDateTime t = terminators.get(i);
+                List<Bitemporality> startingHere = startTerminators.get(t);
+                List<Bitemporality> endingHere = endTerminators.get(t);
+                if (startingHere != null) {
+                    presentBitemporalities.addAll(startingHere);
+                }
+                if (endingHere != null) {
+                    presentBitemporalities.removeAll(endingHere);
+                }
+                if (i < terminators.size() - 1) {
+                    OffsetDateTime next = terminators.get(i + 1);
+                    if (!presentBitemporalities.isEmpty()) {
+
+                        if (mustOverlap == null || mustOverlap.overlapsRegistration(t, next)) {
+                            ObjectNode registrationNode = objectMapper.createObjectNode();
+                            registrationsNode.add(registrationNode);
+                            registrationNode.put(REGISTRATION_FROM, formatTime(t));
+                            registrationNode.put(REGISTRATION_TO, formatTime(next));
+
+                            for (Bitemporality bitemporality : presentBitemporalities) {
+                                HashMap<String, ArrayList<JsonNode>> records = this.bitemporalData.get(bitemporality);
+                                for (String key : records.keySet()) {
+                                    ArrayNode dataNode = (ArrayNode) registrationNode.get(key);
+                                    if (dataNode == null) {
+                                        dataNode = objectMapper.createArrayNode();
+                                        registrationNode.set(key, dataNode);
+                                    }
+                                    List<JsonNode> nodes = records.get(key);
+                                    nodes = this.filterNodes(nodes, node -> {
+                                        if (node instanceof ObjectNode) {
+                                            ObjectNode objectNode = (ObjectNode) node;
+                                            objectNode.remove(rvdNodeRemoveFields);
+                                            /*if (objectNode.size() == 1) {
+                                                node = objectNode.get(objectNode.fieldNames().next());
+                                            }*/
+                                        }
+                                        return node;
+                                    });
+                                    for (JsonNode node : nodes) {
+                                        ObjectNode oNode;
+                                        if (node instanceof ObjectNode) {
+                                             oNode = (ObjectNode) node;
+                                        } else {
+                                            oNode = objectMapper.createObjectNode();
+                                            oNode.set("value", node);
+                                        }
+                                        oNode.put(EFFECT_FROM, formatTime(bitemporality.effectFrom));
+                                        oNode.put(EFFECT_TO, formatTime(bitemporality.effectTo));
+                                        dataNode.add(oNode);
+                                    }
+
+                                    //this.setValue(objectMapper, registrationNode, key, nodes);
+                                }
                             }
                         }
                     }
