@@ -70,10 +70,10 @@ public class LocalityEntity extends SumiffiikEntity implements IdentifiedEntity 
     public static final String DB_FIELD_NAME = "name";
     public static final String IO_FIELD_NAME = "navn";
     @OneToMany(mappedBy = LocalityNameRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
-    @Filters({
+    /*@Filters({
             @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_REGISTRATION_AFTER),
             @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_REGISTRATION_BEFORE)
-    })
+    })*/
     @JsonProperty(IO_FIELD_NAME)
     Set<LocalityNameRecord> name = new HashSet<>();
 

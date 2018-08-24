@@ -205,7 +205,7 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
                 timer.measure(TASK_FIND_ENTITY);
 
                 timer.start(TASK_POPULATE_DATA);
-                this.updateEntity(entity, rawData);
+                this.updateEntity(entity, rawData, importMetadata);
                 entity.wire(session);
                 timer.measure(TASK_POPULATE_DATA);
 
@@ -270,8 +270,9 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
     }
 
 
-    protected void updateEntity(E entity, T rawData) {
+    protected void updateEntity(E entity, T rawData, ImportMetadata importMetadata) {
         for (GeoMonotemporalRecord record : rawData.getMonotemporalRecords()) {
+            record.setDafoUpdated(importMetadata.getImportTime());
             entity.addMonotemporalRecord(record);
         }
     }

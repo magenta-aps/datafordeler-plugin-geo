@@ -37,17 +37,20 @@ public class BuildingService extends FapiBaseService<BuildingEntity, PostcodeQue
     @Autowired
     private MonitorService monitorService;
 
+    @Autowired
+    private BuildingOutputWrapper buildingOutputWrapper;
+
     @PostConstruct
     public void init() {
         this.monitorService.addAccessCheckPoint("/geo/building/1/rest/1234");
         this.monitorService.addAccessCheckPoint("/geo/building/1/rest/search?bnr=1234");
 
-        //this.setOutputWrapper(this.personRecordOutputWrapper);
+        this.setOutputWrapper(this.buildingOutputWrapper);
     }
 
     @Override
     protected OutputWrapper.Mode getDefaultMode() {
-        return OutputWrapper.Mode.LEGACY;
+        return OutputWrapper.Mode.DRV;
     }
 
     @Override

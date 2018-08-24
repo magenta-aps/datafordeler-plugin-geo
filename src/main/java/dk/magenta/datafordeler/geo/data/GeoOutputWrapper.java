@@ -70,7 +70,11 @@ public abstract class GeoOutputWrapper<E extends GeoEntity> extends OutputWrappe
 
     protected abstract void fillMetadataContainer(OutputContainer container, E item);
 
-    public abstract Set<String> getRemoveFieldNames();
+    public Set<String> getRemoveFieldNames() {
+        HashSet<String> fields = new HashSet<>();
+        fields.add(GeoMonotemporalRecord.IO_FIELD_EDITOR);
+        return fields;
+    }
 
 
 
@@ -293,6 +297,8 @@ public abstract class GeoOutputWrapper<E extends GeoEntity> extends OutputWrappe
         public ObjectNode getDataNodes(Bitemporality mustOverlap) {
             ObjectMapper objectMapper = GeoOutputWrapper.this.getObjectMapper();
             ObjectNode objectNode = objectMapper.createObjectNode();
+
+            System.out.println(this.bitemporalData);
 
             for (Bitemporality bitemporality : this.bitemporalData.keySet()) {
                 if (bitemporality.overlaps(mustOverlap)) {
