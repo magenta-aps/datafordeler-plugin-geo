@@ -1,5 +1,6 @@
 package dk.magenta.datafordeler.geo.data.unitaddress;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import dk.magenta.datafordeler.core.database.DatabaseEntry;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
@@ -30,7 +31,9 @@ public class UnitAddressDoorRecord extends GeoMonotemporalRecord<UnitAddressEnti
 
 
     public static final String DB_FIELD_DOOR = "door";
+    public static final String IO_FIELD_DOOR = "dør";
     @Column(name = DB_FIELD_DOOR)
+    @JsonProperty(value = IO_FIELD_DOOR)
     private String door;
 
     public String getDoor() {

@@ -36,20 +36,20 @@ public class MunicipalityService extends FapiBaseService<MunicipalityEntity, Mun
     @Autowired
     private MonitorService monitorService;
 
-    //@Autowired
-    //private PersonRecordOutputWrapper personRecordOutputWrapper;
+    @Autowired
+    private MunicipalityOutputWrapper municipalityOutputWrapper;
 
     @PostConstruct
     public void init() {
         //this.monitorService.addAccessCheckPoint("/geo/municipality/1/rest/1234");
         //this.monitorService.addAccessCheckPoint("/geo/municipality/1/rest/search?kommunekode=956");
 
-        //this.setOutputWrapper(this.personRecordOutputWrapper);
+        this.setOutputWrapper(this.municipalityOutputWrapper);
     }
 
     @Override
     protected OutputWrapper.Mode getDefaultMode() {
-        return OutputWrapper.Mode.LEGACY;
+        return OutputWrapper.Mode.DRV;
     }
 
     @Override

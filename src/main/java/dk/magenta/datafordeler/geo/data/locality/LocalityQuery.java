@@ -1,6 +1,7 @@
 package dk.magenta.datafordeler.geo.data.locality;
 
 import dk.magenta.datafordeler.core.database.BaseLookupDefinition;
+import dk.magenta.datafordeler.core.exception.InvalidClientInputException;
 import dk.magenta.datafordeler.core.fapi.ParameterMap;
 import dk.magenta.datafordeler.core.fapi.QueryField;
 import dk.magenta.datafordeler.geo.data.SumiffiikQuery;
@@ -102,7 +103,7 @@ public class LocalityQuery extends SumiffiikQuery<LocalityEntity> {
     }
 
     @Override
-    public void setFromParameters(ParameterMap parameters) {
+    public void setFromParameters(ParameterMap parameters) throws InvalidClientInputException {
         super.setFromParameters(parameters);
         this.setCode(parameters.getFirst(CODE));
         this.setName(parameters.getFirst(NAME));

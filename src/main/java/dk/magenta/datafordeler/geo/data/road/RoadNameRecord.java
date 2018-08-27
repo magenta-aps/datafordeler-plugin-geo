@@ -1,5 +1,6 @@
 package dk.magenta.datafordeler.geo.data.road;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import dk.magenta.datafordeler.core.database.DatabaseEntry;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.common.NameRecord;
@@ -40,6 +41,7 @@ public class RoadNameRecord extends NameRecord<RoadEntity> {
     public static final String DB_FIELD_ADDRESSING_NAME = "addressingName";
     public static final String IO_FIELD_ADDRESSING_NAME = "addresseringsNavn";
     @Column(name = DB_FIELD_ADDRESSING_NAME)
+    @JsonProperty(IO_FIELD_ADDRESSING_NAME)
     private String addressingName;
 
     public String getAddressingName() {

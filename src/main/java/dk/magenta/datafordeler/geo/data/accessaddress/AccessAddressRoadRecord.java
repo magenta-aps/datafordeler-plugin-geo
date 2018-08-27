@@ -1,5 +1,7 @@
 package dk.magenta.datafordeler.geo.data.accessaddress;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import dk.magenta.datafordeler.core.database.DatabaseEntry;
 import dk.magenta.datafordeler.core.database.Identification;
 import dk.magenta.datafordeler.core.database.QueryManager;
@@ -33,8 +35,9 @@ public class AccessAddressRoadRecord extends GeoMonotemporalRecord<AccessAddress
 
 
     public static final String DB_FIELD_MUNICIPALITY_CODE = "municipalityCode";
-    public static final String IO_FIELD_MUNICIPALITY_CODE = "kommune";
+    public static final String IO_FIELD_MUNICIPALITY_CODE = "kommuneKode";
     @Column(name = DB_FIELD_MUNICIPALITY_CODE, nullable = true)
+    @JsonProperty(value = IO_FIELD_MUNICIPALITY_CODE)
     private Integer municipalityCode;
 
     public Integer getMunicipalityCode() {
@@ -48,7 +51,9 @@ public class AccessAddressRoadRecord extends GeoMonotemporalRecord<AccessAddress
 
 
     public static final String DB_FIELD_ROAD_CODE = "roadCode";
+    public static final String IO_FIELD_ROAD_CODE = "vejKode";
     @Column(name = DB_FIELD_ROAD_CODE)
+    @JsonProperty(value = IO_FIELD_ROAD_CODE)
     private Integer roadCode;
 
     public Integer getRoadCode() {
@@ -60,30 +65,28 @@ public class AccessAddressRoadRecord extends GeoMonotemporalRecord<AccessAddress
     }
 
 
+    public static final String DB_FIELD_ROAD_REFERENCE = "reference";
+    public static final String IO_FIELD_ROAD_REFERENCE = "reference";
     @ManyToOne
+    @JsonIgnore
     private Identification reference;
 
     public Identification getReference() {
         return this.reference;
     }
 
+
     public void wire(Session session) {
         if (this.reference == null && this.municipalityCode != null && this.roadCode != null) {
             RoadQuery query = new RoadQuery();
-            //query.setMunicipality(Integer.toString(this.municipalityCode));
+            query.setMunicipality(Integer.toString(this.municipalityCode));
             query.setCode(Integer.toString(this.roadCode));
-            System.out.println("Wiring...");
             for (RoadEntity road : QueryManager.getAllEntities(session, query, RoadEntity.class)) {
-                System.out.println("found!");
-                System.out.println(road.getMunicipality()+"|"+road.getCode());
                 this.reference = road.getIdentification();
                 return;
             }
-            System.out.println("not found");
         }
     }
-
-
 
     public boolean equalData(Object o) {
         if (this == o) return true;

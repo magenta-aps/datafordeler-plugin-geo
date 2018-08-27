@@ -1,5 +1,7 @@
 package dk.magenta.datafordeler.geo.data.common;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import dk.magenta.datafordeler.core.database.Identification;
 import dk.magenta.datafordeler.core.database.QueryManager;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
@@ -25,6 +27,7 @@ public class LocalityReferenceRecord<E extends GeoEntity> extends GeoMonotempora
     public static final String DB_FIELD_CODE = "code";
     public static final String IO_FIELD_CODE = "lokalitetskode";
     @Column(name = DB_FIELD_CODE)
+    @JsonProperty(IO_FIELD_CODE)
     private String code;
 
     public String getCode() {
@@ -36,7 +39,9 @@ public class LocalityReferenceRecord<E extends GeoEntity> extends GeoMonotempora
     }
 
 
+    public static final String DB_FIELD_REFERENCE = "reference";
     @ManyToOne
+    @JsonIgnore
     private Identification reference;
 
     public Identification getReference() {
@@ -46,16 +51,11 @@ public class LocalityReferenceRecord<E extends GeoEntity> extends GeoMonotempora
     public void wire(Session session) {
         if (this.reference == null && this.code != null) {
             LocalityQuery query = new LocalityQuery();
-            //query.setMunicipality(Integer.toString(this.municipalityCode));
             query.setCode(this.code);
-            System.out.println("Wiring...");
             for (LocalityEntity locality : QueryManager.getAllEntities(session, query, LocalityEntity.class)) {
-                System.out.println("found!");
-                System.out.println(locality.getCode());
                 this.reference = locality.getIdentification();
                 return;
             }
-            System.out.println("not found");
         }
     }
 

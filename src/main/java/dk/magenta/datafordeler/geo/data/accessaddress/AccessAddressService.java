@@ -36,17 +36,20 @@ public class AccessAddressService extends FapiBaseService<AccessAddressEntity, A
     @Autowired
     private MonitorService monitorService;
 
+    @Autowired
+    private AccessAddressOutputWrapper accessAddressOutputWrapper;
+
     @PostConstruct
     public void init() {
-        this.monitorService.addAccessCheckPoint("/geo/accessaddress/1/rest/1234");
-        this.monitorService.addAccessCheckPoint("/geo/accessaddress/1/rest/search?bnr=1234");
+        //this.monitorService.addAccessCheckPoint("/geo/accessaddress/1/rest/1234");
+        //this.monitorService.addAccessCheckPoint("/geo/accessaddress/1/rest/search?bnr=1234");
 
-        //this.setOutputWrapper(this.personRecordOutputWrapper);
+        this.setOutputWrapper(this.accessAddressOutputWrapper);
     }
 
     @Override
     protected OutputWrapper.Mode getDefaultMode() {
-        return OutputWrapper.Mode.LEGACY;
+        return OutputWrapper.Mode.DRV;
     }
 
     @Override

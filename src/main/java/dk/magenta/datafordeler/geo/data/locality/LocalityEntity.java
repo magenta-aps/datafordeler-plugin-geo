@@ -3,13 +3,10 @@ package dk.magenta.datafordeler.geo.data.locality;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import dk.magenta.datafordeler.core.database.IdentifiedEntity;
-import dk.magenta.datafordeler.core.database.Registration;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 import dk.magenta.datafordeler.geo.data.SumiffiikEntity;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.Filters;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -70,10 +67,10 @@ public class LocalityEntity extends SumiffiikEntity implements IdentifiedEntity 
     public static final String DB_FIELD_NAME = "name";
     public static final String IO_FIELD_NAME = "navn";
     @OneToMany(mappedBy = LocalityNameRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
-    @Filters({
+    /*@Filters({
             @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_REGISTRATION_AFTER),
             @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_REGISTRATION_BEFORE)
-    })
+    })*/
     @JsonProperty(IO_FIELD_NAME)
     Set<LocalityNameRecord> name = new HashSet<>();
 

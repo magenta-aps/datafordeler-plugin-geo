@@ -1,5 +1,6 @@
 package dk.magenta.datafordeler.geo.data.accessaddress;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import dk.magenta.datafordeler.core.database.DatabaseEntry;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
@@ -30,7 +31,9 @@ public class AccessAddressBlockNameRecord extends GeoMonotemporalRecord<AccessAd
 
 
     public static final String DB_FIELD_NAME = "name";
+    public static final String IO_FIELD_NAME = "blokNavn";
     @Column(name = DB_FIELD_NAME)
+    @JsonProperty(value = IO_FIELD_NAME)
     private String name;
 
     public String getName() {

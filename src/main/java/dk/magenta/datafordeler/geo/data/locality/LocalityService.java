@@ -36,17 +36,20 @@ public class LocalityService extends FapiBaseService<LocalityEntity, LocalityQue
     @Autowired
     private MonitorService monitorService;
 
+    @Autowired
+    private LocalityOutputWrapper localityOutputWrapper;
+
     @PostConstruct
     public void init() {
-        this.monitorService.addAccessCheckPoint("/geo/locality/1/rest/1234");
-        this.monitorService.addAccessCheckPoint("/geo/locality/1/rest/search?kode=1234");
+        //this.monitorService.addAccessCheckPoint("/geo/locality/1/rest/1234");
+        //this.monitorService.addAccessCheckPoint("/geo/locality/1/rest/search?kode=1234");
 
-        //this.setOutputWrapper(this.personRecordOutputWrapper);
+        this.setOutputWrapper(this.localityOutputWrapper);
     }
 
     @Override
     protected OutputWrapper.Mode getDefaultMode() {
-        return OutputWrapper.Mode.LEGACY;
+        return OutputWrapper.Mode.DRV;
     }
 
     @Override

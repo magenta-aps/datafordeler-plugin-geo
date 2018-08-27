@@ -3,7 +3,6 @@ package dk.magenta.datafordeler.geo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import dk.magenta.datafordeler.core.database.Identification;
 import dk.magenta.datafordeler.core.database.QueryManager;
 import dk.magenta.datafordeler.core.database.SessionManager;
 import dk.magenta.datafordeler.core.exception.DataFordelerException;
@@ -13,7 +12,10 @@ import dk.magenta.datafordeler.core.fapi.BaseQuery;
 import dk.magenta.datafordeler.core.user.DafoUserDetails;
 import dk.magenta.datafordeler.core.user.DafoUserManager;
 import dk.magenta.datafordeler.core.util.LoggerHelper;
-import dk.magenta.datafordeler.geo.data.accessaddress.*;
+import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressBlockNameRecord;
+import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressEntity;
+import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressHouseNumberRecord;
+import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressQuery;
 import dk.magenta.datafordeler.geo.data.locality.LocalityEntity;
 import dk.magenta.datafordeler.geo.data.locality.LocalityNameRecord;
 import dk.magenta.datafordeler.geo.data.locality.LocalityQuery;
@@ -39,9 +41,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.OffsetDateTime;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.UUID;
 
 @RestController
@@ -178,16 +180,15 @@ public class AdresseService {
                 "Incoming REST request for AddressService.road with locality {}", locality
         );
         checkParameterExistence(PARAM_LOCALITY, locality);
-        //UUID locality = parameterAsUUID(PARAM_LOCALITY, locality);
-        return this.getRoads(locality);
+        return this.getRoads(parameterAsUUID(PARAM_LOCALITY, locality));
     }
 
-    public String getRoads(String locality) throws DataFordelerException {
+    public String getRoads(UUID locality) throws DataFordelerException {
 
         RoadQuery query = new RoadQuery();
         setQueryNow(query);
         setQueryNoLimit(query);
-        query.setLocality(locality);
+        query.setLocalityUUID(locality);
         Session session = sessionManager.getSessionFactory().openSession();
         try {
             List<RoadEntity> roads = QueryManager.getAllEntities(session, query, RoadEntity.class);
@@ -234,35 +235,32 @@ public class AdresseService {
         loggerHelper.info(
                 "Incoming REST request for AddressService.building with road {}", roadUUID
         );
-        //checkParameterExistence(PARAM_ROAD, roadUUID);
-        //UUID road = parameterAsUUID(PARAM_ROAD, roadUUID);
-        //return this.getAccessAddresses(road.toString());
-        return null;
+        checkParameterExistence(PARAM_ROAD, roadUUID);
+        UUID road = parameterAsUUID(PARAM_ROAD, roadUUID);
+        return this.getAccessAddresses(road);
     }
 
-    public String getAccessAddresses(int municipality, int road) throws DataFordelerException {
+    public String getAccessAddresses(UUID road) throws DataFordelerException {
+
+        System.out.println("road: "+road);
+        Session session = sessionManager.getSessionFactory().openSession();
 
         AccessAddressQuery accessAddressQuery = new AccessAddressQuery();
         setQueryNow(accessAddressQuery);
         setQueryNoLimit(accessAddressQuery);
-        accessAddressQuery.setMunicipality(Integer.toString(municipality));
-        accessAddressQuery.setRoad(Integer.toString(road));
+        accessAddressQuery.setRoadUUID(road);
 
-        Session session = sessionManager.getSessionFactory().openSession();
         try {
             ArrayNode results = objectMapper.createArrayNode();
 
-            //List<AccessAddressEntity> addressEntities = QueryManager.getAllEntities(session, accessAddressQuery, AccessAddressEntity.class);
-            List<AccessAddressEntity> addressEntities = QueryManager.getAllEntities(session, AccessAddressEntity.class);
-            System.out.println(addressEntities.size()+" found");
+            List<AccessAddressEntity> addressEntities = QueryManager.getAllEntities(session, accessAddressQuery, AccessAddressEntity.class);
             if (!addressEntities.isEmpty()) {
-                //HashMap<Identification, BNumberEntity> bNumberMap = getBNumbers(session, addressEntities);
 
                 for (AccessAddressEntity addressEntity : addressEntities) {
                     ObjectNode addressNode = objectMapper.createObjectNode();
                     addressNode.set(OUTPUT_HOUSENUMBER, null);
                     addressNode.set(OUTPUT_BNUMBER, null);
-                    //addressNode.set(OUTPUT_BCALLNAME, null);
+                    addressNode.set(OUTPUT_BCALLNAME, null);
 
                     for (AccessAddressHouseNumberRecord houseNumber : addressEntity.getHouseNumber()) {
                         addressNode.put(OUTPUT_HOUSENUMBER, houseNumber.getNumber());
@@ -270,25 +268,10 @@ public class AdresseService {
 
                     addressNode.put(OUTPUT_BNUMBER, addressEntity.getBnr());
 
-
-/*
-                    for (DataItem dataItem : addressDataItems) {
-                        if (addressData.getbNumber() != null) {
-                            BNumberEntity bNumberEntity = bNumberMap.get(addressData.getbNumber());
-                            if (bNumberEntity != null) {
-                                for (DataItem bNumberDataItem : bNumberEntity.getCurrent()) {
-                                    BNumberData bNumberData = (BNumberData) bNumberDataItem;
-                                    if (bNumberData.getRoadCode() != null) {
-                                        addressNode.put(OUTPUT_BNUMBER, bNumberData.getRoadCode());
-                                    }
-                                    if (bNumberData.getCallname() != null && !bNumberData.getCallname().isEmpty()) {
-                                        addressNode.put(OUTPUT_BCALLNAME, bNumberData.getCallname());
-                                    }
-                                }
-                            }
-                        }
+                    for (AccessAddressBlockNameRecord blockName : addressEntity.getBlockName()) {
+                        addressNode.put(OUTPUT_BCALLNAME, blockName.getName());
                     }
-                    */
+
                     results.add(addressNode);
                 }
             }
@@ -323,45 +306,62 @@ public class AdresseService {
         );
         checkParameterExistence(PARAM_ROAD, roadUUID);
         UUID road = parameterAsUUID(PARAM_ROAD, roadUUID);
-
-        return null;
+        return this.getUnitAddresses(road, houseNumber, buildingNumber);
     }
 
-    public String getUnitAddresses(int municipalityCode, int roadCode, String houseNumber, String buildingNumber) throws DataFordelerException {
+    public String getUnitAddresses(UUID roadUUID, String houseNumber, String buildingNumber) throws DataFordelerException {
 
+        if (houseNumber != null && houseNumber.trim().isEmpty()) {
+            houseNumber = null;
+        }
+        if (buildingNumber != null && buildingNumber.trim().isEmpty()) {
+            buildingNumber = null;
+        }
         Session session = sessionManager.getSessionFactory().openSession();
         try {
 
             AccessAddressQuery query = new AccessAddressQuery();
             setQueryNow(query);
             setQueryNoLimit(query);
-            query.setMunicipality(municipalityCode);
-            query.setRoad(roadCode);
 
-            if (houseNumber != null && !houseNumber.trim().isEmpty()) {
+            StringJoiner where = new StringJoiner(" AND ");
+
+            if (roadUUID != null) {
+                query.setRoadUUID(roadUUID);
+                where.add("road_identification.uuid IN :road");
+            }
+            if (houseNumber != null) {
                 houseNumber = houseNumber.trim();
                 query.addHouseNumber(houseNumber);
-                query.addHouseNumber("0"+houseNumber);
-                query.addHouseNumber("00"+houseNumber);
+                query.addHouseNumber("0" + houseNumber);
+                query.addHouseNumber("00" + houseNumber);
+                where.add("houseNumber.number IN :hnr");
             }
-            if (buildingNumber != null && !buildingNumber.trim().isEmpty()) {
+            if (buildingNumber != null) {
                 query.addBnr(buildingNumber.trim());
+                where.add("access.bnr IN :bnr");
             }
-            // We only get bnumber references here, and must look them up in the bnumber table
-            //List<AccessAddressEntity> addressEntities = QueryManager.getAllEntities(session, query, AccessAddressEntity.class);
 
             org.hibernate.query.Query databaseQuery = session.createQuery(
-                    "SELECT DISTINCT unit, access FROM "+UnitAddressEntity.class.getCanonicalName()+" unit "+
-                       "JOIN "+AccessAddressEntity.class.getCanonicalName()+" access ON unit.accessAddress = access.identification "+
-
-                            "JOIN access.houseNumber houseNumber "+
-
-                       "WHERE access.bnr = :bnr "+
-                            "AND houseNumber.number IN :hnr"
+                    "SELECT DISTINCT unit, access FROM " + UnitAddressEntity.class.getCanonicalName() + " unit " +
+                       "JOIN " + AccessAddressEntity.class.getCanonicalName() + " access ON unit.accessAddress = access.identification " +
+                       "JOIN access.road access_road " +
+                       "JOIN access_road.reference road_identification " +
+                       (houseNumber != null ? "JOIN access.houseNumber houseNumber " : "") +
+                       "WHERE " + where.toString()
             );
-            //databaseQuery.setParameter("bnr", "B-0000");
-            databaseQuery.setParameterList("hnr", query.getHouseNumber());
+
+            if (roadUUID != null) {
+                databaseQuery.setParameterList("road", query.getRoadUUID());
+            }
+            if (houseNumber != null) {
+                databaseQuery.setParameterList("hnr", query.getHouseNumber());
+            }
+            if (buildingNumber != null) {
+                databaseQuery.setParameterList("bnr", query.getBnr());
+            }
             databaseQuery.setFlushMode(FlushModeType.COMMIT);
+
 
             ArrayNode results = objectMapper.createArrayNode();
 
@@ -376,7 +376,9 @@ public class AdresseService {
                 for (AccessAddressHouseNumberRecord houseNumberRecord : accessAddressEntity.getHouseNumber()) {
                     addressNode.put(OUTPUT_HOUSENUMBER, houseNumberRecord.getNumber());
                 }
-                //addressNode.set(OUTPUT_BCALLNAME, null);
+                for (AccessAddressBlockNameRecord blockname : accessAddressEntity.getBlockName()) {
+                    addressNode.put(OUTPUT_BCALLNAME, blockname.getName());
+                }
 
                 addressNode.put(OUTPUT_BNUMBER, accessAddressEntity.getBnr());
 
@@ -394,9 +396,12 @@ public class AdresseService {
             }
 
             return results.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             session.close();
         }
+        return null;
     }
 
     /**
@@ -449,7 +454,6 @@ public class AdresseService {
 
                     "WHERE unit_identification.uuid = :uuid "
             );
-            //databaseQuery.setParameter("bnr", "B-0000");
             databaseQuery.setParameter("uuid", unitAddressUUID);
             databaseQuery.setFlushMode(FlushModeType.COMMIT);
 
@@ -460,12 +464,6 @@ public class AdresseService {
                 AccessAddressEntity accessAddress = results.length > 1 ? (AccessAddressEntity) results[1] : null;
                 RoadEntity road = results.length > 2 ? (RoadEntity) results[2] : null;
                 LocalityEntity locality = results.length > 3 ? (LocalityEntity) results[3] : null;
-
-
-                System.out.println("unitAddress: "+unitAddress);
-                System.out.println("accessAddress: "+accessAddress);
-                System.out.println("road: "+road);
-                System.out.println("locality: "+locality);
 
                 addressNode.put(OUTPUT_UUID, unitAddress.getUUID().toString());
                 addressNode.set(OUTPUT_HOUSENUMBER, null);
@@ -526,106 +524,6 @@ public class AdresseService {
     }
 
 
-    /*
-    private static HashMap<Identification, BNumberEntity> getBNumbers(Session session, Collection<AddressEntity> addressEntities) {
-        HashSet<Identification> bNumbers = new HashSet<>();
-        for (AddressEntity addressEntity : addressEntities) {
-            Set<DataItem> addressDataItems = addressEntity.getCurrent();
-            for (DataItem dataItem : addressDataItems) {
-                AddressData data = (AddressData) dataItem;
-                if (data.getbNumber() != null) {
-                    bNumbers.add(data.getbNumber());
-                }
-            }
-        }
-        return getBNumbers(session, bNumbers);
-    }
-
-    private static HashMap<Identification, BNumberEntity> getBNumbers(Session session, HashSet<Identification> identifications) {
-        HashMap<Identification, BNumberEntity> bNumberMap = new HashMap<>();
-        if (!identifications.isEmpty()) {
-            org.hibernate.query.Query<Object[]> bQuery = session.createQuery(
-                    "SELECT DISTINCT e, e.identification FROM " + BNumberEntity.class.getCanonicalName() + " e " +
-                            "WHERE e.identification in (:identifications)"
-            );
-            bQuery.setParameterList("identifications", identifications);
-
-            for (Object[] resultItem : bQuery.getResultList()) {
-                BNumberEntity bNumberEntity = (BNumberEntity) resultItem[0];
-                Identification identification = (Identification) resultItem[1];
-                bNumberMap.put(identification, bNumberEntity);
-            }
-        }
-        return bNumberMap;
-    }
-
-
-
-    private static HashMap<Identification, RoadEntity> getRoads(Session session, Collection<AddressEntity> addressEntities) {
-        HashSet<Identification> identifications = new HashSet<>();
-        for (AddressEntity addressEntity : addressEntities) {
-            Set<DataItem> addressDataItems = addressEntity.getCurrent();
-            for (DataItem dataItem : addressDataItems) {
-                AddressData data = (AddressData) dataItem;
-                if (data.getRoad() != null) {
-                    identifications.add(data.getRoad());
-                }
-            }
-        }
-        return getRoads(session, identifications);
-    }
-
-    private static HashMap<Identification, RoadEntity> getRoads(Session session, HashSet<Identification> identifications) {
-        HashMap<Identification, RoadEntity> roadMap = new HashMap<>();
-        if (!identifications.isEmpty()) {
-            org.hibernate.query.Query<Object[]> bQuery = session.createQuery(
-                    "SELECT DISTINCT e, e.identification FROM " + RoadEntity.class.getCanonicalName() + " e " +
-                            "WHERE e.identification in (:identifications)"
-            );
-            bQuery.setParameterList("identifications", identifications);
-
-            for (Object[] resultItem : bQuery.getResultList()) {
-                RoadEntity roadEntity = (RoadEntity) resultItem[0];
-                Identification identification = (Identification) resultItem[1];
-                roadMap.put(identification, roadEntity);
-            }
-        }
-        return roadMap;
-    }
-
-    private static HashMap<Identification, LocalityEntity> getLocalities(Session session, Collection<RoadEntity> roadEntities) {
-        HashSet<Identification> identifications = new HashSet<>();
-        for (RoadEntity roadEntity : roadEntities) {
-            Set<DataItem> roadDataItems = roadEntity.getCurrent();
-            for (DataItem dataItem : roadDataItems) {
-                RoadData data = (RoadData) dataItem;
-                if (data.getLocation() != null) {
-                    identifications.add(data.getLocation());
-                }
-            }
-        }
-        return getLocalities(session, identifications);
-    }
-
-    private static HashMap<Identification, LocalityEntity> getLocalities(Session session, HashSet<Identification> identifications) {
-        HashMap<Identification, LocalityEntity> localityMap = new HashMap<>();
-        if (!identifications.isEmpty()) {
-            org.hibernate.query.Query<Object[]> bQuery = session.createQuery(
-                    "SELECT DISTINCT e, e.identification FROM " + LocalityEntity.class.getCanonicalName() + " e " +
-                            "WHERE e.identification in (:identifications)"
-            );
-            bQuery.setParameterList("identifications", identifications);
-
-            for (Object[] resultItem : bQuery.getResultList()) {
-                LocalityEntity localityEntity = (LocalityEntity) resultItem[0];
-                Identification identification = (Identification) resultItem[1];
-                localityMap.put(identification, localityEntity);
-            }
-        }
-        return localityMap;
-    }
-
-*/
 
     private static void checkParameterExistence(String name, String value) throws MissingParameterException {
         if (value == null || value.trim().isEmpty()) {

@@ -1,5 +1,6 @@
 package dk.magenta.datafordeler.geo.data.unitaddress;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import dk.magenta.datafordeler.core.database.DatabaseEntry;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
@@ -30,7 +31,9 @@ public class UnitAddressFloorRecord extends GeoMonotemporalRecord<UnitAddressEnt
 
 
     public static final String DB_FIELD_FLOOR = "floor";
+    public static final String IO_FIELD_FLOOR = "etage";
     @Column(name = DB_FIELD_FLOOR)
+    @JsonProperty(value = IO_FIELD_FLOOR)
     private String floor;
 
     public String getFloor() {

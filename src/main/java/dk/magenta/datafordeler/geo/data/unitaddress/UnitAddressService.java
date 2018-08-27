@@ -36,17 +36,20 @@ public class UnitAddressService extends FapiBaseService<UnitAddressEntity, UnitA
     @Autowired
     private MonitorService monitorService;
 
+    @Autowired
+    private UnitAddressOutputWrapper unitAddressOutputWrapper;
+
     @PostConstruct
     public void init() {
         this.monitorService.addAccessCheckPoint("/geo/unitaddress/1/rest/1234");
         this.monitorService.addAccessCheckPoint("/geo/unitaddress/1/rest/search?bnr=1234");
 
-        //this.setOutputWrapper(this.personRecordOutputWrapper);
+        this.setOutputWrapper(this.unitAddressOutputWrapper);
     }
 
     @Override
     protected OutputWrapper.Mode getDefaultMode() {
-        return OutputWrapper.Mode.LEGACY;
+        return OutputWrapper.Mode.DRV;
     }
 
     @Override
