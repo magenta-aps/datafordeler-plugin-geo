@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.stream.Stream;
 
-@RestController("MunicipalityService")
+@RestController("GeoMunicipalityService")
 @RequestMapping("/geo/municipality/1/rest")
 public class MunicipalityService extends FapiBaseService<MunicipalityEntity, MunicipalityQuery> {
 

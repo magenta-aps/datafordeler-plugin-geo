@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
-@Component
+@Component("GeoRoadEntityManager")
 public class RoadEntityManager extends GeoEntityManager<RoadEntity, RoadRawData> {
 
     @Autowired

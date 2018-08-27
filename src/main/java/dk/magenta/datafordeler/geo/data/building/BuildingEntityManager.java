@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
-@Component
+@Component("GeoBuildingEntityManager")
 public class BuildingEntityManager extends GeoEntityManager<BuildingEntity, BuildingRawData> {
 
     @Autowired

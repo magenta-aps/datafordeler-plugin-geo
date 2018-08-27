@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
-@Component
+@Component("GeoLocalityEntityManager")
 public class LocalityEntityManager extends GeoEntityManager<LocalityEntity, LocalityRawData> {
 
     @Autowired

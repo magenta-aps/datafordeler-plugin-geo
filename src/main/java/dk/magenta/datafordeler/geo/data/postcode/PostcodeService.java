@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.stream.Stream;
 
-@RestController("PostcodeService")
+@RestController("GeoPostcodeService")
 @RequestMapping("/geo/postcode/1/rest")
 public class PostcodeService extends FapiBaseService<PostcodeEntity, PostcodeQuery> {
 

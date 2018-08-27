@@ -46,7 +46,7 @@ import java.util.List;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-@RestController
+@RestController("GeoAdresseService")
 @RequestMapping("/geo/adresse")
 public class AdresseService {
 

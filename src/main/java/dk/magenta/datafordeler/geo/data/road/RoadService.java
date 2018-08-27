@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.stream.Stream;
 
-@RestController("RoadService")
+@RestController("GeoRoadService")
 @RequestMapping("/geo/road/1/rest")
 public class RoadService extends FapiBaseService<RoadEntity, RoadQuery> {
 

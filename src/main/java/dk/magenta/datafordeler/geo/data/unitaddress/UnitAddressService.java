@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.stream.Stream;
 
-@RestController("UnitAddressService")
+@RestController("GeoUnitAddressService")
 @RequestMapping("/geo/unitaddress/1/rest")
 public class UnitAddressService extends FapiBaseService<UnitAddressEntity, UnitAddressQuery> {
 

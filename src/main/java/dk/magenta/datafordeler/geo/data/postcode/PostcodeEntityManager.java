@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
-@Component
+@Component("GeoPostcodeEntityManager")
 public class PostcodeEntityManager extends GeoEntityManager<PostcodeEntity, PostcodeRawData> {
 
     @Autowired

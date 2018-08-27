@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
-@Component
+@Component("GeoAccessAddressEntityManager")
 public class AccessAddressEntityManager extends GeoEntityManager<AccessAddressEntity, AccessAddressRawData> {
 
     @Autowired
