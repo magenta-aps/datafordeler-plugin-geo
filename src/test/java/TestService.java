@@ -36,7 +36,7 @@ public class TestService extends GeoTest {
     @Test
     public void testLocality() throws DataFordelerException, IOException {
         this.load(localityEntityManager, "fixtures/Lokalitet.json");
-        ResponseEntity<String> response = this.lookup("/adresse/lokalitet?kommune=955");
+        ResponseEntity<String> response = this.lookup("/geo/adresse/lokalitet?kommune=955");
         Assert.assertEquals(200, response.getStatusCode().value());
         String localities = response.getBody();
         System.out.println(localities);
@@ -47,7 +47,7 @@ public class TestService extends GeoTest {
     public void testRoad() throws DataFordelerException, IOException {
         this.load(localityEntityManager, "fixtures/Lokalitet.json");
         this.load(roadEntityManager,"fixtures/Vejmidte.json");
-        ResponseEntity<String> response = this.lookup("/adresse/vej?lokalitet=16276a1f-d78b-46f8-b075-0cc8226711a9");
+        ResponseEntity<String> response = this.lookup("/geo/adresse/vej?lokalitet=16276a1f-d78b-46f8-b075-0cc8226711a9");
         Assert.assertEquals(200, response.getStatusCode().value());
         String roads = response.getBody();
         System.out.println(roads);
@@ -58,7 +58,7 @@ public class TestService extends GeoTest {
     public void testAccessAddress() throws DataFordelerException, IOException {
         this.load(roadEntityManager, "fixtures/Vejmidte.json");
         this.load(accessAddressEntityManager, "fixtures/Adgangsadresse.json");
-        ResponseEntity<String> response = this.lookup("/adresse/hus?vej=F45872EF-8D59-4465-BC7B-E81E906F2662");
+        ResponseEntity<String> response = this.lookup("/geo/adresse/hus?vej=F45872EF-8D59-4465-BC7B-E81E906F2662");
         Assert.assertEquals(200, response.getStatusCode().value());
         String buildings = response.getBody();
         System.out.println(buildings);
@@ -69,9 +69,9 @@ public class TestService extends GeoTest {
         this.load(roadEntityManager, "fixtures/Vejmidte.json");
         this.load(accessAddressEntityManager, "fixtures/Adgangsadresse.json");
         this.load(unitAddressEntityManager, "fixtures/Enhedsadresse.json");
-        ResponseEntity<String> response = this.lookup("/adresse/adresse?b_nummer=B-1234");
+        ResponseEntity<String> response = this.lookup("/geo/adresse/adresse?b_nummer=B-1234");
         Assert.assertEquals(400, response.getStatusCode().value());
-        response = this.lookup("/adresse/adresse?vej=F45872EF-8D59-4465-BC7B-E81E906F2662&husnr=5");
+        response = this.lookup("/geo/adresse/adresse?vej=F45872EF-8D59-4465-BC7B-E81E906F2662&husnr=5");
         Assert.assertEquals(200, response.getStatusCode().value());
         String addresses = response.getBody();
         System.out.println(addresses);
@@ -83,7 +83,7 @@ public class TestService extends GeoTest {
         this.load(roadEntityManager,"fixtures/Vejmidte.json");
         this.load(accessAddressEntityManager, "fixtures/Adgangsadresse.json");
         this.load(unitAddressEntityManager, "fixtures/Enhedsadresse.json");
-        ResponseEntity<String> response = this.lookup("/adresse/adresseoplysninger?adresse=FF2F9C69-40C1-4377-A630-9C0F743FD2D1");
+        ResponseEntity<String> response = this.lookup("/geo/adresse/adresseoplysninger?adresse=FF2F9C69-40C1-4377-A630-9C0F743FD2D1");
         Assert.assertEquals(200, response.getStatusCode().value());
         String addresses = response.getBody();
         System.out.println(addresses);

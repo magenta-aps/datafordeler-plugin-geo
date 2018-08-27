@@ -47,13 +47,8 @@ import java.util.StringJoiner;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/adresse")
+@RequestMapping("/geo/adresse")
 public class AdresseService {
-
-    @RequestMapping("/foo")
-    public String foo(HttpServletRequest request) {
-        return "";
-    }
 
     @Autowired
     SessionManager sessionManager;
