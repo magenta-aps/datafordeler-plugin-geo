@@ -41,8 +41,8 @@ public class UnitAddressService extends FapiBaseService<UnitAddressEntity, UnitA
 
     @PostConstruct
     public void init() {
-        this.monitorService.addAccessCheckPoint("/geo/unitaddress/1/rest/1234");
-        this.monitorService.addAccessCheckPoint("/geo/unitaddress/1/rest/search?bnr=1234");
+        //this.monitorService.addAccessCheckPoint("/geo/unitaddress/1/rest/1234");
+        //this.monitorService.addAccessCheckPoint("/geo/unitaddress/1/rest/search?bnr=1234");
 
         this.setOutputWrapper(this.unitAddressOutputWrapper);
     }
