@@ -1,6 +1,5 @@
 import dk.magenta.datafordeler.core.Application;
 import dk.magenta.datafordeler.core.exception.DataFordelerException;
-import dk.magenta.datafordeler.geo.AdresseService;
 import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressEntityManager;
 import dk.magenta.datafordeler.geo.data.locality.LocalityEntityManager;
 import dk.magenta.datafordeler.geo.data.road.RoadEntityManager;
@@ -15,7 +14,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
-import java.util.UUID;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = Application.class)
@@ -34,9 +32,6 @@ public class TestService extends GeoTest {
     @Autowired
     private UnitAddressEntityManager unitAddressEntityManager;
 
-    @Autowired
-    private AdresseService adresseService;
-
 
     @Test
     public void testLocality() throws DataFordelerException, IOException {
@@ -50,8 +45,9 @@ public class TestService extends GeoTest {
 
     @Test
     public void testRoad() throws DataFordelerException, IOException {
+        this.load(localityEntityManager, "fixtures/Lokalitet.json");
         this.load(roadEntityManager,"fixtures/Vejmidte.json");
-        ResponseEntity<String> response = this.lookup("/adresse/vej?lokalitet=1234");
+        ResponseEntity<String> response = this.lookup("/adresse/vej?lokalitet=16276a1f-d78b-46f8-b075-0cc8226711a9");
         Assert.assertEquals(200, response.getStatusCode().value());
         String roads = response.getBody();
         System.out.println(roads);
@@ -60,6 +56,7 @@ public class TestService extends GeoTest {
 
     @Test
     public void testAccessAddress() throws DataFordelerException, IOException {
+        this.load(roadEntityManager, "fixtures/Vejmidte.json");
         this.load(accessAddressEntityManager, "fixtures/Adgangsadresse.json");
         ResponseEntity<String> response = this.lookup("/adresse/hus?vej=F45872EF-8D59-4465-BC7B-E81E906F2662");
         Assert.assertEquals(200, response.getStatusCode().value());
@@ -69,9 +66,12 @@ public class TestService extends GeoTest {
 
     @Test
     public void testUnitAddress() throws DataFordelerException, IOException {
+        this.load(roadEntityManager, "fixtures/Vejmidte.json");
         this.load(accessAddressEntityManager, "fixtures/Adgangsadresse.json");
         this.load(unitAddressEntityManager, "fixtures/Enhedsadresse.json");
-        ResponseEntity<String> response = this.lookup("/adresse/adresse?bnr=B-1234");
+        ResponseEntity<String> response = this.lookup("/adresse/adresse?b_nummer=B-1234");
+        Assert.assertEquals(400, response.getStatusCode().value());
+        response = this.lookup("/adresse/adresse?vej=F45872EF-8D59-4465-BC7B-E81E906F2662&husnr=5");
         Assert.assertEquals(200, response.getStatusCode().value());
         String addresses = response.getBody();
         System.out.println(addresses);

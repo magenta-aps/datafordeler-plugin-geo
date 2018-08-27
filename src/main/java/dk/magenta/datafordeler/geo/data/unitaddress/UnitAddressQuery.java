@@ -1,6 +1,7 @@
 package dk.magenta.datafordeler.geo.data.unitaddress;
 
 import dk.magenta.datafordeler.core.database.BaseLookupDefinition;
+import dk.magenta.datafordeler.core.exception.InvalidClientInputException;
 import dk.magenta.datafordeler.core.fapi.ParameterMap;
 import dk.magenta.datafordeler.core.fapi.QueryField;
 import dk.magenta.datafordeler.geo.data.SumiffiikQuery;
@@ -155,7 +156,7 @@ public class UnitAddressQuery extends SumiffiikQuery<UnitAddressEntity> {
     }
 
     @Override
-    public void setFromParameters(ParameterMap parameters) {
+    public void setFromParameters(ParameterMap parameters) throws InvalidClientInputException {
         super.setFromParameters(parameters);
         //this.setBnr(parameters.getFirst(BNR));
         //this.setRoad(parameters.getFirst(ROAD));

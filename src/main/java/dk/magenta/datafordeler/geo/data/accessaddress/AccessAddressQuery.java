@@ -2,14 +2,13 @@ package dk.magenta.datafordeler.geo.data.accessaddress;
 
 import dk.magenta.datafordeler.core.database.BaseLookupDefinition;
 import dk.magenta.datafordeler.core.database.Identification;
+import dk.magenta.datafordeler.core.exception.InvalidClientInputException;
 import dk.magenta.datafordeler.core.fapi.ParameterMap;
 import dk.magenta.datafordeler.core.fapi.QueryField;
 import dk.magenta.datafordeler.geo.data.SumiffiikQuery;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by lars on 19-05-17.
@@ -37,7 +36,7 @@ public class AccessAddressQuery extends SumiffiikQuery<AccessAddressEntity> {
     public static final String ROAD_UUID = AccessAddressEntity.IO_FIELD_ROAD + "_uuid";
 
     @QueryField(type = QueryField.FieldType.STRING, queryName = ROAD_UUID)
-    private List<String> roadUUID = new ArrayList<>();
+    private List<UUID> roadUUID = new ArrayList<>();
 
 
 
@@ -112,16 +111,16 @@ public class AccessAddressQuery extends SumiffiikQuery<AccessAddressEntity> {
 
 
 
-    public List<String> getRoadUUID() {
-        return road;
+    public List<UUID> getRoadUUID() {
+        return roadUUID;
     }
 
-    public void setRoadUUID(String roadUUID) {
+    public void setRoadUUID(UUID roadUUID) {
         this.roadUUID.clear();
-        this.addRoad(roadUUID);
+        this.addRoadUUID(roadUUID);
     }
 
-    public void addRoadUUID(String roadUUID) {
+    public void addRoadUUID(UUID roadUUID) {
         if (roadUUID != null) {
             this.roadUUID.add(roadUUID);
             this.increaseDataParamCount();
@@ -156,6 +155,8 @@ public class AccessAddressQuery extends SumiffiikQuery<AccessAddressEntity> {
         HashMap<String, Object> map = new HashMap<>(super.getSearchParameters());
         map.put(BNR, this.bnr);
         map.put(ROAD, this.road);
+        map.put(ROAD_UUID, this.roadUUID);
+        map.put(MUNICIPALITY, this.municipality);
         return map;
     }
 
@@ -172,7 +173,7 @@ public class AccessAddressQuery extends SumiffiikQuery<AccessAddressEntity> {
             lookupDefinition.put(AccessAddressEntity.DB_FIELD_ROAD + BaseLookupDefinition.separator + AccessAddressRoadRecord.DB_FIELD_ROAD_CODE, this.road, Integer.class);
         }
         if (this.roadUUID != null && !this.roadUUID.isEmpty()) {
-            lookupDefinition.put(AccessAddressEntity.DB_FIELD_ROAD + BaseLookupDefinition.separator + AccessAddressRoadRecord.DB_FIELD_ROAD_REFERENCE + BaseLookupDefinition.separator + Identification.DB_FIELD_UUID, this.road, Integer.class);
+            lookupDefinition.put(AccessAddressEntity.DB_FIELD_ROAD + BaseLookupDefinition.separator + AccessAddressRoadRecord.DB_FIELD_ROAD_REFERENCE + BaseLookupDefinition.separator + Identification.DB_FIELD_UUID, this.roadUUID, UUID.class);
         }
         if (this.municipality != null && !this.municipality.isEmpty()) {
             lookupDefinition.put(AccessAddressEntity.DB_FIELD_ROAD + BaseLookupDefinition.separator + AccessAddressRoadRecord.DB_FIELD_MUNICIPALITY_CODE, this.municipality, Integer.class);
@@ -181,11 +182,18 @@ public class AccessAddressQuery extends SumiffiikQuery<AccessAddressEntity> {
     }
 
     @Override
-    public void setFromParameters(ParameterMap parameters) {
+    public void setFromParameters(ParameterMap parameters) throws InvalidClientInputException {
         super.setFromParameters(parameters);
         this.setBnr(parameters.getFirst(BNR));
         this.setRoad(parameters.getFirst(ROAD));
-        this.setRoadUUID(parameters.getFirst(ROAD_UUID));
+        String roadUUID = parameters.getFirst(ROAD_UUID);
+        if (roadUUID != null) {
+            try {
+                this.setRoadUUID(UUID.fromString(roadUUID));
+            } catch (IllegalArgumentException e) {
+                throw new InvalidClientInputException("Parameter " + ROAD_UUID + " must be a uuid", e);
+            }
+        }
     }
 
 }

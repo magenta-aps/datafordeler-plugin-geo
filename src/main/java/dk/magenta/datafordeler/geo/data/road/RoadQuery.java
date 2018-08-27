@@ -1,14 +1,13 @@
 package dk.magenta.datafordeler.geo.data.road;
 
 import dk.magenta.datafordeler.core.database.BaseLookupDefinition;
+import dk.magenta.datafordeler.core.database.Identification;
+import dk.magenta.datafordeler.core.exception.InvalidClientInputException;
 import dk.magenta.datafordeler.core.fapi.ParameterMap;
 import dk.magenta.datafordeler.core.fapi.QueryField;
 import dk.magenta.datafordeler.geo.data.SumiffiikQuery;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by lars on 19-05-17.
@@ -32,6 +31,9 @@ public class RoadQuery extends SumiffiikQuery<RoadEntity> {
 
     @QueryField(type = QueryField.FieldType.STRING, queryName = LOCALITY)
     private List<String> locality = new ArrayList<>();
+
+    @QueryField(type = QueryField.FieldType.STRING, queryName = LOCALITY)
+    private List<UUID> localityUUID = new ArrayList<>();
 
     @QueryField(type = QueryField.FieldType.STRING, queryName = MUNICIPALITY)
     private List<String> municipality = new ArrayList<>();
@@ -102,6 +104,24 @@ public class RoadQuery extends SumiffiikQuery<RoadEntity> {
         }
     }
 
+
+
+    public List<UUID> getLocalityUUID() {
+        return localityUUID;
+    }
+
+    public void setLocalityUUID(UUID localityUUID) {
+        this.localityUUID.clear();
+        this.addLocalityUUID(localityUUID);
+    }
+
+    public void addLocalityUUID(UUID localityUUID) {
+        if (localityUUID != null) {
+            this.localityUUID.add(localityUUID);
+            this.increaseDataParamCount();
+        }
+    }
+
     public List<String> getMunicipality() {
         return municipality;
     }
@@ -149,18 +169,18 @@ public class RoadQuery extends SumiffiikQuery<RoadEntity> {
                     String.class
             );
         }
-        /*if (this.locality != null && !this.locality.isEmpty()) {
-            lookupDefinition.put(
-                    RoadEntity.DB_FIELD_LOCALITY + BaseLookupDefinition.separator + RoadLocalityRecord.DB_FIELD_CODE,
-                    this.locality,
-                    String.class
-            );
-        }*/
         if (this.locality != null && !this.locality.isEmpty()) {
             lookupDefinition.put(
                     RoadEntity.DB_FIELD_LOCALITY + BaseLookupDefinition.separator + RoadLocalityRecord.DB_FIELD_CODE,
                     this.locality,
                     String.class
+            );
+        }
+        if (this.localityUUID != null && !this.localityUUID.isEmpty()) {
+            lookupDefinition.put(
+                    RoadEntity.DB_FIELD_LOCALITY + BaseLookupDefinition.separator + RoadLocalityRecord.DB_FIELD_REFERENCE + BaseLookupDefinition.separator + Identification.DB_FIELD_UUID,
+                    this.localityUUID,
+                    UUID.class
             );
         }
         if (this.municipality != null && !this.municipality.isEmpty()) {
@@ -174,7 +194,7 @@ public class RoadQuery extends SumiffiikQuery<RoadEntity> {
     }
 
     @Override
-    public void setFromParameters(ParameterMap parameters) {
+    public void setFromParameters(ParameterMap parameters) throws InvalidClientInputException {
         super.setFromParameters(parameters);
         this.setCode(parameters.getFirst(CODE));
         this.setName(parameters.getFirst(NAME));

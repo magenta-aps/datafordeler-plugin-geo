@@ -39,6 +39,7 @@ public class LocalityReferenceRecord<E extends GeoEntity> extends GeoMonotempora
     }
 
 
+    public static final String DB_FIELD_REFERENCE = "reference";
     @ManyToOne
     @JsonIgnore
     private Identification reference;
