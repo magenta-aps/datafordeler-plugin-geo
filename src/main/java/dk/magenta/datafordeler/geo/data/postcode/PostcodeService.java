@@ -41,8 +41,8 @@ public class PostcodeService extends FapiBaseService<PostcodeEntity, PostcodeQue
 
     @PostConstruct
     public void init() {
-        this.monitorService.addAccessCheckPoint("/geo/postcode/1/rest/1234");
-        this.monitorService.addAccessCheckPoint("/geo/postcode/1/rest/search?kode=1234");
+        //this.monitorService.addAccessCheckPoint("/geo/postcode/1/rest/1234");
+        //this.monitorService.addAccessCheckPoint("/geo/postcode/1/rest/search?kode=1234");
 
         this.setOutputWrapper(this.postcodeOutputWrapper);
     }

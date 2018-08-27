@@ -41,15 +41,15 @@ public class RoadService extends FapiBaseService<RoadEntity, RoadQuery> {
 
     @PostConstruct
     public void init() {
-        this.monitorService.addAccessCheckPoint("/geo/road/1/rest/1234");
-        this.monitorService.addAccessCheckPoint("/geo/road/1/rest/search?kode=1234");
+        //this.monitorService.addAccessCheckPoint("/geo/road/1/rest/1234");
+        //this.monitorService.addAccessCheckPoint("/geo/road/1/rest/search?kode=1234");
 
         this.setOutputWrapper(this.roadOutputWrapper);
     }
 
     @Override
     protected OutputWrapper.Mode getDefaultMode() {
-        return OutputWrapper.Mode.RVD;
+        return OutputWrapper.Mode.DRV;
     }
 
     @Override

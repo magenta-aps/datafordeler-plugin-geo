@@ -41,8 +41,8 @@ public class LocalityService extends FapiBaseService<LocalityEntity, LocalityQue
 
     @PostConstruct
     public void init() {
-        this.monitorService.addAccessCheckPoint("/geo/locality/1/rest/1234");
-        this.monitorService.addAccessCheckPoint("/geo/locality/1/rest/search?kode=1234");
+        //this.monitorService.addAccessCheckPoint("/geo/locality/1/rest/1234");
+        //this.monitorService.addAccessCheckPoint("/geo/locality/1/rest/search?kode=1234");
 
         this.setOutputWrapper(this.localityOutputWrapper);
     }

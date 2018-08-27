@@ -42,8 +42,8 @@ public class BuildingService extends FapiBaseService<BuildingEntity, PostcodeQue
 
     @PostConstruct
     public void init() {
-        this.monitorService.addAccessCheckPoint("/geo/building/1/rest/1234");
-        this.monitorService.addAccessCheckPoint("/geo/building/1/rest/search?bnr=1234");
+        //this.monitorService.addAccessCheckPoint("/geo/building/1/rest/1234");
+        //this.monitorService.addAccessCheckPoint("/geo/building/1/rest/search?bnr=1234");
 
         this.setOutputWrapper(this.buildingOutputWrapper);
     }
