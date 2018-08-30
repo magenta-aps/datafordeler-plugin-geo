@@ -7,6 +7,7 @@ import dk.magenta.datafordeler.geo.data.common.LocalityReferenceRecord;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
+import java.util.UUID;
 
 @Entity
 @Table(name = GeoPlugin.DEBUG_TABLE_PREFIX + BuildingLocalityRecord.TABLE_NAME, indexes = {
@@ -30,4 +31,7 @@ public class BuildingLocalityRecord extends LocalityReferenceRecord<BuildingEnti
         super(code);
     }
 
+    public BuildingLocalityRecord(UUID uuid) {
+        super(uuid);
+    }
 }

@@ -139,7 +139,7 @@ public class UnitAddressEntity extends SumiffiikEntity implements IdentifiedEnti
     }
 
 
-
+/*
     public static final String DB_FIELD_IMPORT = "importStatus";
     public static final String IO_FIELD_IMPORT = "import";
     @OneToMany(mappedBy = UnitAddressImportRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
@@ -152,7 +152,7 @@ public class UnitAddressEntity extends SumiffiikEntity implements IdentifiedEnti
 
     public Set<UnitAddressImportRecord> getImportStatus() {
         return this.importStatus;
-    }
+    }*/
 
 
 
@@ -194,9 +194,9 @@ public class UnitAddressEntity extends SumiffiikEntity implements IdentifiedEnti
         if (record instanceof UnitAddressStatusRecord) {
             added = addItem(this.status, record);
         }
-        if (record instanceof UnitAddressImportRecord) {
+        /*if (record instanceof UnitAddressImportRecord) {
             added = addItem(this.importStatus, record);
-        }
+        }*/
         if (record instanceof UnitAddressSourceRecord) {
             added = addItem(this.source, record);
         }
@@ -217,7 +217,7 @@ public class UnitAddressEntity extends SumiffiikEntity implements IdentifiedEnti
         records.add(this.floor);
         records.add(this.number);
         records.add(this.usage);
-        records.add(this.importStatus);
+        //records.add(this.importStatus);
         records.add(this.source);
         records.add(this.status);
         return records;

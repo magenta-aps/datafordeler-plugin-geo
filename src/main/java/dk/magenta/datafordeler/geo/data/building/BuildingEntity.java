@@ -81,7 +81,7 @@ public class BuildingEntity extends SumiffiikEntity implements IdentifiedEntity 
     }
 
 
-
+/*
     public static final String DB_FIELD_USAGE = "usage";
     public static final String IO_FIELD_USAGE = "anvendelse";
     @OneToMany(mappedBy = BuildingUsageRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
@@ -95,7 +95,7 @@ public class BuildingEntity extends SumiffiikEntity implements IdentifiedEntity 
     public Set<BuildingUsageRecord> getUsage() {
         return this.usage;
     }
-
+*/
 
 
 
@@ -140,9 +140,9 @@ public class BuildingEntity extends SumiffiikEntity implements IdentifiedEntity 
 
     public void addMonotemporalRecord(GeoMonotemporalRecord record) {
         boolean added = false;
-        if (record instanceof BuildingUsageRecord) {
+        /*if (record instanceof BuildingUsageRecord) {
             added = addItem(this.usage, record);
-        }
+        }*/
         if (record instanceof BuildingLocalityRecord) {
             added = addItem(this.locality, record);
         }
@@ -158,7 +158,7 @@ public class BuildingEntity extends SumiffiikEntity implements IdentifiedEntity 
     public Set<Set<? extends GeoMonotemporalRecord>> getAllRecords() {
         HashSet<Set<? extends GeoMonotemporalRecord>> records = new HashSet<>();
         records.add(this.locality);
-        records.add(this.usage);
+        //records.add(this.usage);
         records.add(this.shape);
         return records;
     }

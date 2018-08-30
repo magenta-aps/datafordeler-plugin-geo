@@ -22,11 +22,11 @@ public class BuildingRawData extends SumiffiikRawData {
         @JsonProperty("B_nummer")
         public String bnr;
 
-        @JsonProperty("Lokalitetskode")
+        @JsonProperty("location_id")
         public String locality;
 
-        @JsonProperty("Anvendelse")
-        public Integer usage;
+        //@JsonProperty("Anvendelse")
+        //public Integer usage;
     }
 
     @JsonProperty
@@ -36,12 +36,12 @@ public class BuildingRawData extends SumiffiikRawData {
     public List<GeoMonotemporalRecord> getMonotemporalRecords() {
         ArrayList<GeoMonotemporalRecord> records = new ArrayList<>();
 
-        records.add(
+        /*records.add(
                 new BuildingUsageRecord(this.properties.usage)
-        );
+        );*/
 
         records.add(
-                new BuildingLocalityRecord(this.properties.locality)
+                new BuildingLocalityRecord(SumiffiikRawData.getSumiffiikAsUUID(this.properties.locality))
         );
 
         MultiPolygon multiPolygon = null;

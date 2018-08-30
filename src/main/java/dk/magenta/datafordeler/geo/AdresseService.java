@@ -196,7 +196,8 @@ public class AdresseService {
                 roadNode.set(OUTPUT_NAME, null);
 
                 for (RoadNameRecord nameRecord : road.getName()) {
-                    roadNode.put(OUTPUT_ROADNAME, nameRecord.getName());
+                    roadNode.put(OUTPUT_NAME, nameRecord.getName());
+                    roadNode.put(OUTPUT_ALTNAME, nameRecord.getAddressingName());
                 }
 
                 for (RoadMunicipalityRecord municipality : road.getMunicipality()) {

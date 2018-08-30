@@ -16,7 +16,7 @@ public class UnitAddressOutputWrapper extends GeoOutputWrapper<UnitAddressEntity
         container.addMonotemporal("etage", item.getFloor());
         container.addMonotemporal("anvendelse", item.getUsage());
         container.addMonotemporal("nummer", item.getNumber());
-        container.addMonotemporal("import", item.getImportStatus());
+        //container.addMonotemporal("import", item.getImportStatus());
         container.addMonotemporal("kilde", item.getSource());
         container.addMonotemporal("status", item.getStatus());
     }
