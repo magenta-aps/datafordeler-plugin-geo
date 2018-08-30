@@ -12,7 +12,9 @@ import org.hibernate.Session;
 import javax.persistence.Column;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 import java.util.Objects;
+import java.util.UUID;
 
 @MappedSuperclass
 public class LocalityReferenceRecord<E extends GeoEntity> extends GeoMonotemporalRecord<E> {
@@ -22,6 +24,10 @@ public class LocalityReferenceRecord<E extends GeoEntity> extends GeoMonotempora
 
     public LocalityReferenceRecord(String code) {
         this.code = code;
+    }
+
+    public LocalityReferenceRecord(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public static final String DB_FIELD_CODE = "code";
@@ -39,6 +45,17 @@ public class LocalityReferenceRecord<E extends GeoEntity> extends GeoMonotempora
     }
 
 
+
+    @Transient
+    @JsonIgnore
+    private UUID uuid;
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
+
+
+
     public static final String DB_FIELD_REFERENCE = "reference";
     @ManyToOne
     @JsonIgnore
@@ -54,7 +71,14 @@ public class LocalityReferenceRecord<E extends GeoEntity> extends GeoMonotempora
             query.setCode(this.code);
             for (LocalityEntity locality : QueryManager.getAllEntities(session, query, LocalityEntity.class)) {
                 this.reference = locality.getIdentification();
-                return;
+                break;
+            }
+        }
+        if (this.reference == null && this.uuid != null) {
+            LocalityEntity localityEntity = QueryManager.getEntity(session, this.uuid, LocalityEntity.class);
+            if (localityEntity != null) {
+                this.reference = localityEntity.getIdentification();
+                this.code = localityEntity.getCode();
             }
         }
     }

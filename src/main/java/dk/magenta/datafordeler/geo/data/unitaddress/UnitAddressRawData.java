@@ -33,8 +33,8 @@ public class UnitAddressRawData extends SumiffiikRawData {
         @JsonProperty("Objektstatus")
         public Integer objectStatus;
 
-        @JsonProperty("ImporteretKomplette")
-        public String importComplete;
+        //@JsonProperty("ImporteretKomplette")
+        //public String importComplete;
 
         @JsonProperty("Datakilde")
         public Integer source;
@@ -66,9 +66,9 @@ public class UnitAddressRawData extends SumiffiikRawData {
         records.add(
                 new UnitAddressStatusRecord(this.properties.objectStatus)
         );
-        records.add(
+        /*records.add(
                 new UnitAddressImportRecord(this.properties.importComplete)
-        );
+        );*/
         records.add(
                 new UnitAddressSourceRecord(this.properties.source)
         );

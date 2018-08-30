@@ -1,6 +1,3 @@
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.NumericNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import dk.magenta.datafordeler.core.database.SessionManager;
 import dk.magenta.datafordeler.core.io.ImportMetadata;
 import dk.magenta.datafordeler.geo.data.GeoEntityManager;
@@ -14,10 +11,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Comparator;
+import java.io.InputStream;
 
 @Component
 public abstract class GeoTest {
@@ -35,8 +30,10 @@ public abstract class GeoTest {
         return this.restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
     }
 
-    protected void load(GeoEntityManager entityManager, String filename) throws IOException {
-        FileInputStream data = new FileInputStream(new File(filename));
+    //protected void load(GeoEntityManager entityManager, String filename) throws IOException {
+    //    FileInputStream data = new FileInputStream(new File(filename));
+    protected void load(GeoEntityManager entityManager, String resourceName) throws IOException {
+        InputStream data = GeoTest.class.getResourceAsStream(resourceName);
         Session session = sessionManager.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
         ImportMetadata importMetadata = new ImportMetadata();

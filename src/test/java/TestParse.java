@@ -83,25 +83,25 @@ public class TestParse extends GeoTest {
 
     @Test
     public void testMunicipality() throws DataFordelerException, IOException {
-        this.load(municipalityEntityManager, "fixtures/Kommune.json");
-        this.load(municipalityEntityManager, "fixtures/Kommune.json");
+        this.load(municipalityEntityManager, "/municipality.json");
+        this.load(municipalityEntityManager, "/municipality.json");
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {
-            MunicipalityEntity entity = QueryManager.getEntity(session, UUID.fromString("96C57A43-5761-45E6-83D0-F329A10B0AEC"), MunicipalityEntity.class);
+            MunicipalityEntity entity = QueryManager.getEntity(session, UUID.fromString("33960E68-2F0A-4CB0-BB3D-02D9F0B21304"), MunicipalityEntity.class);
             Assert.assertNotNull(entity);
-            Assert.assertEquals(955, entity.getCode());
+            Assert.assertEquals(956, entity.getCode());
             Assert.assertTrue(OffsetDateTime.parse("2018-07-19T11:11:05Z").isEqual(entity.getCreationDate()));
             Assert.assertEquals("GREENADMIN", entity.getCreator());
-            Assert.assertEquals(1, entity.getName().size());
             Assert.assertEquals(1, entity.getShape().size());
-            Assert.assertEquals("Kommune Kujalleq", entity.getName().iterator().next().getName());
-            Assert.assertTrue(OffsetDateTime.parse("2018-07-19T11:11:05Z").isEqual(entity.getName().iterator().next().getRegistrationFrom()));
+            Assert.assertEquals(1, entity.getName().size());
+            Assert.assertEquals("Kommuneqarfik Sermersooq", entity.getName().iterator().next().getName());
+            Assert.assertTrue(OffsetDateTime.parse("2018-08-07T12:33:50Z").isEqual(entity.getName().iterator().next().getRegistrationFrom()));
         } finally {
             session.close();
         }
 
-        ResponseEntity<String> response = this.uuidSearch("96C57A43-5761-45E6-83D0-F329A10B0AEC", "municipality");
+        ResponseEntity<String> response = this.uuidSearch("33960E68-2F0A-4CB0-BB3D-02D9F0B21304", "municipality");
         Assert.assertEquals(200, response.getStatusCode().value());
         System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(
                 objectMapper.readTree(response.getBody())
@@ -111,25 +111,28 @@ public class TestParse extends GeoTest {
 
     @Test
     public void testLocality() throws DataFordelerException, IOException {
-        this.load(localityEntityManager, "fixtures/Lokalitet.json");
-        this.load(localityEntityManager, "fixtures/Lokalitet.json");
+        this.load(localityEntityManager, "/locality.json");
+        this.load(localityEntityManager, "/locality.json");
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {
-            LocalityEntity entity = QueryManager.getEntity(session, UUID.fromString("32C1849A-6AB6-4358-B293-7D5EC69C3A19"), LocalityEntity.class);
+            LocalityEntity entity = QueryManager.getEntity(session, UUID.fromString("F0966470-F09F-474D-A820-E8A46ED6FCC7"), LocalityEntity.class);
             Assert.assertNotNull(entity);
-            Assert.assertEquals(null, entity.getCode());
-            Assert.assertTrue(OffsetDateTime.parse("2018-07-19T10:57:39Z").isEqual(entity.getCreationDate()));
+            Assert.assertEquals("0600", entity.getCode());
+            Assert.assertTrue(OffsetDateTime.parse("2018-08-09T12:00:04Z").isEqual(entity.getCreationDate()));
             Assert.assertEquals("GREENADMIN", entity.getCreator());
             Assert.assertEquals(1, entity.getName().size());
+            Assert.assertEquals("Nuuk", entity.getName().iterator().next().getName());
+            Assert.assertTrue(OffsetDateTime.parse("2018-08-09T13:11:42Z").isEqual(entity.getName().iterator().next().getRegistrationFrom()));
             Assert.assertEquals(1, entity.getShape().size());
-            Assert.assertEquals("Aadarujuup Aqquserna nord", entity.getName().iterator().next().getName());
-            Assert.assertTrue(OffsetDateTime.parse("2018-07-19T10:57:39Z").isEqual(entity.getName().iterator().next().getRegistrationFrom()));
+            Assert.assertEquals(1, entity.getMunicipality().size());
+            Assert.assertEquals(Integer.valueOf(956), entity.getMunicipality().iterator().next().getCode());
+            Assert.assertTrue(OffsetDateTime.parse("2018-08-09T13:11:42Z").isEqual(entity.getMunicipality().iterator().next().getRegistrationFrom()));
         } finally {
             session.close();
         }
 
-        ResponseEntity<String> response = this.uuidSearch("32C1849A-6AB6-4358-B293-7D5EC69C3A19", "locality");
+        ResponseEntity<String> response = this.uuidSearch("F0966470-F09F-474D-A820-E8A46ED6FCC7", "locality");
         Assert.assertEquals(200, response.getStatusCode().value());
         System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(
                 objectMapper.readTree(response.getBody())
@@ -139,25 +142,25 @@ public class TestParse extends GeoTest {
 
     @Test
     public void testRoad() throws DataFordelerException, IOException {
-        this.load(roadEntityManager, "fixtures/Vejmidte.json");
-        this.load(roadEntityManager, "fixtures/Vejmidte.json");
+        this.load(roadEntityManager, "/road.json");
+        this.load(roadEntityManager, "/road.json");
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {
-            RoadEntity entity = QueryManager.getEntity(session, UUID.fromString("DDF9075A-0B47-442B-BC0C-EFC296F67417"), RoadEntity.class);
+            RoadEntity entity = QueryManager.getEntity(session, UUID.fromString("E1274F15-9E2B-4B6E-8B7D-C8078DF65AA2"), RoadEntity.class);
             Assert.assertNotNull(entity);
-            Assert.assertEquals(0, entity.getCode());
-            Assert.assertTrue(OffsetDateTime.parse("2018-07-23T06:25:18Z").isEqual(entity.getCreationDate()));
-            Assert.assertEquals("GREENADMIN", entity.getCreator());
-            Assert.assertEquals(1, entity.getName().size());
+            Assert.assertEquals(254, entity.getCode());
+            Assert.assertTrue(OffsetDateTime.parse("2018-08-23T14:48:05Z").isEqual(entity.getCreationDate()));
+            Assert.assertEquals("IRKS", entity.getCreator());
             Assert.assertEquals(1, entity.getShape().size());
-            Assert.assertEquals("Pujooriarfik", entity.getName().iterator().next().getName());
-            Assert.assertTrue(OffsetDateTime.parse("2018-07-23T06:25:18Z").isEqual(entity.getName().iterator().next().getRegistrationFrom()));
+            Assert.assertEquals(1, entity.getName().size());
+            Assert.assertEquals("Qarsaalik", entity.getName().iterator().next().getName());
+            Assert.assertTrue(OffsetDateTime.parse("2018-08-23T14:48:05Z").isEqual(entity.getName().iterator().next().getRegistrationFrom()));
         } finally {
             session.close();
         }
 
-        ResponseEntity<String> response = this.uuidSearch("DDF9075A-0B47-442B-BC0C-EFC296F67417", "road");
+        ResponseEntity<String> response = this.uuidSearch("E1274F15-9E2B-4B6E-8B7D-C8078DF65AA2", "road");
         Assert.assertEquals(200, response.getStatusCode().value());
         System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(
                 objectMapper.readTree(response.getBody())
@@ -168,27 +171,29 @@ public class TestParse extends GeoTest {
 
     @Test
     public void testBuilding() throws DataFordelerException, IOException {
-        this.load(buildingEntityManager, "fixtures/Bygning.json");
-        this.load(buildingEntityManager, "fixtures/Bygning.json");
+        this.load(localityEntityManager, "/locality.json");
+        this.load(buildingEntityManager, "/building.json");
+        this.load(buildingEntityManager, "/building.json");
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {
-            BuildingEntity entity = QueryManager.getEntity(session, UUID.fromString("3250B104-5F67-43A5-B6A8-1BEC88476C26"), BuildingEntity.class);
+            BuildingEntity entity = QueryManager.getEntity(session, UUID.fromString("AF3550F5-2998-404D-B784-A70C4DEB2A18"), BuildingEntity.class);
             Assert.assertNotNull(entity);
-            System.out.println(entity.getAnr());
             Assert.assertEquals(null, entity.getAnr());
-            Assert.assertEquals("B-1025", entity.getBnr());
-            Assert.assertTrue(OffsetDateTime.parse("2018-07-19T07:21:03Z").isEqual(entity.getCreationDate()));
-            Assert.assertEquals("IRKS", entity.getCreator());
-            Assert.assertEquals(1, entity.getUsage().size());
+            Assert.assertEquals("B-3197", entity.getBnr());
+            Assert.assertTrue(OffsetDateTime.parse("2017-09-29T16:12:36Z").isEqual(entity.getCreationDate()));
+            Assert.assertEquals("thard_nukissiorfiit", entity.getCreator());
+            Assert.assertEquals("0600", entity.getLocality().iterator().next().getCode());
+            Assert.assertTrue(OffsetDateTime.parse("2018-08-29T10:31:16Z").isEqual(entity.getLocality().iterator().next().getRegistrationFrom()));
             Assert.assertEquals(1, entity.getShape().size());
-            Assert.assertEquals(Integer.valueOf(0), entity.getUsage().iterator().next().getUsage());
-            Assert.assertTrue(OffsetDateTime.parse("2018-07-19T07:23:27Z"). isEqual(entity.getUsage().iterator().next().getRegistrationFrom()));
+            //Assert.assertEquals(1, entity.getUsage().size());
+            //Assert.assertEquals(Integer.valueOf(0), entity.getUsage().iterator().next().getUsage());
+            //Assert.assertTrue(OffsetDateTime.parse("2017-09-29T16:12:36Z"). isEqual(entity.getUsage().iterator().next().getRegistrationFrom()));
         } finally {
             session.close();
         }
 
-        ResponseEntity<String> response = this.uuidSearch("3250B104-5F67-43A5-B6A8-1BEC88476C26", "building");
+        ResponseEntity<String> response = this.uuidSearch("AF3550F5-2998-404D-B784-A70C4DEB2A18", "building");
         Assert.assertEquals(200, response.getStatusCode().value());
         System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(
                 objectMapper.readTree(response.getBody())
@@ -198,28 +203,49 @@ public class TestParse extends GeoTest {
 
     @Test
     public void testAccessAddress() throws DataFordelerException, IOException {
-        this.load(accessAddressEntityManager, "fixtures/Adgangsadresse.json");
-        this.load(accessAddressEntityManager, "fixtures/Adgangsadresse.json");
+        this.load(buildingEntityManager, "/building.json");
+        this.load(accessAddressEntityManager, "/access.json");
+        this.load(accessAddressEntityManager, "/access.json");
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {
-            AccessAddressEntity entity = QueryManager.getEntity(session, UUID.fromString("FA17D08C-D51C-4CE5-8036-D24C06DAE5C6"), AccessAddressEntity.class);
+            AccessAddressEntity entity = QueryManager.getEntity(session, UUID.fromString("2E3776BF-05C2-433C-ADB9-8A07DF6B3E8F"), AccessAddressEntity.class);
             Assert.assertNotNull(entity);
-            Assert.assertEquals("B-0000", entity.getBnr());
-            Assert.assertTrue(OffsetDateTime.parse("2018-07-19T10:15:31Z").isEqual(entity.getCreationDate()));
+            Assert.assertEquals("B-3197", entity.getBnr());
+            Assert.assertTrue(OffsetDateTime.parse("2018-08-23T14:48:05Z").isEqual(entity.getCreationDate()));
             Assert.assertEquals("IRKS", entity.getCreator());
             Assert.assertEquals(1, entity.getShape().size());
+            Assert.assertEquals(1, entity.getSource().size());
+            Assert.assertEquals(Integer.valueOf(1), entity.getSource().iterator().next().getSource());
+            Assert.assertTrue(OffsetDateTime.parse("2018-08-29T10:42:07Z").isEqual(entity.getSource().iterator().next().getRegistrationFrom()));
             Assert.assertEquals(1, entity.getHouseNumber().size());
+            Assert.assertEquals("18", entity.getHouseNumber().iterator().next().getNumber());
+            Assert.assertTrue(OffsetDateTime.parse("2018-08-29T10:42:07Z").isEqual(entity.getHouseNumber().iterator().next().getRegistrationFrom()));
             Assert.assertEquals(1, entity.getBlockName().size());
+            Assert.assertEquals("House of Testing!", entity.getBlockName().iterator().next().getName());
+            Assert.assertTrue(OffsetDateTime.parse("2018-08-29T10:42:07Z").isEqual(entity.getBlockName().iterator().next().getRegistrationFrom()));
             Assert.assertEquals(1, entity.getLocality().size());
+            Assert.assertEquals("0600", entity.getLocality().iterator().next().getCode());
+            Assert.assertTrue(OffsetDateTime.parse("2018-08-29T10:42:07Z").isEqual(entity.getLocality().iterator().next().getRegistrationFrom()));
             Assert.assertEquals(1, entity.getStatus().size());
-            Assert.assertEquals(1, entity.getImportStatus().size());
+            Assert.assertEquals(Integer.valueOf(2), entity.getStatus().iterator().next().getStatus());
+            Assert.assertTrue(OffsetDateTime.parse("2018-08-29T10:42:07Z").isEqual(entity.getStatus().iterator().next().getRegistrationFrom()));
+
+            Assert.assertEquals(1, entity.getBuilding().size());
+            Assert.assertEquals("af3550f5-2998-404d-b784-a70c4deb2a18", entity.getBuilding().iterator().next().getReference().getUuid().toString());
+
+            //Assert.assertEquals(1, entity.getImportStatus().size());
+
             Assert.assertEquals(1, entity.getRoad().size());
+            Assert.assertEquals(Integer.valueOf(956), entity.getRoad().iterator().next().getMunicipalityCode());
+            Assert.assertEquals(Integer.valueOf(254), entity.getRoad().iterator().next().getRoadCode());
+            Assert.assertTrue(OffsetDateTime.parse("2018-08-29T10:42:07Z").isEqual(entity.getRoad().iterator().next().getRegistrationFrom()));
+
         } finally {
             session.close();
         }
 
-        ResponseEntity<String> response = this.uuidSearch("FA17D08C-D51C-4CE5-8036-D24C06DAE5C6", "accessaddress");
+        ResponseEntity<String> response = this.uuidSearch("2E3776BF-05C2-433C-ADB9-8A07DF6B3E8F", "accessaddress");
         Assert.assertEquals(200, response.getStatusCode().value());
         System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(
                 objectMapper.readTree(response.getBody())
@@ -229,27 +255,34 @@ public class TestParse extends GeoTest {
 
     @Test
     public void testUnitAddress() throws DataFordelerException, IOException {
-        this.load(unitAddressEntityManager, "fixtures/Enhedsadresse.json");
-        this.load(unitAddressEntityManager, "fixtures/Enhedsadresse.json");
+        this.load(unitAddressEntityManager, "unit.json");
+        this.load(unitAddressEntityManager, "unit.json");
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {
-            UnitAddressEntity entity = QueryManager.getEntity(session, UUID.fromString("A77B5AD0-D54F-46D6-8641-2BF47EA1C9D6"), UnitAddressEntity.class);
+            UnitAddressEntity entity = QueryManager.getEntity(session, UUID.fromString("1B3AC64B-C28D-40B2-A106-16CEE7C188B8"), UnitAddressEntity.class);
             Assert.assertNotNull(entity);
-            Assert.assertTrue(OffsetDateTime.parse("2018-07-19T10:09:13Z").isEqual(entity.getCreationDate()));
-            Assert.assertEquals("IRKS", entity.getCreator());
+            System.out.println(entity.getCreationDate());
+            Assert.assertTrue(OffsetDateTime.parse("2018-08-29T10:21:17Z").isEqual(entity.getCreationDate()));
+            Assert.assertEquals("TELDWST", entity.getCreator());
             Assert.assertEquals(1, entity.getUsage().size());
+            Assert.assertEquals(Integer.valueOf(1), entity.getUsage().iterator().next().getUsage());
             Assert.assertEquals(1, entity.getFloor().size());
+            Assert.assertEquals("kld", entity.getFloor().iterator().next().getFloor());
             Assert.assertEquals(1, entity.getDoor().size());
-            Assert.assertEquals(1, entity.getImportStatus().size());
+            Assert.assertEquals("1234", entity.getDoor().iterator().next().getDoor());
+            //Assert.assertEquals(1, entity.getImportStatus().size());
             Assert.assertEquals(1, entity.getNumber().size());
+            Assert.assertEquals("5678", entity.getNumber().iterator().next().getNumber());
             Assert.assertEquals(1, entity.getSource().size());
+            Assert.assertEquals(Integer.valueOf(1), entity.getSource().iterator().next().getSource());
             Assert.assertEquals(1, entity.getStatus().size());
+            Assert.assertEquals(Integer.valueOf(2), entity.getStatus().iterator().next().getStatus());
         } finally {
             session.close();
         }
 
-        ResponseEntity<String> response = this.uuidSearch("A77B5AD0-D54F-46D6-8641-2BF47EA1C9D6", "unitaddress");
+        ResponseEntity<String> response = this.uuidSearch("1B3AC64B-C28D-40B2-A106-16CEE7C188B8", "unitaddress");
         Assert.assertEquals(200, response.getStatusCode().value());
         System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(
                 objectMapper.readTree(response.getBody())
@@ -258,30 +291,24 @@ public class TestParse extends GeoTest {
 
     @Test
     public void testPostcode() throws DataFordelerException, IOException {
-        this.load(postcodeEntityManager, "fixtures/Postnummer.json");
-        this.load(postcodeEntityManager, "fixtures/Postnummer.json");
+        this.load(postcodeEntityManager, "/post.json");
+        this.load(postcodeEntityManager, "/post.json");
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {
-            PostcodeEntity entity = QueryManager.getEntity(session, PostcodeEntity.generateUUID(2412), PostcodeEntity.class);
+            PostcodeEntity entity = QueryManager.getEntity(session, PostcodeEntity.generateUUID(3900), PostcodeEntity.class);
             Assert.assertNotNull(entity);
-            Assert.assertEquals(2412, entity.getCode());
-            Assert.assertEquals("Santa Claus/Julemanden", entity.getName());
+            Assert.assertEquals(3900, entity.getCode());
+            Assert.assertEquals("Nuuk", entity.getName());
         } finally {
             session.close();
         }
 
-        ResponseEntity<String> response = this.uuidSearch(PostcodeEntity.generateUUID(2412).toString(), "postcode");
+        ResponseEntity<String> response = this.uuidSearch(PostcodeEntity.generateUUID(3900).toString(), "postcode");
         Assert.assertEquals(200, response.getStatusCode().value());
         System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(
                 objectMapper.readTree(response.getBody())
         ));
-    }
-
-    @Test
-    public void pull() {
-        Pull pull = new Pull(engine, plugin);
-        pull.run();
     }
 
 }

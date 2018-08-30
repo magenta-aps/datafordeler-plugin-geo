@@ -15,7 +15,7 @@ public abstract class SumiffiikRawData extends RawData {
         @JsonProperty("OBJECTID")
         public int objectId;
 
-        @JsonProperty("id")
+        @JsonProperty("GlobalID")
         public String sumiffiikId;
 
         @JsonProperty("Creator")
@@ -32,7 +32,7 @@ public abstract class SumiffiikRawData extends RawData {
 
         @JsonIgnore
         public UUID getSumiffiikAsUUID() {
-            return dk.magenta.datafordeler.geo.data.SumiffiikRawData.getSumiffiikAsUUID(this.sumiffiikId);
+            return SumiffiikRawData.getSumiffiikAsUUID(this.sumiffiikId);
         }
 
     }

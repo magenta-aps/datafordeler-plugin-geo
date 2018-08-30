@@ -130,6 +130,24 @@ public class AccessAddressEntity extends SumiffiikEntity implements IdentifiedEn
     }
 
 
+
+
+    public static final String DB_FIELD_BUILDING = "building";
+    public static final String IO_FIELD_BUILDING = "building";
+    @OneToMany(mappedBy = AccessAddressBuildingReferenceRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
+    /*@Filters({
+            @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_EFFECT_FROM),
+            @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_EFFECT_TO)
+    })*/
+    @JsonProperty(IO_FIELD_BUILDING)
+    Set<AccessAddressBuildingReferenceRecord> building = new HashSet<>();
+
+    public Set<AccessAddressBuildingReferenceRecord> getBuilding() {
+        return this.building;
+    }
+
+
+
     public static final String DB_FIELD_STATUS = "status";
     public static final String IO_FIELD_STATUS = "status";
     @OneToMany(mappedBy = AccessAddressStatusRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
@@ -221,6 +239,9 @@ public class AccessAddressEntity extends SumiffiikEntity implements IdentifiedEn
         if (record instanceof AccessAddressLocalityRecord) {
             added = addItem(this.locality, record);
         }
+        if (record instanceof AccessAddressBuildingReferenceRecord) {
+            added = addItem(this.building, record);
+        }
         if (record instanceof AccessAddressStatusRecord) {
             added = addItem(this.status, record);
         }
@@ -248,6 +269,7 @@ public class AccessAddressEntity extends SumiffiikEntity implements IdentifiedEn
         HashSet<Set<? extends GeoMonotemporalRecord>> records = new HashSet<>();
         records.add(this.locality);
         records.add(this.road);
+        records.add(this.building);
         records.add(this.blockName);
         records.add(this.houseNumber);
         records.add(this.importStatus);

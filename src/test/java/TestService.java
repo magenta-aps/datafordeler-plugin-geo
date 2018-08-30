@@ -1,3 +1,6 @@
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import dk.magenta.datafordeler.core.Application;
 import dk.magenta.datafordeler.core.exception.DataFordelerException;
 import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressEntityManager;
@@ -21,6 +24,9 @@ import java.io.IOException;
 public class TestService extends GeoTest {
 
     @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
     private LocalityEntityManager localityEntityManager;
 
     @Autowired
@@ -35,58 +41,103 @@ public class TestService extends GeoTest {
 
     @Test
     public void testLocality() throws DataFordelerException, IOException {
-        this.load(localityEntityManager, "fixtures/Lokalitet.json");
-        ResponseEntity<String> response = this.lookup("/geo/adresse/lokalitet?kommune=955");
+        this.load(localityEntityManager, "/locality.json");
+        ResponseEntity<String> response = this.lookup("/geo/adresse/lokalitet?kommune=956");
         Assert.assertEquals(200, response.getStatusCode().value());
-        String localities = response.getBody();
-        System.out.println(localities);
+        ArrayNode localities = (ArrayNode) objectMapper.readTree(response.getBody());
+        Assert.assertEquals(1, localities.size());
+        ObjectNode locality = (ObjectNode) localities.get(0);
+        Assert.assertEquals("Nuuk", locality.get("navn").asText());
+        Assert.assertEquals("f0966470-f09f-474d-a820-e8a46ed6fcc7", locality.get("uuid").asText());
     }
 
 
     @Test
     public void testRoad() throws DataFordelerException, IOException {
-        this.load(localityEntityManager, "fixtures/Lokalitet.json");
-        this.load(roadEntityManager,"fixtures/Vejmidte.json");
-        ResponseEntity<String> response = this.lookup("/geo/adresse/vej?lokalitet=16276a1f-d78b-46f8-b075-0cc8226711a9");
+        this.load(localityEntityManager, "/locality.json");
+        this.load(roadEntityManager,"/road.json");
+        ResponseEntity<String> response = this.lookup("/geo/adresse/vej?lokalitet=f0966470-f09f-474d-a820-e8a46ed6fcc7");
         Assert.assertEquals(200, response.getStatusCode().value());
-        String roads = response.getBody();
-        System.out.println(roads);
+        ArrayNode roads = (ArrayNode) objectMapper.readTree(response.getBody());
+        Assert.assertEquals(1, roads.size());
+        ObjectNode road = (ObjectNode) roads.get(0);
+        Assert.assertEquals(254, road.get("vejkode").intValue());
+        Assert.assertEquals("Qarsaalik", road.get("navn").asText());
+        Assert.assertEquals("Qarsaalik", road.get("andet_navn").asText());
+        Assert.assertEquals(956, road.get("kommunekode").intValue());
+        Assert.assertEquals("e1274f15-9e2b-4b6e-8b7d-c8078df65aa2", road.get("uuid").asText());
     }
 
 
     @Test
     public void testAccessAddress() throws DataFordelerException, IOException {
-        this.load(roadEntityManager, "fixtures/Vejmidte.json");
-        this.load(accessAddressEntityManager, "fixtures/Adgangsadresse.json");
-        ResponseEntity<String> response = this.lookup("/geo/adresse/hus?vej=F45872EF-8D59-4465-BC7B-E81E906F2662");
+        this.load(roadEntityManager, "/road.json");
+        this.load(accessAddressEntityManager, "/access.json");
+        ResponseEntity<String> response = this.lookup("/geo/adresse/hus?vej=e1274f15-9e2b-4b6e-8b7d-c8078df65aa2");
         Assert.assertEquals(200, response.getStatusCode().value());
-        String buildings = response.getBody();
-        System.out.println(buildings);
+        ArrayNode buildings = (ArrayNode) objectMapper.readTree(response.getBody());
+        Assert.assertEquals(1, buildings.size());
+        ObjectNode building = (ObjectNode) buildings.get(0);
+        Assert.assertEquals("18", building.get("husnummer").asText());
+        Assert.assertEquals("B-3197", building.get("b_nummer").asText());
+        Assert.assertEquals("House of Testing!", building.get("b_kaldenavn").asText());
     }
 
     @Test
     public void testUnitAddress() throws DataFordelerException, IOException {
-        this.load(roadEntityManager, "fixtures/Vejmidte.json");
-        this.load(accessAddressEntityManager, "fixtures/Adgangsadresse.json");
-        this.load(unitAddressEntityManager, "fixtures/Enhedsadresse.json");
-        ResponseEntity<String> response = this.lookup("/geo/adresse/adresse?b_nummer=B-1234");
+        this.load(roadEntityManager, "/road.json");
+        this.load(accessAddressEntityManager, "/access.json");
+        this.load(unitAddressEntityManager, "/unit.json");
+        ResponseEntity<String> response = this.lookup("/geo/adresse/adresse?b_nummer=B-3197");
         Assert.assertEquals(400, response.getStatusCode().value());
-        response = this.lookup("/geo/adresse/adresse?vej=F45872EF-8D59-4465-BC7B-E81E906F2662&husnr=5");
+        response = this.lookup("/geo/adresse/adresse?vej=e1274f15-9e2b-4b6e-8b7d-c8078df65aa2&b_nummer=B-3197");
         Assert.assertEquals(200, response.getStatusCode().value());
-        String addresses = response.getBody();
-        System.out.println(addresses);
+        ArrayNode addresses = (ArrayNode) objectMapper.readTree(response.getBody());
+        Assert.assertEquals(1, addresses.size());
+        ObjectNode address = (ObjectNode) addresses.get(0);
+        Assert.assertEquals("18", address.get("husnummer").asText());
+        Assert.assertEquals("House of Testing!", address.get("b_kaldenavn").asText());
+        Assert.assertEquals("B-3197", address.get("b_nummer").asText());
+        Assert.assertEquals("kld", address.get("etage").asText());
+        Assert.assertEquals("1234", address.get("doer").asText());
+        Assert.assertEquals(1, address.get("anvendelse").intValue());
+        Assert.assertEquals("1b3ac64b-c28d-40b2-a106-16cee7c188b8", address.get("uuid").asText());
+        response = this.lookup("/geo/adresse/adresse?vej=e1274f15-9e2b-4b6e-8b7d-c8078df65aa2&husnummer=18");
+        Assert.assertEquals(200, response.getStatusCode().value());
+        addresses = (ArrayNode) objectMapper.readTree(response.getBody());
+        Assert.assertEquals(1, addresses.size());
+        address = (ObjectNode) addresses.get(0);
+        Assert.assertEquals("18", address.get("husnummer").asText());
+        Assert.assertEquals("House of Testing!", address.get("b_kaldenavn").asText());
+        Assert.assertEquals("B-3197", address.get("b_nummer").asText());
+        Assert.assertEquals("kld", address.get("etage").asText());
+        Assert.assertEquals("1234", address.get("doer").asText());
+        Assert.assertEquals(1, address.get("anvendelse").intValue());
+        Assert.assertEquals("1b3ac64b-c28d-40b2-a106-16cee7c188b8", address.get("uuid").asText());
     }
 
     @Test
     public void testUnitAddressDetails() throws DataFordelerException, IOException {
-        this.load(localityEntityManager,"fixtures/Lokalitet.json");
-        this.load(roadEntityManager,"fixtures/Vejmidte.json");
-        this.load(accessAddressEntityManager, "fixtures/Adgangsadresse.json");
-        this.load(unitAddressEntityManager, "fixtures/Enhedsadresse.json");
-        ResponseEntity<String> response = this.lookup("/geo/adresse/adresseoplysninger?adresse=FF2F9C69-40C1-4377-A630-9C0F743FD2D1");
+        this.load(localityEntityManager,"/locality.json");
+        this.load(roadEntityManager,"/road.json");
+        this.load(accessAddressEntityManager, "/access.json");
+        this.load(unitAddressEntityManager, "/unit.json");
+        ResponseEntity<String> response = this.lookup("/geo/adresse/adresseoplysninger?adresse=1b3ac64b-c28d-40b2-a106-16cee7c188b8");
         Assert.assertEquals(200, response.getStatusCode().value());
-        String addresses = response.getBody();
-        System.out.println(addresses);
+        ObjectNode address = (ObjectNode) objectMapper.readTree(response.getBody());
+        Assert.assertEquals("1b3ac64b-c28d-40b2-a106-16cee7c188b8", address.get("uuid").asText());
+        Assert.assertEquals("18", address.get("husnummer").asText());
+        Assert.assertEquals("kld", address.get("etage").asText());
+        Assert.assertEquals("1234", address.get("doer").asText());
+        Assert.assertEquals("B-3197", address.get("b_nummer").asText());
+        Assert.assertEquals("e1274f15-9e2b-4b6e-8b7d-c8078df65aa2", address.get("vej_uuid").asText());
+        Assert.assertEquals(254, address.get("vejkode").intValue());
+        Assert.assertEquals("Qarsaalik", address.get("vejnavn").asText());
+        Assert.assertEquals("f0966470-f09f-474d-a820-e8a46ed6fcc7", address.get("lokalitet").asText());
+        Assert.assertEquals("Nuuk", address.get("lokalitetsnavn").asText());
+        Assert.assertEquals(956, address.get("kommunekode").intValue());
+        Assert.assertEquals(1, address.get("anvendelse").intValue());
+        Assert.assertEquals("House of Testing!", address.get("b_kaldenavn").asText());
     }
 
 }
