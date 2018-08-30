@@ -49,6 +49,11 @@ public class AccessAddressRawData extends SumiffiikRawData {
 
         @JsonProperty("bygning_id")
         public String buildingId;
+
+        @JsonProperty("AdgangsadresseSumiffik")
+        public void setSumiffiikId(String sumiffiikId) {
+            this.sumiffiikId = sumiffiikId;
+        }
     }
 
     @JsonProperty

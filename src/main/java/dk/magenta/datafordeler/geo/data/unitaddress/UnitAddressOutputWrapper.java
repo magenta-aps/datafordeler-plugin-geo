@@ -19,6 +19,7 @@ public class UnitAddressOutputWrapper extends GeoOutputWrapper<UnitAddressEntity
         //container.addMonotemporal("import", item.getImportStatus());
         container.addMonotemporal("kilde", item.getSource());
         container.addMonotemporal("status", item.getStatus());
+        container.addNontemporal("sumiffiik", item.getSumiffiikId());
     }
 
     @Override

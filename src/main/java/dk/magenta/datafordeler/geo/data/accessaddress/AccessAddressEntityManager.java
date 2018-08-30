@@ -49,7 +49,7 @@ public class AccessAddressEntityManager extends GeoEntityManager<AccessAddressEn
 
     @Override
     protected UUID generateUUID(AccessAddressRawData rawData) {
-        return rawData.properties.getSumiffiikAsUUID();
+        return rawData.properties.getUUID();
     }
 
     @Override

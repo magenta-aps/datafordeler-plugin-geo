@@ -49,7 +49,7 @@ public class MunicipalityEntityManager extends GeoEntityManager<MunicipalityEnti
 
     @Override
     protected UUID generateUUID(MunicipalityRawData rawData) {
-        return rawData.properties.getSumiffiikAsUUID();
+        return rawData.properties.getUUID();
     }
 
     @Override

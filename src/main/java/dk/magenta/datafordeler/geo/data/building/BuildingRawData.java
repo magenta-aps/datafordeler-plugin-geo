@@ -25,6 +25,10 @@ public class BuildingRawData extends SumiffiikRawData {
         @JsonProperty("location_id")
         public String locality;
 
+        @JsonProperty("BygningSumiffik")
+        public void setSumiffiikId(String sumiffiikId) {
+            this.sumiffiikId = sumiffiikId;
+        }
     }
 
     @JsonProperty

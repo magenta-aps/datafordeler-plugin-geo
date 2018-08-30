@@ -49,7 +49,7 @@ public class LocalityEntityManager extends GeoEntityManager<LocalityEntity, Loca
 
     @Override
     protected UUID generateUUID(LocalityRawData rawData) {
-        return rawData.properties.getSumiffiikAsUUID();
+        return rawData.properties.getUUID();
     }
 
     @Override

@@ -36,6 +36,11 @@ public class RoadRawData extends SumiffiikRawData {
 
         @JsonProperty("Kommunekode")
         public Integer municipality;
+
+        @JsonProperty("VejmidteSumiffik")
+        public void setSumiffiikId(String sumiffiikId) {
+            this.sumiffiikId = sumiffiikId;
+        }
     }
 
     @JsonProperty

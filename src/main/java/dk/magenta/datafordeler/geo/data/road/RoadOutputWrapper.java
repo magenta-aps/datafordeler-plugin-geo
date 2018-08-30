@@ -16,6 +16,7 @@ public class RoadOutputWrapper extends GeoOutputWrapper<RoadEntity> {
         container.addMonotemporal("navn", item.getName());
         container.addMonotemporal("lokalitet", item.getLocality());
         container.addMonotemporal("kommune", item.getMunicipality());
+        container.addNontemporal("sumiffiik", item.getSumiffiikId());
     }
 
     @Override

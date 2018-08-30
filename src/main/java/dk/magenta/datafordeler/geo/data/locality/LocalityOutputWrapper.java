@@ -10,7 +10,10 @@ public class LocalityOutputWrapper extends GeoOutputWrapper<LocalityEntity> {
     protected void fillMetadataContainer(OutputContainer container, LocalityEntity item) {
         container.addNontemporal("lokalitetskode", item.getCode());
         container.addMonotemporal("navn", item.getName());
+        container.addMonotemporal("forkortelse", item.getAbbreviation());
+        container.addMonotemporal("type", item.getType());
         container.addMonotemporal("kommune", item.getMunicipality());
+        container.addNontemporal("sumiffiik", item.getSumiffiikId());
     }
 
 }
