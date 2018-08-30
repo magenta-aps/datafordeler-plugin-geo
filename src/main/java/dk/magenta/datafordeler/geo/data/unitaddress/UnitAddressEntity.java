@@ -4,10 +4,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import dk.magenta.datafordeler.core.database.Identification;
 import dk.magenta.datafordeler.core.database.IdentifiedEntity;
+import dk.magenta.datafordeler.core.database.Monotemporal;
+import dk.magenta.datafordeler.core.database.Nontemporal;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 import dk.magenta.datafordeler.geo.data.SumiffiikEntity;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.Filters;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -62,10 +66,12 @@ public class UnitAddressEntity extends SumiffiikEntity implements IdentifiedEnti
     public static final String DB_FIELD_FLOOR = "floor";
     public static final String IO_FIELD_FLOOR = "etage";
     @OneToMany(mappedBy = UnitAddressFloorRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
-    /*@Filters({
-            @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_EFFECT_FROM),
-            @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_EFFECT_TO)
-    })*/
+    @Filters({
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_AFTER, condition = Monotemporal.FILTERLOGIC_REGISTRATION_AFTER),
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_BEFORE, condition = Monotemporal.FILTERLOGIC_REGISTRATION_BEFORE),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_AFTER, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_AFTER),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_BEFORE, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_BEFORE)
+    })
     @JsonProperty(IO_FIELD_FLOOR)
     Set<UnitAddressFloorRecord> floor = new HashSet<>();
 
@@ -78,10 +84,12 @@ public class UnitAddressEntity extends SumiffiikEntity implements IdentifiedEnti
     public static final String DB_FIELD_DOOR = "door";
     public static final String IO_FIELD_DOOR = "sidedør";
     @OneToMany(mappedBy = UnitAddressDoorRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
-    /*@Filters({
-            @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_EFFECT_FROM),
-            @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_EFFECT_TO)
-    })*/
+    @Filters({
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_AFTER, condition = Monotemporal.FILTERLOGIC_REGISTRATION_AFTER),
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_BEFORE, condition = Monotemporal.FILTERLOGIC_REGISTRATION_BEFORE),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_AFTER, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_AFTER),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_BEFORE, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_BEFORE)
+    })
     @JsonProperty(IO_FIELD_DOOR)
     Set<UnitAddressDoorRecord> door = new HashSet<>();
 
@@ -94,10 +102,12 @@ public class UnitAddressEntity extends SumiffiikEntity implements IdentifiedEnti
     public static final String DB_FIELD_NUMBER = "number";
     public static final String IO_FIELD_NUMBER = "nummer";
     @OneToMany(mappedBy = UnitAddressNumberRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
-    /*@Filters({
-            @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_EFFECT_FROM),
-            @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_EFFECT_TO)
-    })*/
+    @Filters({
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_AFTER, condition = Monotemporal.FILTERLOGIC_REGISTRATION_AFTER),
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_BEFORE, condition = Monotemporal.FILTERLOGIC_REGISTRATION_BEFORE),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_AFTER, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_AFTER),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_BEFORE, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_BEFORE)
+    })
     @JsonProperty(IO_FIELD_NUMBER)
     Set<UnitAddressNumberRecord> number = new HashSet<>();
 
@@ -110,10 +120,12 @@ public class UnitAddressEntity extends SumiffiikEntity implements IdentifiedEnti
     public static final String DB_FIELD_USAGE = "usage";
     public static final String IO_FIELD_USAGE = "anvendelse";
     @OneToMany(mappedBy = UnitAddressUsageRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
-    /*@Filters({
-            @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_EFFECT_FROM),
-            @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_EFFECT_TO)
-    })*/
+    @Filters({
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_AFTER, condition = Monotemporal.FILTERLOGIC_REGISTRATION_AFTER),
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_BEFORE, condition = Monotemporal.FILTERLOGIC_REGISTRATION_BEFORE),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_AFTER, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_AFTER),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_BEFORE, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_BEFORE)
+    })
     @JsonProperty(IO_FIELD_USAGE)
     Set<UnitAddressUsageRecord> usage = new HashSet<>();
 
@@ -127,10 +139,12 @@ public class UnitAddressEntity extends SumiffiikEntity implements IdentifiedEnti
     public static final String DB_FIELD_STATUS = "status";
     public static final String IO_FIELD_STATUS = "status";
     @OneToMany(mappedBy = UnitAddressStatusRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
-    /*@Filters({
-            @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_EFFECT_FROM),
-            @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_EFFECT_TO)
-    })*/
+    @Filters({
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_AFTER, condition = Monotemporal.FILTERLOGIC_REGISTRATION_AFTER),
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_BEFORE, condition = Monotemporal.FILTERLOGIC_REGISTRATION_BEFORE),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_AFTER, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_AFTER),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_BEFORE, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_BEFORE)
+    })
     @JsonProperty(IO_FIELD_STATUS)
     Set<UnitAddressStatusRecord> status = new HashSet<>();
 
@@ -143,10 +157,12 @@ public class UnitAddressEntity extends SumiffiikEntity implements IdentifiedEnti
     public static final String DB_FIELD_SOURCE = "source";
     public static final String IO_FIELD_SOURCE = "source";
     @OneToMany(mappedBy = UnitAddressSourceRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
-    /*@Filters({
-            @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_EFFECT_FROM),
-            @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_EFFECT_TO)
-    })*/
+    @Filters({
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_AFTER, condition = Monotemporal.FILTERLOGIC_REGISTRATION_AFTER),
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_BEFORE, condition = Monotemporal.FILTERLOGIC_REGISTRATION_BEFORE),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_AFTER, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_AFTER),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_BEFORE, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_BEFORE)
+    })
     @JsonProperty(IO_FIELD_SOURCE)
     Set<UnitAddressSourceRecord> source = new HashSet<>();
 
@@ -198,7 +214,6 @@ public class UnitAddressEntity extends SumiffiikEntity implements IdentifiedEnti
         records.add(this.floor);
         records.add(this.number);
         records.add(this.usage);
-        //records.add(this.importStatus);
         records.add(this.source);
         records.add(this.status);
         return records;

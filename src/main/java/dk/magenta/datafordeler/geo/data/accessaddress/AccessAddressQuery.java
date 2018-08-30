@@ -8,7 +8,6 @@ import dk.magenta.datafordeler.core.fapi.QueryField;
 import dk.magenta.datafordeler.geo.data.SumiffiikQuery;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by lars on 19-05-17.
