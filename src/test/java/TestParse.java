@@ -186,9 +186,6 @@ public class TestParse extends GeoTest {
             Assert.assertEquals("0600", entity.getLocality().iterator().next().getCode());
             Assert.assertTrue(OffsetDateTime.parse("2018-08-29T10:31:16Z").isEqual(entity.getLocality().iterator().next().getRegistrationFrom()));
             Assert.assertEquals(1, entity.getShape().size());
-            //Assert.assertEquals(1, entity.getUsage().size());
-            //Assert.assertEquals(Integer.valueOf(0), entity.getUsage().iterator().next().getUsage());
-            //Assert.assertTrue(OffsetDateTime.parse("2017-09-29T16:12:36Z"). isEqual(entity.getUsage().iterator().next().getRegistrationFrom()));
         } finally {
             session.close();
         }
@@ -233,8 +230,6 @@ public class TestParse extends GeoTest {
 
             Assert.assertEquals(1, entity.getBuilding().size());
             Assert.assertEquals("af3550f5-2998-404d-b784-a70c4deb2a18", entity.getBuilding().iterator().next().getReference().getUuid().toString());
-
-            //Assert.assertEquals(1, entity.getImportStatus().size());
 
             Assert.assertEquals(1, entity.getRoad().size());
             Assert.assertEquals(Integer.valueOf(956), entity.getRoad().iterator().next().getMunicipalityCode());

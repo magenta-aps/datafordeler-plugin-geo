@@ -25,8 +25,6 @@ public class BuildingRawData extends SumiffiikRawData {
         @JsonProperty("location_id")
         public String locality;
 
-        //@JsonProperty("Anvendelse")
-        //public Integer usage;
     }
 
     @JsonProperty
@@ -35,10 +33,6 @@ public class BuildingRawData extends SumiffiikRawData {
     @Override
     public List<GeoMonotemporalRecord> getMonotemporalRecords() {
         ArrayList<GeoMonotemporalRecord> records = new ArrayList<>();
-
-        /*records.add(
-                new BuildingUsageRecord(this.properties.usage)
-        );*/
 
         records.add(
                 new BuildingLocalityRecord(SumiffiikRawData.getSumiffiikAsUUID(this.properties.locality))

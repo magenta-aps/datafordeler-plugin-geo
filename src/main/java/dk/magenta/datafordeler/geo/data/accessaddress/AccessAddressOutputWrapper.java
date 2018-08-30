@@ -12,7 +12,6 @@ public class AccessAddressOutputWrapper extends GeoOutputWrapper<AccessAddressEn
         container.addNontemporal("bnr", item.getBnr());
         container.addMonotemporal("blokNavn", item.getBlockName());
         container.addMonotemporal("lokalitet", item.getLocality());
-        container.addMonotemporal("import", item.getImportStatus());
         container.addMonotemporal("dataKilde", item.getSource());
         container.addMonotemporal("vej", item.getRoad());
         container.addMonotemporal("status", item.getStatus());
