@@ -203,6 +203,7 @@ public class TestParse extends GeoTest {
 
     @Test
     public void testAccessAddress() throws DataFordelerException, IOException {
+        this.load(buildingEntityManager, "/building.json");
         this.load(accessAddressEntityManager, "/access.json");
         this.load(accessAddressEntityManager, "/access.json");
 
@@ -229,6 +230,9 @@ public class TestParse extends GeoTest {
             Assert.assertEquals(1, entity.getStatus().size());
             Assert.assertEquals(Integer.valueOf(2), entity.getStatus().iterator().next().getStatus());
             Assert.assertTrue(OffsetDateTime.parse("2018-08-29T10:42:07Z").isEqual(entity.getStatus().iterator().next().getRegistrationFrom()));
+
+            Assert.assertEquals(1, entity.getBuilding().size());
+            Assert.assertEquals("af3550f5-2998-404d-b784-a70c4deb2a18", entity.getBuilding().iterator().next().getReference().getUuid().toString());
 
             //Assert.assertEquals(1, entity.getImportStatus().size());
 

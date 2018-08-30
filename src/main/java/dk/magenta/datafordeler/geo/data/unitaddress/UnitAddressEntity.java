@@ -143,11 +143,12 @@ public class UnitAddressEntity extends SumiffiikEntity implements IdentifiedEnti
     public static final String DB_FIELD_IMPORT = "importStatus";
     public static final String IO_FIELD_IMPORT = "import";
     @OneToMany(mappedBy = UnitAddressImportRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
+    */
     /*@Filters({
             @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_EFFECT_FROM),
             @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_EFFECT_TO)
     })*/
-    @JsonProperty(IO_FIELD_IMPORT)
+/*    @JsonProperty(IO_FIELD_IMPORT)
     Set<UnitAddressImportRecord> importStatus = new HashSet<>();
 
     public Set<UnitAddressImportRecord> getImportStatus() {

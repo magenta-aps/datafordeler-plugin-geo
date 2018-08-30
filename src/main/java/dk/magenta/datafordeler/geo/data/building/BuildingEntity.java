@@ -89,7 +89,7 @@ public class BuildingEntity extends SumiffiikEntity implements IdentifiedEntity 
             @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_EFFECT_FROM),
             @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_EFFECT_TO)
     })*/
-    @JsonProperty(IO_FIELD_USAGE)
+/*    @JsonProperty(IO_FIELD_USAGE)
     Set<BuildingUsageRecord> usage = new HashSet<>();
 
     public Set<BuildingUsageRecord> getUsage() {

@@ -44,7 +44,6 @@ public class TestService extends GeoTest {
         this.load(localityEntityManager, "/locality.json");
         ResponseEntity<String> response = this.lookup("/geo/adresse/lokalitet?kommune=956");
         Assert.assertEquals(200, response.getStatusCode().value());
-        System.out.println(response.getBody());
         ArrayNode localities = (ArrayNode) objectMapper.readTree(response.getBody());
         Assert.assertEquals(1, localities.size());
         ObjectNode locality = (ObjectNode) localities.get(0);
@@ -76,7 +75,6 @@ public class TestService extends GeoTest {
         this.load(accessAddressEntityManager, "/access.json");
         ResponseEntity<String> response = this.lookup("/geo/adresse/hus?vej=e1274f15-9e2b-4b6e-8b7d-c8078df65aa2");
         Assert.assertEquals(200, response.getStatusCode().value());
-        System.out.println(response.getBody());
         ArrayNode buildings = (ArrayNode) objectMapper.readTree(response.getBody());
         Assert.assertEquals(1, buildings.size());
         ObjectNode building = (ObjectNode) buildings.get(0);
@@ -94,7 +92,6 @@ public class TestService extends GeoTest {
         Assert.assertEquals(400, response.getStatusCode().value());
         response = this.lookup("/geo/adresse/adresse?vej=e1274f15-9e2b-4b6e-8b7d-c8078df65aa2&b_nummer=B-3197");
         Assert.assertEquals(200, response.getStatusCode().value());
-        System.out.println(response.getBody());
         ArrayNode addresses = (ArrayNode) objectMapper.readTree(response.getBody());
         Assert.assertEquals(1, addresses.size());
         ObjectNode address = (ObjectNode) addresses.get(0);
@@ -127,7 +124,6 @@ public class TestService extends GeoTest {
         this.load(unitAddressEntityManager, "/unit.json");
         ResponseEntity<String> response = this.lookup("/geo/adresse/adresseoplysninger?adresse=1b3ac64b-c28d-40b2-a106-16cee7c188b8");
         Assert.assertEquals(200, response.getStatusCode().value());
-        System.out.println(response.getBody());
         ObjectNode address = (ObjectNode) objectMapper.readTree(response.getBody());
         Assert.assertEquals("1b3ac64b-c28d-40b2-a106-16cee7c188b8", address.get("uuid").asText());
         Assert.assertEquals("18", address.get("husnummer").asText());
