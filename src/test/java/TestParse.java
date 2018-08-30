@@ -94,6 +94,7 @@ public class TestParse extends GeoTest {
             Assert.assertTrue(OffsetDateTime.parse("2018-07-19T11:11:05Z").isEqual(entity.getCreationDate()));
             Assert.assertEquals("GREENADMIN", entity.getCreator());
             Assert.assertEquals(1, entity.getShape().size());
+            Assert.assertEquals("23a2a20416bb427fab4849384ee677ff", entity.getSumiffiikId());
             Assert.assertEquals(1, entity.getName().size());
             Assert.assertEquals("Kommuneqarfik Sermersooq", entity.getName().iterator().next().getName());
             Assert.assertTrue(OffsetDateTime.parse("2018-08-07T12:33:50Z").isEqual(entity.getName().iterator().next().getRegistrationFrom()));
@@ -121,8 +122,15 @@ public class TestParse extends GeoTest {
             Assert.assertEquals("0600", entity.getCode());
             Assert.assertTrue(OffsetDateTime.parse("2018-08-09T12:00:04Z").isEqual(entity.getCreationDate()));
             Assert.assertEquals("GREENADMIN", entity.getCreator());
+            Assert.assertEquals("4F46D110-E6AD-46D1-B403-B12063152564", entity.getSumiffiikId());
             Assert.assertEquals(1, entity.getName().size());
             Assert.assertEquals("Nuuk", entity.getName().iterator().next().getName());
+            Assert.assertTrue(OffsetDateTime.parse("2018-08-09T13:11:42Z").isEqual(entity.getName().iterator().next().getRegistrationFrom()));
+            Assert.assertEquals(1, entity.getName().size());
+            Assert.assertEquals("NUK", entity.getAbbreviation().iterator().next().getName());
+            Assert.assertTrue(OffsetDateTime.parse("2018-08-09T13:11:42Z").isEqual(entity.getName().iterator().next().getRegistrationFrom()));
+            Assert.assertEquals(1, entity.getName().size());
+            Assert.assertEquals(Integer.valueOf(1), entity.getType().iterator().next().getType());
             Assert.assertTrue(OffsetDateTime.parse("2018-08-09T13:11:42Z").isEqual(entity.getName().iterator().next().getRegistrationFrom()));
             Assert.assertEquals(1, entity.getShape().size());
             Assert.assertEquals(1, entity.getMunicipality().size());
@@ -152,6 +160,7 @@ public class TestParse extends GeoTest {
             Assert.assertEquals(254, entity.getCode());
             Assert.assertTrue(OffsetDateTime.parse("2018-08-23T14:48:05Z").isEqual(entity.getCreationDate()));
             Assert.assertEquals("IRKS", entity.getCreator());
+            Assert.assertEquals("{961FFC61-8B04-45F3-80FD-509B0676FEF6}", entity.getSumiffiikId());
             Assert.assertEquals(1, entity.getShape().size());
             Assert.assertEquals(1, entity.getName().size());
             Assert.assertEquals("Qarsaalik", entity.getName().iterator().next().getName());
@@ -181,6 +190,7 @@ public class TestParse extends GeoTest {
             Assert.assertNotNull(entity);
             Assert.assertEquals(null, entity.getAnr());
             Assert.assertEquals("B-3197", entity.getBnr());
+            Assert.assertEquals("{DC2CAE1B-1F98-44FF-AE8F-6A52556B13FD}", entity.getSumiffiikId());
             Assert.assertTrue(OffsetDateTime.parse("2017-09-29T16:12:36Z").isEqual(entity.getCreationDate()));
             Assert.assertEquals("thard_nukissiorfiit", entity.getCreator());
             Assert.assertEquals("0600", entity.getLocality().iterator().next().getCode());
@@ -211,6 +221,7 @@ public class TestParse extends GeoTest {
             Assert.assertEquals("B-3197", entity.getBnr());
             Assert.assertTrue(OffsetDateTime.parse("2018-08-23T14:48:05Z").isEqual(entity.getCreationDate()));
             Assert.assertEquals("IRKS", entity.getCreator());
+            Assert.assertEquals("{69231C66-F37A-4F78-80C1-E379BFEE165D}", entity.getSumiffiikId());
             Assert.assertEquals(1, entity.getShape().size());
             Assert.assertEquals(1, entity.getSource().size());
             Assert.assertEquals(Integer.valueOf(1), entity.getSource().iterator().next().getSource());
@@ -257,9 +268,9 @@ public class TestParse extends GeoTest {
         try {
             UnitAddressEntity entity = QueryManager.getEntity(session, UUID.fromString("1B3AC64B-C28D-40B2-A106-16CEE7C188B8"), UnitAddressEntity.class);
             Assert.assertNotNull(entity);
-            System.out.println(entity.getCreationDate());
             Assert.assertTrue(OffsetDateTime.parse("2018-08-29T10:21:17Z").isEqual(entity.getCreationDate()));
             Assert.assertEquals("TELDWST", entity.getCreator());
+            Assert.assertEquals("{EE4805F1-96AB-45A7-B045-ED4D3C28364C}", entity.getSumiffiikId());
             Assert.assertEquals(1, entity.getUsage().size());
             Assert.assertEquals(Integer.valueOf(1), entity.getUsage().iterator().next().getUsage());
             Assert.assertEquals(1, entity.getFloor().size());
