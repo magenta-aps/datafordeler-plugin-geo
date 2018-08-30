@@ -11,7 +11,7 @@ import java.util.Set;
 public class MunicipalityOutputWrapper extends GeoOutputWrapper<MunicipalityEntity> {
 
     @Override
-    protected void fillMetadataContainer(OutputContainer container, MunicipalityEntity item) {
+    protected void fillContainer(OutputContainer container, MunicipalityEntity item) {
         container.addNontemporal("kommunekode", item.getCode());
         container.addMonotemporal("navn", item.getName());
     }

@@ -1,3 +1,6 @@
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.NumericNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import dk.magenta.datafordeler.core.database.SessionManager;
 import dk.magenta.datafordeler.core.io.ImportMetadata;
 import dk.magenta.datafordeler.geo.data.GeoEntityManager;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Comparator;
 
 @Component
 public abstract class GeoTest {

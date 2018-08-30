@@ -3,7 +3,11 @@ package dk.magenta.datafordeler.geo.data.common;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import dk.magenta.datafordeler.core.database.DatabaseEntry;
+import dk.magenta.datafordeler.core.database.Nontemporal;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.FilterDefs;
+import org.hibernate.annotations.ParamDef;
 
 import javax.persistence.Column;
 import javax.persistence.ManyToOne;
@@ -13,7 +17,11 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.time.OffsetDateTime;
 
 @MappedSuperclass
-public abstract class GeoNontemporalRecord<E extends GeoEntity> extends DatabaseEntry {
+@FilterDefs({
+        @FilterDef(name = Nontemporal.FILTER_LASTUPDATED_AFTER, parameters = @ParamDef(name = Nontemporal.FILTERPARAM_LASTUPDATED_AFTER, type = "java.time.OffsetDateTime")),
+        @FilterDef(name = Nontemporal.FILTER_LASTUPDATED_BEFORE, parameters = @ParamDef(name = Nontemporal.FILTERPARAM_LASTUPDATED_BEFORE, type = "java.time.OffsetDateTime"))
+})
+public abstract class GeoNontemporalRecord<E extends GeoEntity> extends DatabaseEntry implements Nontemporal<E> {
 
     public static final String DB_FIELD_ENTITY = "entity";
 

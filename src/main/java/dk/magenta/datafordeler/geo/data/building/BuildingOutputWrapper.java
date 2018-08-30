@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 public class BuildingOutputWrapper extends GeoOutputWrapper<BuildingEntity> {
 
     @Override
-    protected void fillMetadataContainer(OutputContainer container, BuildingEntity item) {
+    protected void fillContainer(OutputContainer container, BuildingEntity item) {
         container.addNontemporal("anr", item.getAnr());
         container.addNontemporal("bnr", item.getBnr());
         container.addMonotemporal("anvendelse", item.getUsage());

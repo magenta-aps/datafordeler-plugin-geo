@@ -2,10 +2,13 @@ package dk.magenta.datafordeler.geo.data.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import dk.magenta.datafordeler.core.database.Registration;
+import dk.magenta.datafordeler.core.database.Monotemporal;
 import dk.magenta.datafordeler.core.util.Monotemporality;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 import org.hibernate.Session;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.FilterDefs;
+import org.hibernate.annotations.ParamDef;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
@@ -19,15 +22,17 @@ import java.util.Comparator;
 import java.util.Objects;
 
 @MappedSuperclass
-public class GeoMonotemporalRecord<E extends GeoEntity> extends GeoNontemporalRecord<E> {
+@FilterDefs({
+        @FilterDef(name = Monotemporal.FILTER_REGISTRATION_AFTER, parameters = @ParamDef(name = Monotemporal.FILTERPARAM_REGISTRATION_AFTER, type = "java.time.OffsetDateTime")),
+        @FilterDef(name = Monotemporal.FILTER_REGISTRATION_BEFORE, parameters = @ParamDef(name = Monotemporal.FILTERPARAM_REGISTRATION_BEFORE, type = "java.time.OffsetDateTime"))
+})
+public class GeoMonotemporalRecord<E extends GeoEntity> extends GeoNontemporalRecord<E> implements Monotemporal<E> {
 
-    public static final String FILTER_REGISTRATION_AFTER = "(" + GeoMonotemporalRecord.DB_FIELD_REGISTRATION_FROM + " >= :" + Registration.FILTERPARAM_REGISTRATION_FROM + " OR " + GeoMonotemporalRecord.DB_FIELD_REGISTRATION_FROM + " is null)";
-    public static final String FILTER_REGISTRATION_BEFORE = "(" + GeoMonotemporalRecord.DB_FIELD_REGISTRATION_FROM + " < :" + Registration.FILTERPARAM_REGISTRATION_TO + " OR " + GeoMonotemporalRecord.DB_FIELD_REGISTRATION_FROM + " is null)";
-
+    public static final String DB_FIELD_ENTITY = GeoNontemporalRecord.DB_FIELD_ENTITY;
 
     // For storing the calculated endRegistration time, ie. when the next registration "overrides" us
-    public static final String DB_FIELD_REGISTRATION_FROM = "registrationFrom";
-    public static final String IO_FIELD_REGISTRATION_FROM = "registreringFra";
+    public static final String DB_FIELD_REGISTRATION_FROM = Monotemporal.DB_FIELD_REGISTRATION_FROM;
+    public static final String IO_FIELD_REGISTRATION_FROM = Monotemporal.IO_FIELD_REGISTRATION_FROM;
     @Column(name = DB_FIELD_REGISTRATION_FROM)
     @JsonProperty(value = IO_FIELD_REGISTRATION_FROM)
     @XmlElement(name = IO_FIELD_REGISTRATION_FROM)
@@ -52,8 +57,8 @@ public class GeoMonotemporalRecord<E extends GeoEntity> extends GeoNontemporalRe
 
 
     // For storing the calculated endRegistration time, ie. when the next registration "overrides" us
-    public static final String DB_FIELD_REGISTRATION_TO = "registrationTo";
-    public static final String IO_FIELD_REGISTRATION_TO = "registreringTil";
+    public static final String DB_FIELD_REGISTRATION_TO = Monotemporal.DB_FIELD_REGISTRATION_TO;
+    public static final String IO_FIELD_REGISTRATION_TO = Monotemporal.IO_FIELD_REGISTRATION_TO;
     @Column(name = DB_FIELD_REGISTRATION_TO)
     @JsonProperty(value = IO_FIELD_REGISTRATION_TO)
     @XmlElement(name = IO_FIELD_REGISTRATION_TO)

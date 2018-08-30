@@ -3,10 +3,14 @@ package dk.magenta.datafordeler.geo.data.building;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import dk.magenta.datafordeler.core.database.IdentifiedEntity;
+import dk.magenta.datafordeler.core.database.Monotemporal;
+import dk.magenta.datafordeler.core.database.Nontemporal;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 import dk.magenta.datafordeler.geo.data.SumiffiikEntity;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.Filters;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -85,10 +89,12 @@ public class BuildingEntity extends SumiffiikEntity implements IdentifiedEntity 
     public static final String DB_FIELD_USAGE = "usage";
     public static final String IO_FIELD_USAGE = "anvendelse";
     @OneToMany(mappedBy = BuildingUsageRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
-    /*@Filters({
-            @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_EFFECT_FROM),
-            @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_EFFECT_TO)
-    })*/
+    @Filters({
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_AFTER, condition = Monotemporal.FILTERLOGIC_REGISTRATION_AFTER),
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_BEFORE, condition = Monotemporal.FILTERLOGIC_REGISTRATION_BEFORE),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_AFTER, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_AFTER),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_BEFORE, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_BEFORE)
+    })
     @JsonProperty(IO_FIELD_USAGE)
     Set<BuildingUsageRecord> usage = new HashSet<>();
 
@@ -102,10 +108,12 @@ public class BuildingEntity extends SumiffiikEntity implements IdentifiedEntity 
     public static final String DB_FIELD_LOCALITY = "locality";
     public static final String IO_FIELD_LOCALITY = "lokalitet";
     @OneToMany(mappedBy = BuildingLocalityRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
-    /*@Filters({
-            @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_EFFECT_FROM),
-            @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_EFFECT_TO)
-    })*/
+    @Filters({
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_AFTER, condition = Monotemporal.FILTERLOGIC_REGISTRATION_AFTER),
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_BEFORE, condition = Monotemporal.FILTERLOGIC_REGISTRATION_BEFORE),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_AFTER, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_AFTER),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_BEFORE, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_BEFORE)
+    })
     @JsonProperty(IO_FIELD_LOCALITY)
     Set<BuildingLocalityRecord> locality = new HashSet<>();
 
@@ -120,10 +128,12 @@ public class BuildingEntity extends SumiffiikEntity implements IdentifiedEntity 
     public static final String DB_FIELD_SHAPE = "shape";
     public static final String IO_FIELD_SHAPE = "form";
     @OneToMany(mappedBy = BuildingShapeRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
-    /*@Filters({
-            @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_EFFECT_FROM),
-            @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_EFFECT_TO)
-    })*/
+    @Filters({
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_AFTER, condition = Monotemporal.FILTERLOGIC_REGISTRATION_AFTER),
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_BEFORE, condition = Monotemporal.FILTERLOGIC_REGISTRATION_BEFORE),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_AFTER, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_AFTER),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_BEFORE, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_BEFORE)
+    })
     @JsonProperty(IO_FIELD_SHAPE)
     Set<BuildingShapeRecord> shape = new HashSet<>();
 
