@@ -135,10 +135,12 @@ public class AccessAddressEntity extends SumiffiikEntity implements IdentifiedEn
     public static final String DB_FIELD_BUILDING = "building";
     public static final String IO_FIELD_BUILDING = "building";
     @OneToMany(mappedBy = AccessAddressBuildingReferenceRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
-    /*@Filters({
-            @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_EFFECT_FROM),
-            @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_EFFECT_TO)
-    })*/
+    @Filters({
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_AFTER, condition = Monotemporal.FILTERLOGIC_REGISTRATION_AFTER),
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_BEFORE, condition = Monotemporal.FILTERLOGIC_REGISTRATION_BEFORE),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_AFTER, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_AFTER),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_BEFORE, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_BEFORE)
+    })
     @JsonProperty(IO_FIELD_BUILDING)
     Set<AccessAddressBuildingReferenceRecord> building = new HashSet<>();
 
@@ -166,23 +168,6 @@ public class AccessAddressEntity extends SumiffiikEntity implements IdentifiedEn
 
 
 
-    public static final String DB_FIELD_IMPORT = "importStatus";
-    public static final String IO_FIELD_IMPORT = "import";
-    @OneToMany(mappedBy = AccessAddressImportRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
-    @Filters({
-            @Filter(name = Monotemporal.FILTER_REGISTRATION_AFTER, condition = Monotemporal.FILTERLOGIC_REGISTRATION_AFTER),
-            @Filter(name = Monotemporal.FILTER_REGISTRATION_BEFORE, condition = Monotemporal.FILTERLOGIC_REGISTRATION_BEFORE),
-            @Filter(name = Nontemporal.FILTER_LASTUPDATED_AFTER, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_AFTER),
-            @Filter(name = Nontemporal.FILTER_LASTUPDATED_BEFORE, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_BEFORE)
-    })
-    @JsonProperty(IO_FIELD_IMPORT)
-    Set<AccessAddressImportRecord> importStatus = new HashSet<>();
-
-    public Set<AccessAddressImportRecord> getImportStatus() {
-        return this.importStatus;
-    }
-
-
     public static final String DB_FIELD_SOURCE = "source";
     public static final String IO_FIELD_SOURCE = "source";
     @OneToMany(mappedBy = AccessAddressSourceRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
@@ -199,8 +184,7 @@ public class AccessAddressEntity extends SumiffiikEntity implements IdentifiedEn
         return this.source;
     }
 
-
-
+    
 
     public static final String DB_FIELD_SHAPE = "shape";
     public static final String IO_FIELD_SHAPE = "form";
@@ -245,9 +229,6 @@ public class AccessAddressEntity extends SumiffiikEntity implements IdentifiedEn
         if (record instanceof AccessAddressStatusRecord) {
             added = addItem(this.status, record);
         }
-        if (record instanceof AccessAddressImportRecord) {
-            added = addItem(this.importStatus, record);
-        }
         if (record instanceof AccessAddressSourceRecord) {
             added = addItem(this.source, record);
         }
@@ -272,7 +253,6 @@ public class AccessAddressEntity extends SumiffiikEntity implements IdentifiedEn
         records.add(this.building);
         records.add(this.blockName);
         records.add(this.houseNumber);
-        records.add(this.importStatus);
         records.add(this.source);
         records.add(this.status);
         records.add(this.shape);

@@ -85,25 +85,6 @@ public class BuildingEntity extends SumiffiikEntity implements IdentifiedEntity 
     }
 
 
-/*
-    public static final String DB_FIELD_USAGE = "usage";
-    public static final String IO_FIELD_USAGE = "anvendelse";
-    @OneToMany(mappedBy = BuildingUsageRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
-    @Filters({
-            @Filter(name = Monotemporal.FILTER_REGISTRATION_AFTER, condition = Monotemporal.FILTERLOGIC_REGISTRATION_AFTER),
-            @Filter(name = Monotemporal.FILTER_REGISTRATION_BEFORE, condition = Monotemporal.FILTERLOGIC_REGISTRATION_BEFORE),
-            @Filter(name = Nontemporal.FILTER_LASTUPDATED_AFTER, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_AFTER),
-            @Filter(name = Nontemporal.FILTER_LASTUPDATED_BEFORE, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_BEFORE)
-    })
-    @JsonProperty(IO_FIELD_USAGE)
-    Set<BuildingUsageRecord> usage = new HashSet<>();
-
-    public Set<BuildingUsageRecord> getUsage() {
-        return this.usage;
-    }
-*/
-
-
 
     public static final String DB_FIELD_LOCALITY = "locality";
     public static final String IO_FIELD_LOCALITY = "lokalitet";
@@ -150,9 +131,6 @@ public class BuildingEntity extends SumiffiikEntity implements IdentifiedEntity 
 
     public void addMonotemporalRecord(GeoMonotemporalRecord record) {
         boolean added = false;
-        /*if (record instanceof BuildingUsageRecord) {
-            added = addItem(this.usage, record);
-        }*/
         if (record instanceof BuildingLocalityRecord) {
             added = addItem(this.locality, record);
         }
@@ -168,7 +146,6 @@ public class BuildingEntity extends SumiffiikEntity implements IdentifiedEntity 
     public Set<Set<? extends GeoMonotemporalRecord>> getAllRecords() {
         HashSet<Set<? extends GeoMonotemporalRecord>> records = new HashSet<>();
         records.add(this.locality);
-        //records.add(this.usage);
         records.add(this.shape);
         return records;
     }

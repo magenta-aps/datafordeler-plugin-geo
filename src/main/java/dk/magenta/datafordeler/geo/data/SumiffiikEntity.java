@@ -20,6 +20,9 @@ public abstract class SumiffiikEntity extends GeoEntity implements IdentifiedEnt
     }
 
 
+
+
+
     public static final String DB_FIELD_OBJECT_ID = "objectId";
     @Column(name = DB_FIELD_OBJECT_ID)
     @JsonProperty
@@ -40,7 +43,7 @@ public abstract class SumiffiikEntity extends GeoEntity implements IdentifiedEnt
     @JsonProperty
     private String sumiffiikId;
 
-    @JsonProperty(value = "id")
+    @JsonProperty(value = "sumiffiikId")
     public String getSumiffiikId() {
         return this.sumiffiikId;
     }

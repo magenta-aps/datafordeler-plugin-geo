@@ -43,6 +43,11 @@ public class UnitAddressRawData extends SumiffiikRawData {
             return SumiffiikRawData.getSumiffiikAsUUID(this.accessAddressSumiffiik);
         }
 
+        @JsonProperty("EnhedsadresseSumiffik")
+        public void setSumiffiikId(String sumiffiikId) {
+            this.sumiffiikId = sumiffiikId;
+        }
+
     }
 
     @JsonProperty("attributes")

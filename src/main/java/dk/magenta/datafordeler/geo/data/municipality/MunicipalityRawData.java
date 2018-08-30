@@ -21,6 +21,11 @@ public class MunicipalityRawData extends SumiffiikRawData {
 
         @JsonProperty("Kommunekode")
         public int code;
+
+        @JsonProperty("groupid")
+        public void setSumiffiikId(String sumiffiikId) {
+            this.sumiffiikId = sumiffiikId;
+        }
     }
 
     @JsonProperty

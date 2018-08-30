@@ -86,6 +86,38 @@ public class LocalityEntity extends SumiffiikEntity implements IdentifiedEntity 
 
 
 
+    public static final String DB_FIELD_ABBREVIATION = "abbreviation";
+    public static final String IO_FIELD_ABBREVIATION = "forkortelse";
+    @OneToMany(mappedBy = LocalityAbbreviationRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
+    /*@Filters({
+            @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_REGISTRATION_AFTER),
+            @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_REGISTRATION_BEFORE)
+    })*/
+    @JsonProperty(IO_FIELD_ABBREVIATION)
+    Set<LocalityAbbreviationRecord> abbreviation = new HashSet<>();
+
+    public Set<LocalityAbbreviationRecord> getAbbreviation() {
+        return this.abbreviation;
+    }
+
+
+
+    public static final String DB_FIELD_TYPE = "type";
+    public static final String IO_FIELD_TYPE = "type";
+    @OneToMany(mappedBy = LocalityTypeRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
+    /*@Filters({
+            @Filter(name = Registration.FILTER_REGISTRATION_FROM, condition = GeoMonotemporalRecord.FILTER_REGISTRATION_AFTER),
+            @Filter(name = Registration.FILTER_REGISTRATION_TO, condition = GeoMonotemporalRecord.FILTER_REGISTRATION_BEFORE)
+    })*/
+    @JsonProperty(IO_FIELD_TYPE)
+    Set<LocalityTypeRecord> type = new HashSet<>();
+
+    public Set<LocalityTypeRecord> getType() {
+        return this.type;
+    }
+
+
+
     public static final String DB_FIELD_MUNICIPALITY = "municipality";
     public static final String IO_FIELD_MUNICIPALITY = "kommune";
     @OneToMany(mappedBy = LocalityMunicipalityRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
@@ -132,6 +164,12 @@ public class LocalityEntity extends SumiffiikEntity implements IdentifiedEntity 
         if (record instanceof LocalityNameRecord) {
             added = addItem(this.name, record);
         }
+        if (record instanceof LocalityAbbreviationRecord) {
+            added = addItem(this.abbreviation, record);
+        }
+        if (record instanceof LocalityTypeRecord) {
+            added = addItem(this.type, record);
+        }
         if (record instanceof LocalityMunicipalityRecord) {
             added = addItem(this.municipality, record);
         }
@@ -152,6 +190,7 @@ public class LocalityEntity extends SumiffiikEntity implements IdentifiedEntity 
     public Set<Set<? extends GeoMonotemporalRecord>> getAllRecords() {
         HashSet<Set<? extends GeoMonotemporalRecord>> records = new HashSet<>();
         records.add(this.name);
+        records.add(this.abbreviation);
         records.add(this.shape);
         records.add(this.municipality);
         return records;

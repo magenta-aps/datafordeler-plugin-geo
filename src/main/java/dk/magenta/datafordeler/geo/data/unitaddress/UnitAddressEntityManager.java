@@ -54,7 +54,7 @@ public class UnitAddressEntityManager extends GeoEntityManager<UnitAddressEntity
 
     @Override
     protected UUID generateUUID(UnitAddressRawData rawData) {
-        return rawData.properties.getSumiffiikAsUUID();
+        return rawData.properties.getUUID();
     }
 
     @Override

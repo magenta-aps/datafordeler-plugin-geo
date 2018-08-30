@@ -151,24 +151,6 @@ public class UnitAddressEntity extends SumiffiikEntity implements IdentifiedEnti
     }
 
 
-/*
-    public static final String DB_FIELD_IMPORT = "importStatus";
-    public static final String IO_FIELD_IMPORT = "import";
-    @OneToMany(mappedBy = UnitAddressImportRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
-    @Filters({
-            @Filter(name = Monotemporal.FILTER_REGISTRATION_AFTER, condition = Monotemporal.FILTERLOGIC_REGISTRATION_AFTER),
-            @Filter(name = Monotemporal.FILTER_REGISTRATION_BEFORE, condition = Monotemporal.FILTERLOGIC_REGISTRATION_BEFORE),
-            @Filter(name = Nontemporal.FILTER_LASTUPDATED_AFTER, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_AFTER),
-            @Filter(name = Nontemporal.FILTER_LASTUPDATED_BEFORE, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_BEFORE)
-    })
-    @JsonProperty(IO_FIELD_IMPORT)
-    Set<UnitAddressImportRecord> importStatus = new HashSet<>();
-
-    public Set<UnitAddressImportRecord> getImportStatus() {
-        return this.importStatus;
-    }*/
-
-
 
     public static final String DB_FIELD_SOURCE = "source";
     public static final String IO_FIELD_SOURCE = "source";
@@ -210,9 +192,6 @@ public class UnitAddressEntity extends SumiffiikEntity implements IdentifiedEnti
         if (record instanceof UnitAddressStatusRecord) {
             added = addItem(this.status, record);
         }
-        /*if (record instanceof UnitAddressImportRecord) {
-            added = addItem(this.importStatus, record);
-        }*/
         if (record instanceof UnitAddressSourceRecord) {
             added = addItem(this.source, record);
         }
@@ -233,7 +212,6 @@ public class UnitAddressEntity extends SumiffiikEntity implements IdentifiedEnti
         records.add(this.floor);
         records.add(this.number);
         records.add(this.usage);
-        //records.add(this.importStatus);
         records.add(this.source);
         records.add(this.status);
         return records;

@@ -237,10 +237,7 @@ public class AdresseService {
     }
 
     public String getAccessAddresses(UUID road) throws DataFordelerException {
-
-        System.out.println("road: "+road);
         Session session = sessionManager.getSessionFactory().openSession();
-
         AccessAddressQuery accessAddressQuery = new AccessAddressQuery();
         setQueryNow(accessAddressQuery);
         setQueryNoLimit(accessAddressQuery);
@@ -306,7 +303,6 @@ public class AdresseService {
     }
 
     public String getUnitAddresses(UUID roadUUID, String houseNumber, String buildingNumber) throws DataFordelerException {
-
         if (houseNumber != null && houseNumber.trim().isEmpty()) {
             houseNumber = null;
         }

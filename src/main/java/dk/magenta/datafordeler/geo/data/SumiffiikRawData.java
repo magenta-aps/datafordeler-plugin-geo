@@ -16,6 +16,9 @@ public abstract class SumiffiikRawData extends RawData {
         public int objectId;
 
         @JsonProperty("GlobalID")
+        public String globalID;
+
+        @JsonIgnore
         public String sumiffiikId;
 
         @JsonProperty("Creator")
@@ -31,8 +34,8 @@ public abstract class SumiffiikRawData extends RawData {
         public long editDate;
 
         @JsonIgnore
-        public UUID getSumiffiikAsUUID() {
-            return SumiffiikRawData.getSumiffiikAsUUID(this.sumiffiikId);
+        public UUID getUUID() {
+            return SumiffiikRawData.getSumiffiikAsUUID(this.globalID);
         }
 
     }

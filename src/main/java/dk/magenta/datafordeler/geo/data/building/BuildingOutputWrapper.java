@@ -10,8 +10,8 @@ public class BuildingOutputWrapper extends GeoOutputWrapper<BuildingEntity> {
     protected void fillContainer(OutputContainer container, BuildingEntity item) {
         container.addNontemporal("anr", item.getAnr());
         container.addNontemporal("bnr", item.getBnr());
-        //container.addMonotemporal("anvendelse", item.getUsage());
         container.addMonotemporal("lokalitet", item.getLocality());
+        container.addNontemporal("sumiffiik", item.getSumiffiikId());
     }
 
 }

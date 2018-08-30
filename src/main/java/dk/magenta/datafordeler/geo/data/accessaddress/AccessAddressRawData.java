@@ -34,9 +34,6 @@ public class AccessAddressRawData extends SumiffiikRawData {
         @JsonProperty("HusNummer")
         public String houseNumber;
 
-        @JsonProperty("ImporteretKomplette")
-        public String importComplete;
-
         @JsonProperty("Postnummer")
         public Integer postcode;
 
@@ -52,6 +49,11 @@ public class AccessAddressRawData extends SumiffiikRawData {
 
         @JsonProperty("bygning_id")
         public String buildingId;
+
+        @JsonProperty("AdgangsadresseSumiffik")
+        public void setSumiffiikId(String sumiffiikId) {
+            this.sumiffiikId = sumiffiikId;
+        }
     }
 
     @JsonProperty
@@ -83,10 +85,6 @@ public class AccessAddressRawData extends SumiffiikRawData {
 
         records.add(
                 new AccessAddressStatusRecord(this.properties.objectStatus)
-        );
-
-        records.add(
-                new AccessAddressImportRecord(this.properties.importComplete)
         );
 
         records.add(

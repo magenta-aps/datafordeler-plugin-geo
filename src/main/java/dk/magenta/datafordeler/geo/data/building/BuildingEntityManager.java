@@ -49,7 +49,7 @@ public class BuildingEntityManager extends GeoEntityManager<BuildingEntity, Buil
 
     @Override
     protected UUID generateUUID(BuildingRawData rawData) {
-        return rawData.properties.getSumiffiikAsUUID();
+        return rawData.properties.getUUID();
     }
 
     @Override

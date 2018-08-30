@@ -14,6 +14,7 @@ public class MunicipalityOutputWrapper extends GeoOutputWrapper<MunicipalityEnti
     protected void fillContainer(OutputContainer container, MunicipalityEntity item) {
         container.addNontemporal("kommunekode", item.getCode());
         container.addMonotemporal("navn", item.getName());
+        container.addNontemporal("sumiffiik", item.getSumiffiikId());
     }
 
     @Override

@@ -49,7 +49,7 @@ public class RoadEntityManager extends GeoEntityManager<RoadEntity, RoadRawData>
 
     @Override
     protected UUID generateUUID(RoadRawData rawData) {
-        return rawData.properties.getSumiffiikAsUUID();
+        return rawData.properties.getUUID();
     }
 
     @Override
