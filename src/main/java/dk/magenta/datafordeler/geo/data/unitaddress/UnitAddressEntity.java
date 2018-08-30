@@ -2,7 +2,10 @@ package dk.magenta.datafordeler.geo.data.unitaddress;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import dk.magenta.datafordeler.core.database.*;
+import dk.magenta.datafordeler.core.database.Identification;
+import dk.magenta.datafordeler.core.database.IdentifiedEntity;
+import dk.magenta.datafordeler.core.database.Monotemporal;
+import dk.magenta.datafordeler.core.database.Nontemporal;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 import dk.magenta.datafordeler.geo.data.SumiffiikEntity;
@@ -11,7 +14,6 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Filters;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;

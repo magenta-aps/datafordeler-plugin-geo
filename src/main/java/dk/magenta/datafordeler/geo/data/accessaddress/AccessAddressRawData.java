@@ -2,7 +2,6 @@ package dk.magenta.datafordeler.geo.data.accessaddress;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import dk.magenta.datafordeler.geo.data.SumiffiikEntity;
 import dk.magenta.datafordeler.geo.data.SumiffiikRawData;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
 import org.geojson.Point;

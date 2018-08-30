@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dk.magenta.datafordeler.core.database.DatabaseEntry;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
-import dk.magenta.datafordeler.geo.data.common.NameRecord;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

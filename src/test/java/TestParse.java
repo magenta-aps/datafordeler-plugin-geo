@@ -41,12 +41,6 @@ import java.util.UUID;
 public class TestParse extends GeoTest {
 
     @Autowired
-    private Engine engine;
-
-    @Autowired
-    private GeoPlugin plugin;
-
-    @Autowired
     private SessionManager sessionManager;
 
     @Autowired
@@ -277,7 +271,6 @@ public class TestParse extends GeoTest {
             Assert.assertEquals("kld", entity.getFloor().iterator().next().getFloor());
             Assert.assertEquals(1, entity.getDoor().size());
             Assert.assertEquals("1234", entity.getDoor().iterator().next().getDoor());
-            //Assert.assertEquals(1, entity.getImportStatus().size());
             Assert.assertEquals(1, entity.getNumber().size());
             Assert.assertEquals("5678", entity.getNumber().iterator().next().getNumber());
             Assert.assertEquals(1, entity.getSource().size());
