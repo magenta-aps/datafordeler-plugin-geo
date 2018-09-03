@@ -19,10 +19,4 @@ public class RoadOutputWrapper extends GeoOutputWrapper<RoadEntity> {
         container.addNontemporal("sumiffiik", item.getSumiffiikId());
     }
 
-    @Override
-    public Set<String> getRemoveFieldNames() {
-        HashSet<String> fields = new HashSet<>();
-        fields.add(GeoMonotemporalRecord.IO_FIELD_EDITOR);
-        return fields;
-    }
 }

@@ -22,10 +22,4 @@ public class UnitAddressOutputWrapper extends GeoOutputWrapper<UnitAddressEntity
         container.addNontemporal("sumiffiik", item.getSumiffiikId());
     }
 
-    @Override
-    public Set<String> getRemoveFieldNames() {
-        HashSet<String> fields = new HashSet<>();
-        fields.add(GeoMonotemporalRecord.IO_FIELD_EDITOR);
-        return fields;
-    }
 }

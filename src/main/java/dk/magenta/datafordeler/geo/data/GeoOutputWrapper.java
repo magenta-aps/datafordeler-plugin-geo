@@ -11,8 +11,9 @@ import java.util.Set;
 @Component
 public abstract class GeoOutputWrapper<E extends GeoEntity> extends dk.magenta.datafordeler.core.fapi.RecordOutputWrapper<E> {
 
-    public Set<String> getRemoveFieldNames() {
-        HashSet<String> fields = new HashSet<>();
+    @Override
+    public Set<String> getRemoveFieldNames(Mode mode) {
+        HashSet<String> fields = new HashSet<>(super.getRemoveFieldNames(mode));
         fields.add(GeoMonotemporalRecord.IO_FIELD_EDITOR);
         return fields;
     }

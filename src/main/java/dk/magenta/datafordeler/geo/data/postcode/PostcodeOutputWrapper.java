@@ -14,8 +14,4 @@ public class PostcodeOutputWrapper extends GeoOutputWrapper<PostcodeEntity> {
         container.addNontemporal("postdistrikt", item.getName());
     }
 
-    @Override
-    public Set<String> getRemoveFieldNames() {
-        return null;
-    }
 }
