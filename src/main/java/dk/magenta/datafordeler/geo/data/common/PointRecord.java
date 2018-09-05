@@ -43,8 +43,7 @@ public abstract class PointRecord<E extends GeoEntity> extends GeoMonotemporalRe
 
     public static final String DB_FIELD_SHAPE = "shape";
     public static final String IO_FIELD_SHAPE = "form";
-    @Column(name = DB_FIELD_SHAPE)
-    //@Type(type = "org.hibernate.spatial.GeometryType")
+    @Column(name = DB_FIELD_SHAPE, columnDefinition = "geometry")
     private Point shape;
 
     public Point getShape() {

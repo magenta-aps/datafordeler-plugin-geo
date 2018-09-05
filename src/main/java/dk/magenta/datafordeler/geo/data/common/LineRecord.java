@@ -49,8 +49,7 @@ public abstract class LineRecord<E extends GeoEntity> extends GeoMonotemporalRec
 
     public static final String DB_FIELD_SHAPE = "shape";
     public static final String IO_FIELD_SHAPE = "form";
-    @Column(name = DB_FIELD_SHAPE)
-    //@Type(type = "org.hibernate.spatial.GeometryType")
+    @Column(name = DB_FIELD_SHAPE, columnDefinition = "geometry")
     private MultiLineString shape;
 
     public MultiLineString getShape() {

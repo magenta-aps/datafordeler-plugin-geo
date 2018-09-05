@@ -73,12 +73,12 @@ public class GeoPlugin extends Plugin {
      */
     @PostConstruct
     public void init() {
-        this.registerManager.addEntityManager(this.accessAddressEntityManager);
-        this.registerManager.addEntityManager(this.buildingEntityManager);
-        this.registerManager.addEntityManager(this.localityEntityManager);
         this.registerManager.addEntityManager(this.municipalityEntityManager);
-        this.registerManager.addEntityManager(this.postcodeEntityManager);
+        this.registerManager.addEntityManager(this.localityEntityManager);
         this.registerManager.addEntityManager(this.roadEntityManager);
+        this.registerManager.addEntityManager(this.postcodeEntityManager);
+        this.registerManager.addEntityManager(this.buildingEntityManager);
+        this.registerManager.addEntityManager(this.accessAddressEntityManager);
         this.registerManager.addEntityManager(this.unitAddressEntityManager);
     }
 
