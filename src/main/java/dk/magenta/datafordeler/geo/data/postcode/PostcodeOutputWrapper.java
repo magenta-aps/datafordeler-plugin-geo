@@ -9,13 +9,9 @@ import java.util.Set;
 public class PostcodeOutputWrapper extends GeoOutputWrapper<PostcodeEntity> {
 
     @Override
-    protected void fillMetadataContainer(OutputContainer container, PostcodeEntity item) {
+    protected void fillContainer(OutputContainer container, PostcodeEntity item) {
         container.addNontemporal("postnummer", item.getCode());
         container.addNontemporal("postdistrikt", item.getName());
     }
 
-    @Override
-    public Set<String> getRemoveFieldNames() {
-        return null;
-    }
 }

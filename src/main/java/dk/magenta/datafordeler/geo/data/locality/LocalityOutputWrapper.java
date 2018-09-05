@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 public class LocalityOutputWrapper extends GeoOutputWrapper<LocalityEntity> {
 
     @Override
-    protected void fillMetadataContainer(OutputContainer container, LocalityEntity item) {
+    protected void fillContainer(OutputContainer container, LocalityEntity item) {
         container.addNontemporal("lokalitetskode", item.getCode());
         container.addMonotemporal("navn", item.getName());
         container.addMonotemporal("forkortelse", item.getAbbreviation());

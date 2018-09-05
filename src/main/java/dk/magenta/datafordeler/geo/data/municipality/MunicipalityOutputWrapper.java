@@ -11,16 +11,10 @@ import java.util.Set;
 public class MunicipalityOutputWrapper extends GeoOutputWrapper<MunicipalityEntity> {
 
     @Override
-    protected void fillMetadataContainer(OutputContainer container, MunicipalityEntity item) {
+    protected void fillContainer(OutputContainer container, MunicipalityEntity item) {
         container.addNontemporal("kommunekode", item.getCode());
         container.addMonotemporal("navn", item.getName());
         container.addNontemporal("sumiffiik", item.getSumiffiikId());
     }
 
-    @Override
-    public Set<String> getRemoveFieldNames() {
-        HashSet<String> fields = new HashSet<>();
-        fields.add(GeoMonotemporalRecord.IO_FIELD_EDITOR);
-        return fields;
-    }
 }

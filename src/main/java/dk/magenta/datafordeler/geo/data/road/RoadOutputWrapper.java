@@ -11,7 +11,7 @@ import java.util.Set;
 public class RoadOutputWrapper extends GeoOutputWrapper<RoadEntity> {
 
     @Override
-    protected void fillMetadataContainer(OutputContainer container, RoadEntity item) {
+    protected void fillContainer(OutputContainer container, RoadEntity item) {
         container.addNontemporal("vejkode", item.getCode());
         container.addMonotemporal("navn", item.getName());
         container.addMonotemporal("lokalitet", item.getLocality());
@@ -19,10 +19,4 @@ public class RoadOutputWrapper extends GeoOutputWrapper<RoadEntity> {
         container.addNontemporal("sumiffiik", item.getSumiffiikId());
     }
 
-    @Override
-    public Set<String> getRemoveFieldNames() {
-        HashSet<String> fields = new HashSet<>();
-        fields.add(GeoMonotemporalRecord.IO_FIELD_EDITOR);
-        return fields;
-    }
 }

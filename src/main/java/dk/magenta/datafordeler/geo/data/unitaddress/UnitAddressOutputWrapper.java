@@ -11,7 +11,7 @@ import java.util.Set;
 public class UnitAddressOutputWrapper extends GeoOutputWrapper<UnitAddressEntity> {
 
     @Override
-    protected void fillMetadataContainer(OutputContainer container, UnitAddressEntity item) {
+    protected void fillContainer(OutputContainer container, UnitAddressEntity item) {
         container.addMonotemporal("dør", item.getDoor());
         container.addMonotemporal("etage", item.getFloor());
         container.addMonotemporal("anvendelse", item.getUsage());
@@ -22,10 +22,4 @@ public class UnitAddressOutputWrapper extends GeoOutputWrapper<UnitAddressEntity
         container.addNontemporal("sumiffiik", item.getSumiffiikId());
     }
 
-    @Override
-    public Set<String> getRemoveFieldNames() {
-        HashSet<String> fields = new HashSet<>();
-        fields.add(GeoMonotemporalRecord.IO_FIELD_EDITOR);
-        return fields;
-    }
 }

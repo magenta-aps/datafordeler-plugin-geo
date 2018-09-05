@@ -10,6 +10,8 @@ import java.util.Objects;
 @MappedSuperclass
 public class MunicipalityReferenceRecord<E extends GeoEntity> extends GeoMonotemporalRecord<E> {
 
+    public static final String DB_FIELD_ENTITY = GeoMonotemporalRecord.DB_FIELD_ENTITY;
+
     public MunicipalityReferenceRecord() {
     }
 

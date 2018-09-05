@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 public class AccessAddressOutputWrapper extends GeoOutputWrapper<AccessAddressEntity> {
 
     @Override
-    protected void fillMetadataContainer(OutputContainer container, AccessAddressEntity item) {
+    protected void fillContainer(OutputContainer container, AccessAddressEntity item) {
         container.addMonotemporal("husNummer", item.getHouseNumber());
         container.addNontemporal("bnr", item.getBnr());
         container.addMonotemporal("blokNavn", item.getBlockName());
