@@ -218,7 +218,6 @@ public class GeoRegisterManager extends RegisterManager {
                             try {
                                 String data = InputStreamReader.readInputStream(responseBody);
                                 long responseCount = GeoEntityManager.parseJsonStream(data, "features", this.objectMapper, null);
-                                System.out.println("responseCount: "+responseCount);
                                 if (responseCount == 0) {
                                     break;
                                 }
@@ -257,6 +256,11 @@ public class GeoRegisterManager extends RegisterManager {
     @Override
     protected ItemInputStream<? extends PluginSourceData> parseEventResponse(InputStream rawData, EntityManager entityManager) throws DataFordelerException {
         return null;
+    }
+
+    @Override
+    public String getPullCronSchedule() {
+        return this.configurationManager.getConfiguration().getPullCronSchedule();
     }
 
 }
