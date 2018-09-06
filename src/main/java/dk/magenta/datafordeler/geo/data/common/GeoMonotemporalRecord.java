@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dk.magenta.datafordeler.core.database.Monotemporal;
 import dk.magenta.datafordeler.core.util.Monotemporality;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
+import dk.magenta.datafordeler.geo.data.WireCache;
 import org.hibernate.Session;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.FilterDefs;
@@ -161,7 +162,7 @@ public class GeoMonotemporalRecord<E extends GeoEntity> extends GeoNontemporalRe
         to.registrationTo = from.registrationTo;
     }
 
-    public void wire(Session session) {
+    public void wire(Session session, WireCache wireCache) {
         // Implement in subclasses as needed
     }
 

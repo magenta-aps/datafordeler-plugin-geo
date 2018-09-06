@@ -72,7 +72,7 @@ public class MunicipalityQuery extends SumiffiikQuery<MunicipalityEntity> {
             lookupDefinition.put(MunicipalityEntity.DB_FIELD_CODE, this.code, Integer.class);
         }
         if (this.name != null && !this.name.isEmpty()) {
-            lookupDefinition.put(MunicipalityEntity.DB_FIELD_NAME, this.name, String.class);
+            lookupDefinition.put(MunicipalityEntity.DB_FIELD_NAME + BaseLookupDefinition.separator + MunicipalityNameRecord.DB_FIELD_NAME, this.name, String.class);
         }
         return lookupDefinition;
     }

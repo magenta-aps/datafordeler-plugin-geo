@@ -3,8 +3,8 @@ package dk.magenta.datafordeler.geo.data.accessaddress;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import dk.magenta.datafordeler.core.database.DatabaseEntry;
 import dk.magenta.datafordeler.core.database.Identification;
-import dk.magenta.datafordeler.core.database.QueryManager;
 import dk.magenta.datafordeler.geo.GeoPlugin;
+import dk.magenta.datafordeler.geo.data.WireCache;
 import dk.magenta.datafordeler.geo.data.building.BuildingEntity;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
 import org.hibernate.Session;
@@ -51,11 +51,11 @@ public class AccessAddressBuildingReferenceRecord extends GeoMonotemporalRecord<
         return this.reference;
     }
 
-    public void wire(Session session) {
+    public void wire(Session session, WireCache wireCache) {
         if (this.reference == null && this.uuid != null) {
-            BuildingEntity localityEntity = QueryManager.getEntity(session, this.uuid, BuildingEntity.class);
-            if (localityEntity != null) {
-                this.reference = localityEntity.getIdentification();
+            BuildingEntity buildingEntity = wireCache.getBuilding(session, this.uuid);
+            if (buildingEntity != null) {
+                this.reference = buildingEntity.getIdentification();
             }
         }
     }

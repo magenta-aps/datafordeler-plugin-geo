@@ -50,7 +50,7 @@ public class UnitAddressRawData extends SumiffiikRawData {
 
     }
 
-    @JsonProperty("attributes")
+    @JsonProperty("properties")
     public UnitAddressRawProperties properties;
 
     @Override

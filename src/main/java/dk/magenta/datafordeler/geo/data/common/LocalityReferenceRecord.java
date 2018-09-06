@@ -3,16 +3,16 @@ package dk.magenta.datafordeler.geo.data.common;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import dk.magenta.datafordeler.core.database.Identification;
-import dk.magenta.datafordeler.core.database.QueryManager;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
+import dk.magenta.datafordeler.geo.data.WireCache;
 import dk.magenta.datafordeler.geo.data.locality.LocalityEntity;
-import dk.magenta.datafordeler.geo.data.locality.LocalityQuery;
 import org.hibernate.Session;
 
 import javax.persistence.Column;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -65,17 +65,18 @@ public class LocalityReferenceRecord<E extends GeoEntity> extends GeoMonotempora
         return this.reference;
     }
 
-    public void wire(Session session) {
+    public void wire(Session session, WireCache wireCache) {
         if (this.reference == null && this.code != null) {
-            LocalityQuery query = new LocalityQuery();
-            query.setCode(this.code);
-            for (LocalityEntity locality : QueryManager.getAllEntities(session, query, LocalityEntity.class)) {
+            System.out.println("wire localityreference 1");
+            List<LocalityEntity> localityEntities = wireCache.getLocality(session, this.code);
+            for (LocalityEntity locality : localityEntities) {
                 this.reference = locality.getIdentification();
                 break;
             }
         }
         if (this.reference == null && this.uuid != null) {
-            LocalityEntity localityEntity = QueryManager.getEntity(session, this.uuid, LocalityEntity.class);
+            System.out.println("wire localityreference 2");
+            LocalityEntity localityEntity = wireCache.getLocality(session, this.uuid);
             if (localityEntity != null) {
                 this.reference = localityEntity.getIdentification();
                 this.code = localityEntity.getCode();

@@ -49,6 +49,9 @@ public class PostcodeEntityManager extends GeoEntityManager<PostcodeEntity, Post
 
     @Override
     protected UUID generateUUID(PostcodeRawData rawData) {
+        System.out.println(rawData);
+        System.out.println(rawData.properties);
+        System.out.println(rawData.properties.code);
         return PostcodeEntity.generateUUID(rawData.properties.code);
     }
 
