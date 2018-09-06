@@ -29,9 +29,11 @@ import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.function.Consumer;
@@ -182,9 +184,10 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
             importMetadata.setTransactionInProgress(true);
         }
         timer.clear();
+        final WireCache wireCache = new WireCache();
+
         parseJsonStream(jsonData, "features", this.objectMapper, jsonNode -> {
             try {
-
                 timer.start(TASK_PARSE);
                 T rawData = objectMapper.readerFor(this.getRawClass()).readValue(jsonNode);
                 timer.measure(TASK_PARSE);
@@ -205,7 +208,7 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
 
                 timer.start(TASK_POPULATE_DATA);
                 this.updateEntity(entity, rawData, importMetadata);
-                entity.wire(session);
+                entity.wire(session, wireCache);
                 timer.measure(TASK_POPULATE_DATA);
 
                 timer.start(TASK_SAVE);
@@ -217,12 +220,17 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
                 e.printStackTrace();
             }
         });
+
         if (!wrappedInTransaction) {
             session.getTransaction().commit();
             importMetadata.setTransactionInProgress(false);
         }
         log.info(timer.formatAllTotal());
         return null;
+    }
+
+    public static long parseJsonStream(String jsonData, String searchKey, ObjectMapper objectMapper, Consumer<JsonNode> callback) throws DataStreamException {
+        return parseJsonStream(new ByteArrayInputStream(jsonData.getBytes(Charset.forName("utf-8"))), searchKey, objectMapper, callback);
     }
 
     public static long parseJsonStream(InputStream jsonData, String searchKey, ObjectMapper objectMapper, Consumer<JsonNode> callback) throws DataStreamException {
@@ -245,16 +253,21 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
 
                 if (found) {
                     if (token == JsonToken.START_ARRAY) {
-                        parser.nextToken();
-                        Iterator<JsonNode> nodeIterator = parser.readValuesAs(JsonNode.class);
-                        while (nodeIterator.hasNext()) {
-                            JsonNode item = nodeIterator.next();
-                            callback.accept(item);
-                            count++;
+                        if (parser.nextToken() != JsonToken.END_ARRAY) {
+                            Iterator<JsonNode> nodeIterator = parser.readValuesAs(JsonNode.class);
+                            while (nodeIterator.hasNext()) {
+                                JsonNode item = nodeIterator.next();
+                                if (callback != null) {
+                                    callback.accept(item);
+                                }
+                                count++;
+                            }
                         }
                     } else {
                         JsonNode item = parser.readValueAs(JsonNode.class);
-                        callback.accept(item);
+                        if (callback != null) {
+                            callback.accept(item);
+                        }
                         count++;
                     }
                 }
@@ -311,10 +324,8 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
      */
     @Override
     public boolean pullEnabled() {
-        try {
-            return this.getRegisterManager().getEventInterface(this) != null;
-        } catch (DataFordelerException e) {
-            return false;
-        }
+        GeoConfiguration configuration = this.getRegisterManager().getConfigurationManager().getConfiguration();
+        GeoConfiguration.RegisterType registerType = configuration.getRegisterType(this.getSchema());
+        return (registerType != null && registerType != GeoConfiguration.RegisterType.DISABLED);
     }
 }

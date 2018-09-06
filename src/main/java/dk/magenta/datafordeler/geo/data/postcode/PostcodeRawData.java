@@ -24,7 +24,7 @@ public class PostcodeRawData extends RawData {
 
     }
 
-    @JsonProperty("attributes")
+    @JsonProperty("properties")
     public PostcodeRawProperties properties;
 
     public PostcodeRawProperties getProperties() {

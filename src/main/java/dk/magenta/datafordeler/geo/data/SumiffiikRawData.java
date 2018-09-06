@@ -63,8 +63,13 @@ public abstract class SumiffiikRawData extends RawData {
     public GeoJsonObject shape;
 
     public static UUID getSumiffiikAsUUID(String sumiffiikId) {
-        if (sumiffiikId != null && sumiffiikId.length() == 38) {
-            return UUID.fromString(sumiffiikId.substring(1, 37));
+        if (sumiffiikId != null) {
+            if (sumiffiikId.length() == 38 && sumiffiikId.charAt(0) == '{' && sumiffiikId.charAt(37) == '}') {
+                sumiffiikId = sumiffiikId.substring(1, 37);
+            }
+            if (sumiffiikId.length() == 36) {
+                return UUID.fromString(sumiffiikId);
+            }
         }
         return null;
     }

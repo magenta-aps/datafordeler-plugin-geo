@@ -4,11 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import dk.magenta.datafordeler.core.database.DatabaseEntry;
 import dk.magenta.datafordeler.core.database.Identification;
-import dk.magenta.datafordeler.core.database.QueryManager;
 import dk.magenta.datafordeler.geo.GeoPlugin;
+import dk.magenta.datafordeler.geo.data.WireCache;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
 import dk.magenta.datafordeler.geo.data.road.RoadEntity;
-import dk.magenta.datafordeler.geo.data.road.RoadQuery;
 import org.hibernate.Session;
 
 import javax.persistence.*;
@@ -76,12 +75,10 @@ public class AccessAddressRoadRecord extends GeoMonotemporalRecord<AccessAddress
     }
 
 
-    public void wire(Session session) {
+    public void wire(Session session, WireCache wireCache) {
         if (this.reference == null && this.municipalityCode != null && this.roadCode != null) {
-            RoadQuery query = new RoadQuery();
-            query.setMunicipality(Integer.toString(this.municipalityCode));
-            query.setCode(Integer.toString(this.roadCode));
-            for (RoadEntity road : QueryManager.getAllEntities(session, query, RoadEntity.class)) {
+            System.out.println("wire roadreference");
+            for (RoadEntity road : wireCache.getRoad(session, this.municipalityCode, this.roadCode)) {
                 this.reference = road.getIdentification();
                 return;
             }

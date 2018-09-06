@@ -90,10 +90,10 @@ public abstract class GeoEntity extends DatabaseEntry implements IdentifiedEntit
 
     public abstract void addMonotemporalRecord(GeoMonotemporalRecord record);
 
-    public void wire(Session session) {
+    public void wire(Session session, WireCache wireCache) {
         for (Set<? extends GeoMonotemporalRecord> set : this.getAllRecords()) {
             for (GeoMonotemporalRecord record : set) {
-                record.wire(session);
+                record.wire(session, wireCache);
             }
         }
     }

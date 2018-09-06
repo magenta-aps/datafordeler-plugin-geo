@@ -3,8 +3,6 @@ package dk.magenta.datafordeler.geo.data.postcode;
 import dk.magenta.datafordeler.geo.data.GeoOutputWrapper;
 import org.springframework.stereotype.Component;
 
-import java.util.Set;
-
 @Component
 public class PostcodeOutputWrapper extends GeoOutputWrapper<PostcodeEntity> {
 
