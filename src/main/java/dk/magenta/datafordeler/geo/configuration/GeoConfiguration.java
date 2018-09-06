@@ -36,6 +36,14 @@ public class GeoConfiguration implements Configuration {
     private final String plugin = GeoPlugin.class.getName();
 
 
+    @Column
+    private String pullCronSchedule = null;
+
+    public String getPullCronSchedule() {
+        return this.pullCronSchedule;
+    }
+
+
 
     @Column
     @Enumerated(EnumType.ORDINAL)
@@ -45,7 +53,7 @@ public class GeoConfiguration implements Configuration {
         return this.municipalityRegisterType;
     }
 
-    @Column
+    @Column(length = 1024)
     private String municipalityURL = "";
 
     public String getMunicipalityURL() {
@@ -60,7 +68,7 @@ public class GeoConfiguration implements Configuration {
         return this.postcodeRegisterType;
     }
 
-    @Column
+    @Column(length = 1024)
     private String postcodeURL = "";
 
     public String getPostcodeURL() {
@@ -75,7 +83,7 @@ public class GeoConfiguration implements Configuration {
         return this.localityRegisterType;
     }
 
-    @Column
+    @Column(length = 1024)
     private String localityURL = "";
 
     public String getLocalityURL() {
@@ -90,7 +98,7 @@ public class GeoConfiguration implements Configuration {
         return this.roadRegisterType;
     }
 
-    @Column
+    @Column(length = 1024)
     private String roadURL = "";
 
 
@@ -106,7 +114,7 @@ public class GeoConfiguration implements Configuration {
         return this.buildingRegisterType;
     }
 
-    @Column
+    @Column(length = 1024)
     private String buildingURL = "";
 
 
@@ -122,7 +130,7 @@ public class GeoConfiguration implements Configuration {
         return this.accessAddressRegisterType;
     }
 
-    @Column
+    @Column(length = 1024)
     private String accessAddressURL = "";
 
 
@@ -138,7 +146,7 @@ public class GeoConfiguration implements Configuration {
         return this.unitAddressRegisterType;
     }
 
-    @Column
+    @Column(length = 1024)
     private String unitAddressURL = "";
 
 
