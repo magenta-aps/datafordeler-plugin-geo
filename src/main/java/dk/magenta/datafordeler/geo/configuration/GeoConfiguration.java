@@ -54,10 +54,10 @@ public class GeoConfiguration implements Configuration {
     }
 
     @Column(length = 1024)
-    private String municipalityURL = "";
+    private String municipalityRegisterURL = "";
 
-    public String getMunicipalityURL() {
-        return this.municipalityURL;
+    public String getMunicipalityRegisterURL() {
+        return this.municipalityRegisterURL;
     }
 
     @Column
@@ -181,7 +181,7 @@ public class GeoConfiguration implements Configuration {
     public String getURL(String schema) {
         switch (schema) {
             case MunicipalityEntity.schema:
-                return this.municipalityURL;
+                return this.municipalityRegisterURL;
             case PostcodeEntity.schema:
                 return this.postcodeRegisterURL;
             case LocalityEntity.schema:
