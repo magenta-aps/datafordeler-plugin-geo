@@ -69,10 +69,10 @@ public class GeoConfiguration implements Configuration {
     }
 
     @Column(length = 1024)
-    private String postcodeURL = "";
+    private String postcodeRegisterURL = "";
 
-    public String getPostcodeURL() {
-        return this.postcodeURL;
+    public String getPostcodeRegisterURL() {
+        return this.postcodeRegisterURL;
     }
 
     @Column
@@ -84,10 +84,10 @@ public class GeoConfiguration implements Configuration {
     }
 
     @Column(length = 1024)
-    private String localityURL = "";
+    private String localityRegisterURL = "";
 
-    public String getLocalityURL() {
-        return this.localityURL;
+    public String getLocalityRegisterURL() {
+        return this.localityRegisterURL;
     }
 
     @Column
@@ -99,11 +99,11 @@ public class GeoConfiguration implements Configuration {
     }
 
     @Column(length = 1024)
-    private String roadURL = "";
+    private String roadRegisterURL = "";
 
 
-    public String getRoadURL() {
-        return this.roadURL;
+    public String getRoadRegisterURL() {
+        return this.roadRegisterURL;
     }
 
     @Column
@@ -115,11 +115,11 @@ public class GeoConfiguration implements Configuration {
     }
 
     @Column(length = 1024)
-    private String buildingURL = "";
+    private String buildingRegisterURL = "";
 
 
-    public String getBuildingURL() {
-        return this.buildingURL;
+    public String getBuildingRegisterURL() {
+        return this.buildingRegisterURL;
     }
 
     @Column
@@ -131,11 +131,11 @@ public class GeoConfiguration implements Configuration {
     }
 
     @Column(length = 1024)
-    private String accessAddressURL = "";
+    private String accessAddressRegisterURL = "";
 
 
-    public String getAccessAddressURL() {
-        return this.accessAddressURL;
+    public String getAccessAddressRegisterURL() {
+        return this.accessAddressRegisterURL;
     }
 
     @Column
@@ -147,11 +147,11 @@ public class GeoConfiguration implements Configuration {
     }
 
     @Column(length = 1024)
-    private String unitAddressURL = "";
+    private String unitAddressRegisterURL = "";
 
 
-    public String getUnitAddressURL() {
-        return this.unitAddressURL;
+    public String getUnitAddressRegisterURL() {
+        return this.unitAddressRegisterURL;
     }
 
 
@@ -183,17 +183,17 @@ public class GeoConfiguration implements Configuration {
             case MunicipalityEntity.schema:
                 return this.municipalityURL;
             case PostcodeEntity.schema:
-                return this.postcodeURL;
+                return this.postcodeRegisterURL;
             case LocalityEntity.schema:
-                return this.localityURL;
+                return this.localityRegisterURL;
             case RoadEntity.schema:
-                return this.roadURL;
+                return this.roadRegisterURL;
             case BuildingEntity.schema:
-                return this.buildingURL;
+                return this.buildingRegisterURL;
             case AccessAddressEntity.schema:
-                return this.accessAddressURL;
+                return this.accessAddressRegisterURL;
             case UnitAddressEntity.schema:
-                return this.unitAddressURL;
+                return this.unitAddressRegisterURL;
         }
         return null;
     }
