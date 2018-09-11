@@ -172,7 +172,6 @@ public class GeoRegisterManager extends RegisterManager {
 
     @Override
     public ImportInputStream pullRawData(URI eventInterface, EntityManager entityManager, ImportMetadata importMetadata) throws DataFordelerException {
-        System.out.println(eventInterface);
         this.log.info("eventInterface: "+eventInterface);
         GeoConfiguration configuration = this.configurationManager.getConfiguration();
         GeoConfiguration.RegisterType registerType = configuration.getRegisterType(entityManager.getSchema());
