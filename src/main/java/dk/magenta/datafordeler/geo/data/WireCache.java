@@ -22,7 +22,6 @@ public class WireCache {
             LocalityQuery query = new LocalityQuery();
             query.setCode(code);
             List<LocalityEntity> list = QueryManager.getAllEntities(session, query, LocalityEntity.class);
-            System.out.println("adding to localityCacheByCode");
             this.localityCacheByCode.add(code, list);
         }
         return this.localityCacheByCode.get(code);
@@ -33,12 +32,8 @@ public class WireCache {
 
     public LocalityEntity getLocality(Session session, UUID uuid) {
         if (!this.localityCacheByUUID.containsKey(uuid)) {
-            System.out.println("does not contain uuid "+uuid+" in "+this.localityCacheByUUID.size()+" keys, looking up");
             LocalityEntity entity = QueryManager.getEntity(session, uuid, LocalityEntity.class);
-            System.out.println("adding to localityCacheByUUID");
             this.localityCacheByUUID.put(uuid, entity);
-        } else {
-            System.out.println("does contain uuid "+uuid+" in "+this.localityCacheByUUID.size()+" keys");
         }
         return this.localityCacheByUUID.get(uuid);
     }
@@ -49,7 +44,6 @@ public class WireCache {
     public BuildingEntity getBuilding(Session session, UUID uuid) {
         if (!this.buildingCacheByUUID.containsKey(uuid)) {
             BuildingEntity entity = QueryManager.getEntity(session, uuid, BuildingEntity.class);
-            System.out.println("adding to buildingCacheByUUID");
             this.buildingCacheByUUID.put(uuid, entity);
         }
         return this.buildingCacheByUUID.get(uuid);
@@ -65,7 +59,6 @@ public class WireCache {
             query.setMunicipality(Integer.toString(municipalityCode));
             query.setCode(Integer.toString(roadCode));
             List<RoadEntity> list = QueryManager.getAllEntities(session, query, RoadEntity.class);
-            System.out.println("adding to roadCacheByCode");
             this.roadCacheByCode.add(code, list);
         }
         return this.roadCacheByCode.get(code);

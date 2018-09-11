@@ -216,8 +216,7 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
                 timer.measure(TASK_SAVE);
 
             } catch (IOException e) {
-                System.out.println(jsonNode.toString());
-                e.printStackTrace();
+                log.error("Error importing "+this.getEntityClass().getSimpleName()+": "+jsonNode.toString(), e);
             }
         });
 
