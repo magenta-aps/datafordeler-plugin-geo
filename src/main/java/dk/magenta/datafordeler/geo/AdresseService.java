@@ -16,6 +16,7 @@ import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressBlockNameReco
 import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressEntity;
 import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressHouseNumberRecord;
 import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressQuery;
+import dk.magenta.datafordeler.geo.data.locality.LocalityAbbreviationRecord;
 import dk.magenta.datafordeler.geo.data.locality.LocalityEntity;
 import dk.magenta.datafordeler.geo.data.locality.LocalityNameRecord;
 import dk.magenta.datafordeler.geo.data.locality.LocalityQuery;
@@ -146,6 +147,9 @@ public class AdresseService {
                 localityNode.put(OUTPUT_UUID, locality.getUUID().toString());
                 for (LocalityNameRecord nameRecord : locality.getName()) {
                     localityNode.put(OUTPUT_NAME, nameRecord.getName());
+                }
+                for (LocalityAbbreviationRecord abbreviationRecord : locality.getAbbreviation()) {
+                    localityNode.put(OUTPUT_ABBREVIATION, abbreviationRecord.getName());
                 }
                 results.add(localityNode);
             }
