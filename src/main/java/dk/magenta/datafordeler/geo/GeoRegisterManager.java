@@ -110,26 +110,6 @@ public class GeoRegisterManager extends RegisterManager {
 
     @Override
     public URI getEventInterface(EntityManager entityManager) throws DataFordelerException {
-        // Hardcoded loading from fixtures
-        /*switch (entityManager.getSchema()) {
-
-            case AccessAddressEntity.schema:
-                return new File("fixtures/Adgangsadresse.json").toURI();
-            case BuildingEntity.schema:
-                return new File("fixtures/Bygning.json").toURI();
-            case LocalityEntity.schema:
-                return new File("fixtures/Lokalitet.json").toURI();
-            case MunicipalityEntity.schema:
-                return new File("fixtures/Kommune.json").toURI();
-            case PostcodeEntity.schema:
-                return new File("fixtures/Postnummer.json").toURI();
-            case RoadEntity.schema:
-                return new File("fixtures/Vejmidte.json").toURI();
-            case UnitAddressEntity.schema:
-                return new File("fixtures/Enhedsadresse.json").toURI();
-
-        }*/
-
         Session session = this.sessionManager.getSessionFactory().openSession();
         OffsetDateTime lastUpdateTime = entityManager.getLastUpdated(session);
         session.close();
@@ -201,8 +181,6 @@ public class GeoRegisterManager extends RegisterManager {
                     if (!cacheFile.exists()) {
                         log.info("Cache file "+cacheFile.getAbsolutePath()+" doesn't exist. Creating new and filling from source");
 
-                        //eventCommunicator.setUsername(configuration.getUsername(schema));
-                        //eventCommunicator.setPassword(configuration.getPassword(schema));
                         cacheFile.createNewFile();
                         FileWriter fileWriter = new FileWriter(cacheFile);
                         int count = 1000;
