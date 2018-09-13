@@ -1,10 +1,8 @@
 package dk.magenta.datafordeler.geo.data.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.*;
+import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 import org.geojson.LngLatAlt;
 
@@ -67,7 +65,7 @@ public abstract class LineRecord<E extends GeoEntity> extends GeoMonotemporalRec
     }
 
 
-    private static GeometryFactory geometryFactory = new GeometryFactory();
+    private static GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), GeoPlugin.SRID);
 
 
     public static MultiLineString convert(org.geojson.MultiLineString original) {
