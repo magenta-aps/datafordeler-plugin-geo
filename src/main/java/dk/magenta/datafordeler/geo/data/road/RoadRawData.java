@@ -26,7 +26,7 @@ public class RoadRawData extends SumiffiikRawData {
         public void setCode(String code) {
             try {
                 this.code = Integer.parseInt(code, 10);
-            } catch (NumberFormatException e) {}
+            } catch (NumberFormatException|NullPointerException e) {}
         }
 
         public int code;
@@ -45,6 +45,11 @@ public class RoadRawData extends SumiffiikRawData {
 
     @JsonProperty
     public RoadRawProperties properties;
+
+    @JsonProperty("attributes")
+    public void setAttributes(RoadRawProperties attributes) {
+        this.properties = attributes;
+    }
 
     @Override
     public List<GeoMonotemporalRecord> getMonotemporalRecords() {

@@ -31,6 +31,11 @@ public class PostcodeRawData extends RawData {
         return this.properties;
     }
 
+    @JsonProperty("attributes")
+    public void setAttributes(PostcodeRawProperties attributes) {
+        this.properties = attributes;
+    }
+
     @Override
     public List<GeoMonotemporalRecord> getMonotemporalRecords() {
         return Collections.emptyList();

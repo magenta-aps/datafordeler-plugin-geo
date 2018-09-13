@@ -14,7 +14,7 @@ import java.util.List;
 public class BuildingRawData extends SumiffiikRawData {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public class RoadRawProperties extends RawAreaProperties {
+    public class BuildingRawProperties extends RawAreaProperties {
 
         @JsonProperty("a_nummer")
         public String anr;
@@ -32,7 +32,12 @@ public class BuildingRawData extends SumiffiikRawData {
     }
 
     @JsonProperty
-    public RoadRawProperties properties;
+    public BuildingRawProperties properties;
+
+    @JsonProperty("attributes")
+    public void setAttributes(BuildingRawProperties attributes) {
+        this.properties = attributes;
+    }
 
     @Override
     public List<GeoMonotemporalRecord> getMonotemporalRecords() {
