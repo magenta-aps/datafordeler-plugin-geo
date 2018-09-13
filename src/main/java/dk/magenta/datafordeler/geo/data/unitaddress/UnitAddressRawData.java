@@ -33,9 +33,6 @@ public class UnitAddressRawData extends SumiffiikRawData {
         @JsonProperty("Objektstatus")
         public Integer objectStatus;
 
-        //@JsonProperty("ImporteretKomplette")
-        //public String importComplete;
-
         @JsonProperty("Datakilde")
         public Integer source;
 
@@ -52,6 +49,11 @@ public class UnitAddressRawData extends SumiffiikRawData {
 
     @JsonProperty("properties")
     public UnitAddressRawProperties properties;
+
+    @JsonProperty("attributes")
+    public void setAttributes(UnitAddressRawProperties attributes) {
+        this.properties = attributes;
+    }
 
     @Override
     public List<GeoMonotemporalRecord> getMonotemporalRecords() {

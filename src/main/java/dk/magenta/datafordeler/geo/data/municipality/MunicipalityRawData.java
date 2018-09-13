@@ -31,6 +31,12 @@ public class MunicipalityRawData extends SumiffiikRawData {
     @JsonProperty
     public MunicipalityRawProperties properties;
 
+
+    @JsonProperty("attributes")
+    public void setAttributes(MunicipalityRawProperties attributes) {
+        this.properties = attributes;
+    }
+
     @Override
     public List<GeoMonotemporalRecord> getMonotemporalRecords() {
         ArrayList<GeoMonotemporalRecord> records = new ArrayList<>();
