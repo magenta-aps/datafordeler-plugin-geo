@@ -46,7 +46,8 @@ public class LocalityReferenceRecord<E extends GeoEntity> extends GeoMonotempora
 
 
 
-    @Transient
+    public static final String DB_FIELD_UUID = "uuid";
+    @Column(name = DB_FIELD_UUID)
     @JsonIgnore
     private UUID uuid;
 
@@ -87,7 +88,7 @@ public class LocalityReferenceRecord<E extends GeoEntity> extends GeoMonotempora
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equalData(o)) return false;
         LocalityReferenceRecord that = (LocalityReferenceRecord) o;
-        return Objects.equals(this.code, that.code);
+        return Objects.equals(this.code, that.code) || Objects.equals(this.uuid, that.uuid);
     }
 
 }
