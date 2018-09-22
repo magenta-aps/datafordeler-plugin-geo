@@ -88,7 +88,7 @@ public class LocalityReferenceRecord<E extends GeoEntity> extends GeoMonotempora
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equalData(o)) return false;
         LocalityReferenceRecord that = (LocalityReferenceRecord) o;
-        return Objects.equals(this.code, that.code) || Objects.equals(this.uuid, that.uuid);
+        return (this.code != null && Objects.equals(this.code, that.code)) || (this.uuid != null && Objects.equals(this.uuid, that.uuid));
     }
 
 }
