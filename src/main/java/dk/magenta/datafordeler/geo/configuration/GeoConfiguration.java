@@ -62,14 +62,14 @@ public class GeoConfiguration implements Configuration {
 
     @Column
     @Enumerated(EnumType.ORDINAL)
-    private RegisterType postcodeRegisterType = RegisterType.LOCAL_FILE;
+    private RegisterType postcodeRegisterType = RegisterType.DISABLED;
 
     public RegisterType getPostcodeRegisterType() {
         return this.postcodeRegisterType;
     }
 
     @Column(length = 1024)
-    private String postcodeRegisterURL = "file:///home/lars/Downloads/JSON (2)/GeoJSON/Postnummer.json";
+    private String postcodeRegisterURL = "";
 
     public String getPostcodeRegisterURL() {
         return this.postcodeRegisterURL;
