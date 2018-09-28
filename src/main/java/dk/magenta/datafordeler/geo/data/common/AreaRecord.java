@@ -116,7 +116,7 @@ public abstract class AreaRecord<E extends GeoEntity> extends GeoMonotemporalRec
 
     public static MultiPolygon convert(org.geojson.MultiPolygon original) {
         return new MultiPolygon(
-                original.getCoordinates().stream().map(AreaRecord::convertList).toArray(Polygon[]::new),
+                original.getCoordinates().stream().map(AreaRecord::convertList).filter(Objects::nonNull).toArray(Polygon[]::new),
                 geometryFactory
         );
     }
@@ -133,7 +133,7 @@ public abstract class AreaRecord<E extends GeoEntity> extends GeoMonotemporalRec
     public static Polygon convert(org.geojson.Polygon original) {
         return new Polygon(
                 AreaRecord.convert(original.getExteriorRing()),
-                original.getInteriorRings().stream().map(AreaRecord::convert).toArray(LinearRing[]::new),
+                original.getInteriorRings().stream().map(AreaRecord::convert).filter(Objects::nonNull).toArray(LinearRing[]::new),
                 geometryFactory
         );
     }
@@ -149,6 +149,7 @@ public abstract class AreaRecord<E extends GeoEntity> extends GeoMonotemporalRec
 
 
     public static Polygon convertList(List<List<LngLatAlt>> original) {
+        if (original.isEmpty()) return null;
         return new Polygon(
                 AreaRecord.convert(original.get(0)),
                 original.subList(1, original.size()).stream().map(AreaRecord::convert).toArray(LinearRing[]::new),
@@ -168,6 +169,7 @@ public abstract class AreaRecord<E extends GeoEntity> extends GeoMonotemporalRec
 
 
     public static LinearRing convert(List<LngLatAlt> original) {
+        if (original == null) return null;
         return new LinearRing(
                 geometryFactory.getCoordinateSequenceFactory().create(
                         original.stream().map(AreaRecord::convert).toArray(Coordinate[]::new)
@@ -177,7 +179,7 @@ public abstract class AreaRecord<E extends GeoEntity> extends GeoMonotemporalRec
     }
 
     public static List<LngLatAlt> convert(LinearRing original) {
-        return Arrays.asList(original.getCoordinates()).stream().map(AreaRecord::convert).collect(Collectors.toList());
+        return Arrays.stream(original.getCoordinates()).map(AreaRecord::convert).collect(Collectors.toList());
     }
 
 

@@ -47,7 +47,7 @@ public class GeoConfiguration implements Configuration {
 
     @Column
     @Enumerated(EnumType.ORDINAL)
-    private RegisterType municipalityRegisterType = RegisterType.REMOTE_HTTP;
+    private RegisterType municipalityRegisterType = RegisterType.DISABLED;
 
     public RegisterType getMunicipalityRegisterType() {
         return this.municipalityRegisterType;
@@ -62,14 +62,14 @@ public class GeoConfiguration implements Configuration {
 
     @Column
     @Enumerated(EnumType.ORDINAL)
-    private RegisterType postcodeRegisterType = RegisterType.REMOTE_HTTP;
+    private RegisterType postcodeRegisterType = RegisterType.LOCAL_FILE;
 
     public RegisterType getPostcodeRegisterType() {
         return this.postcodeRegisterType;
     }
 
     @Column(length = 1024)
-    private String postcodeRegisterURL = "";
+    private String postcodeRegisterURL = "file:///home/lars/Downloads/JSON (2)/GeoJSON/Postnummer.json";
 
     public String getPostcodeRegisterURL() {
         return this.postcodeRegisterURL;
@@ -77,7 +77,7 @@ public class GeoConfiguration implements Configuration {
 
     @Column
     @Enumerated(EnumType.ORDINAL)
-    private RegisterType localityRegisterType = RegisterType.REMOTE_HTTP;
+    private RegisterType localityRegisterType = RegisterType.DISABLED;
 
     public RegisterType getLocalityRegisterType() {
         return this.localityRegisterType;
@@ -108,7 +108,7 @@ public class GeoConfiguration implements Configuration {
 
     @Column
     @Enumerated(EnumType.ORDINAL)
-    private RegisterType buildingRegisterType = RegisterType.REMOTE_HTTP;
+    private RegisterType buildingRegisterType = RegisterType.DISABLED;
 
     public RegisterType getBuildingRegisterType() {
         return this.buildingRegisterType;
@@ -124,7 +124,7 @@ public class GeoConfiguration implements Configuration {
 
     @Column
     @Enumerated(EnumType.ORDINAL)
-    private RegisterType accessAddressRegisterType = RegisterType.REMOTE_HTTP;
+    private RegisterType accessAddressRegisterType = RegisterType.DISABLED;
 
     public RegisterType getAccessAddressRegisterType() {
         return this.accessAddressRegisterType;
@@ -140,7 +140,7 @@ public class GeoConfiguration implements Configuration {
 
     @Column
     @Enumerated(EnumType.ORDINAL)
-    private RegisterType unitAddressRegisterType = RegisterType.REMOTE_HTTP;
+    private RegisterType unitAddressRegisterType = RegisterType.DISABLED;
 
     public RegisterType getUnitAddressRegisterType() {
         return this.unitAddressRegisterType;

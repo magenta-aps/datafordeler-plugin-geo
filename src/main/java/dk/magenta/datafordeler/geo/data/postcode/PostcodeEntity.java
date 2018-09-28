@@ -3,29 +3,23 @@ package dk.magenta.datafordeler.geo.data.postcode;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import dk.magenta.datafordeler.core.database.IdentifiedEntity;
+import dk.magenta.datafordeler.core.database.Monotemporal;
+import dk.magenta.datafordeler.core.database.Nontemporal;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 import dk.magenta.datafordeler.geo.data.SumiffiikEntity;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.Filters;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-import java.util.UUID;
+import javax.persistence.*;
+import java.util.*;
 
 @Entity
 @Table(name = GeoPlugin.DEBUG_TABLE_PREFIX + PostcodeEntity.TABLE_NAME, indexes = {
         @Index(
                 name = GeoPlugin.DEBUG_TABLE_PREFIX + PostcodeEntity.TABLE_NAME + PostcodeEntity.DB_FIELD_SUMIFFIIK_ID,
                 columnList = PostcodeEntity.DB_FIELD_SUMIFFIIK_ID
-        ),
-        @Index(
-                name = GeoPlugin.DEBUG_TABLE_PREFIX + PostcodeEntity.TABLE_NAME + PostcodeEntity.DB_FIELD_NAME,
-                columnList = PostcodeEntity.DB_FIELD_NAME
         ),
 })
 public class PostcodeEntity extends SumiffiikEntity implements IdentifiedEntity {
@@ -41,7 +35,6 @@ public class PostcodeEntity extends SumiffiikEntity implements IdentifiedEntity 
     public PostcodeEntity(PostcodeRawData record) {
         this.setObjectId(record.getProperties().objectId);
         this.code = record.getProperties().code;
-        this.name = record.getProperties().name;
     }
 
     public static UUID generateUUID(int postcode) {
@@ -67,20 +60,45 @@ public class PostcodeEntity extends SumiffiikEntity implements IdentifiedEntity 
 
 
 
-    public static final String DB_FIELD_NAME = "name";
-    public static final String IO_FIELD_NAME = "name";
-    @Column(name = DB_FIELD_NAME)
-    @JsonProperty
-    private String name;
 
-    public String getName() {
+    public static final String DB_FIELD_NAME = "name";
+    public static final String IO_FIELD_NAME = "navn";
+    @OneToMany(mappedBy = PostcodeNameRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
+    @Filters({
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_AFTER, condition = Monotemporal.FILTERLOGIC_REGISTRATION_AFTER),
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_BEFORE, condition = Monotemporal.FILTERLOGIC_REGISTRATION_BEFORE),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_AFTER, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_AFTER),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_BEFORE, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_BEFORE)
+    })
+    @JsonProperty(IO_FIELD_NAME)
+    Set<PostcodeNameRecord> name = new HashSet<>();
+
+    public Set<PostcodeNameRecord> getName() {
         return this.name;
     }
 
-    @JsonProperty(value = "name")
-    public void setName(String name) {
-        this.name = name;
+
+
+
+
+
+
+    public static final String DB_FIELD_SHAPE = "shape";
+    public static final String IO_FIELD_SHAPE = "form";
+    @OneToMany(mappedBy = PostcodeShapeRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
+    @Filters({
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_AFTER, condition = Monotemporal.FILTERLOGIC_REGISTRATION_AFTER),
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_BEFORE, condition = Monotemporal.FILTERLOGIC_REGISTRATION_BEFORE),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_AFTER, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_AFTER),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_BEFORE, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_BEFORE)
+    })
+    @JsonProperty(IO_FIELD_SHAPE)
+    Set<PostcodeShapeRecord> shape = new HashSet<>();
+
+    public Set<PostcodeShapeRecord> getShape() {
+        return this.shape;
     }
+
 
 
 
@@ -90,6 +108,16 @@ public class PostcodeEntity extends SumiffiikEntity implements IdentifiedEntity 
     }
 
     public void addMonotemporalRecord(GeoMonotemporalRecord record) {
+        boolean added = false;
+        if (record instanceof PostcodeNameRecord) {
+            added = addItem(this.name, record);
+        }
+        if (record instanceof PostcodeShapeRecord) {
+            added = addItem(this.shape, record);
+        }
+        if (added) {
+            record.setEntity(this);
+        }
     }
 
     @Override
