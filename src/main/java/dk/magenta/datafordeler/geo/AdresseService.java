@@ -11,20 +11,15 @@ import dk.magenta.datafordeler.core.exception.MissingParameterException;
 import dk.magenta.datafordeler.core.fapi.BaseQuery;
 import dk.magenta.datafordeler.core.user.DafoUserDetails;
 import dk.magenta.datafordeler.core.user.DafoUserManager;
+import dk.magenta.datafordeler.core.util.ListHashMap;
 import dk.magenta.datafordeler.core.util.LoggerHelper;
-import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressBlockNameRecord;
-import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressEntity;
-import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressHouseNumberRecord;
-import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressQuery;
+import dk.magenta.datafordeler.geo.data.accessaddress.*;
 import dk.magenta.datafordeler.geo.data.locality.LocalityAbbreviationRecord;
 import dk.magenta.datafordeler.geo.data.locality.LocalityEntity;
 import dk.magenta.datafordeler.geo.data.locality.LocalityNameRecord;
 import dk.magenta.datafordeler.geo.data.locality.LocalityQuery;
 import dk.magenta.datafordeler.geo.data.municipality.MunicipalityEntity;
-import dk.magenta.datafordeler.geo.data.road.RoadEntity;
-import dk.magenta.datafordeler.geo.data.road.RoadMunicipalityRecord;
-import dk.magenta.datafordeler.geo.data.road.RoadNameRecord;
-import dk.magenta.datafordeler.geo.data.road.RoadQuery;
+import dk.magenta.datafordeler.geo.data.road.*;
 import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressDoorRecord;
 import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressEntity;
 import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressFloorRecord;
@@ -42,10 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.StringJoiner;
-import java.util.UUID;
+import java.util.*;
 
 @RestController("GeoAdresseService")
 @RequestMapping("/geo/adresse")
@@ -183,7 +175,6 @@ public class AdresseService {
     }
 
     public String getRoads(UUID locality) throws DataFordelerException {
-
         RoadQuery query = new RoadQuery();
         setQueryNow(query);
         setQueryNoLimit(query);
@@ -192,20 +183,39 @@ public class AdresseService {
         try {
             List<RoadEntity> roads = QueryManager.getAllEntities(session, query, RoadEntity.class);
             ArrayNode results = objectMapper.createArrayNode();
+            ListHashMap<String, RoadEntity> roadMap = new ListHashMap<>();
             for (RoadEntity road : roads) {
+                for (RoadNameRecord nameRecord : road.getName()) {
+                    if (nameRecord.getRegistrationTo() == null) {
+                        roadMap.add(nameRecord.getName(), road);
+                    }
+                }
+            }
+
+            for (String roadName : roadMap.keySet()) {
                 ObjectNode roadNode = objectMapper.createObjectNode();
 
-                roadNode.put(OUTPUT_UUID, road.getUUID().toString());
-                roadNode.put(OUTPUT_ROADCODE, road.getCode());
-                roadNode.set(OUTPUT_NAME, null);
+                roadNode.put(OUTPUT_NAME, roadName);
 
-                for (RoadNameRecord nameRecord : road.getName()) {
-                    roadNode.put(OUTPUT_NAME, nameRecord.getName());
-                    roadNode.put(OUTPUT_ALTNAME, nameRecord.getAddressingName());
-                }
-
-                for (RoadMunicipalityRecord municipality : road.getMunicipality()) {
-                    roadNode.put(OUTPUT_MUNICIPALITYCODE, municipality.getCode());
+                boolean hasUUID = false;
+                for (RoadEntity road : roadMap.get(roadName)) {
+                    for (RoadNameRecord nameRecord : road.getName()) {
+                        if (nameRecord.getRegistrationTo() == null) {
+                            roadNode.put(OUTPUT_ALTNAME, nameRecord.getAddressingName());
+                        }
+                    }
+                    if (road.getCode() != 0) {
+                        roadNode.put(OUTPUT_ROADCODE, road.getCode());
+                    }
+                    for (RoadMunicipalityRecord municipalityRecord : road.getMunicipality()) {
+                        if (municipalityRecord.getRegistrationTo() == null) {
+                            roadNode.put(OUTPUT_MUNICIPALITYCODE, municipalityRecord.getCode());
+                        }
+                    }
+                    if (!hasUUID && road.getUUID() != null) {
+                        roadNode.put(OUTPUT_UUID, road.getUUID().toString());
+                        hasUUID = true;
+                    }
                 }
 
                 results.add(roadNode);
@@ -215,6 +225,39 @@ public class AdresseService {
             session.close();
         }
     }
+
+    private Set<UUID> getWholeRoad(Session session, UUID roadSegment) {
+        RoadEntity roadEntity = QueryManager.getEntity(session, roadSegment, RoadEntity.class);
+        String localityCode = null;
+        for (RoadLocalityRecord localityRecord : roadEntity.getLocality()) {
+            if (localityRecord.getRegistrationTo() == null) {
+                localityCode = localityRecord.getCode();
+                break;
+            }
+        }
+        String roadName = null;
+        for (RoadNameRecord nameRecord : roadEntity.getName()) {
+            if (nameRecord.getRegistrationTo() == null) {
+                roadName = nameRecord.getName();
+                break;
+            }
+        }
+
+        RoadQuery query = new RoadQuery();
+        query.setLocality(localityCode);
+        query.setName(roadName);
+
+        HashSet<UUID> uuids = new HashSet<>();
+        for (RoadEntity roadEntity1 : QueryManager.getAllEntities(session, query, RoadEntity.class)) {
+            UUID u = roadEntity1.getUUID();
+            if (u != null) {
+                uuids.add(u);
+            }
+        }
+        return uuids;
+    }
+
+
 
     /**
      * Finds all buildings on a road. Only current data is included.
@@ -245,7 +288,10 @@ public class AdresseService {
         AccessAddressQuery accessAddressQuery = new AccessAddressQuery();
         setQueryNow(accessAddressQuery);
         setQueryNoLimit(accessAddressQuery);
-        accessAddressQuery.setRoadUUID(road);
+
+        for (UUID uuid : this.getWholeRoad(session, road)) {
+            accessAddressQuery.addRoadUUID(uuid);
+        }
 
         try {
             ArrayNode results = objectMapper.createArrayNode();
@@ -323,7 +369,9 @@ public class AdresseService {
             StringJoiner where = new StringJoiner(" AND ");
 
             if (roadUUID != null) {
-                query.setRoadUUID(roadUUID);
+                for (UUID uuid : this.getWholeRoad(session, roadUUID)) {
+                    query.addRoadUUID(uuid);
+                }
                 where.add("road_identification.uuid IN :road");
             }
             if (houseNumber != null) {
@@ -340,10 +388,10 @@ public class AdresseService {
 
             org.hibernate.query.Query databaseQuery = session.createQuery(
                     "SELECT DISTINCT unit, access FROM " + UnitAddressEntity.class.getCanonicalName() + " unit " +
-                       "JOIN " + AccessAddressEntity.class.getCanonicalName() + " access ON unit.accessAddress = access.identification " +
-                       "JOIN access.road access_road " +
-                       "JOIN access_road.reference road_identification " +
-                       (houseNumber != null ? "JOIN access.houseNumber houseNumber " : "") +
+                       "LEFT JOIN " + AccessAddressEntity.class.getCanonicalName() + " access ON unit.accessAddress = access.identification " +
+                       "LEFT JOIN access.road access_road " +
+                       "LEFT JOIN access_road.reference road_identification " +
+                       (houseNumber != null ? "LEFT JOIN access.houseNumber houseNumber " : "") +
                        "WHERE " + where.toString()
             );
 
