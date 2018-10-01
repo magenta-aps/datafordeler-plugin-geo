@@ -243,15 +243,18 @@ public class AdresseService {
             }
         }
 
-        RoadQuery query = new RoadQuery();
-        query.setLocality(localityCode);
-        query.setName(roadName);
-
         HashSet<UUID> uuids = new HashSet<>();
-        for (RoadEntity roadEntity1 : QueryManager.getAllEntities(session, query, RoadEntity.class)) {
-            UUID u = roadEntity1.getUUID();
-            if (u != null) {
-                uuids.add(u);
+
+        if (localityCode != null && roadName != null) {
+            RoadQuery query = new RoadQuery();
+            query.setLocality(localityCode);
+            query.setName(roadName);
+
+            for (RoadEntity roadEntity1 : QueryManager.getAllEntities(session, query, RoadEntity.class)) {
+                UUID u = roadEntity1.getUUID();
+                if (u != null) {
+                    uuids.add(u);
+                }
             }
         }
         return uuids;
