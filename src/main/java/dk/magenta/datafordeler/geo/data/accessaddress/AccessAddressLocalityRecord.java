@@ -18,6 +18,10 @@ import javax.persistence.Table;
                 name = GeoPlugin.DEBUG_TABLE_PREFIX + AccessAddressLocalityRecord.TABLE_NAME + AccessAddressLocalityRecord.DB_FIELD_CODE,
                 columnList = AccessAddressLocalityRecord.DB_FIELD_CODE
         ),
+        @Index(
+                name = GeoPlugin.DEBUG_TABLE_PREFIX + AccessAddressLocalityRecord.TABLE_NAME + AccessAddressLocalityRecord.DB_FIELD_REFERENCE,
+                columnList = AccessAddressLocalityRecord.DB_FIELD_REFERENCE + DatabaseEntry.REF
+        )
 })
 public class AccessAddressLocalityRecord extends LocalityReferenceRecord<AccessAddressEntity> {
 

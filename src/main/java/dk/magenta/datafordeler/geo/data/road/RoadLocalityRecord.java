@@ -18,6 +18,10 @@ import javax.persistence.Table;
                 name = GeoPlugin.DEBUG_TABLE_PREFIX + RoadLocalityRecord.TABLE_NAME + RoadLocalityRecord.DB_FIELD_CODE,
                 columnList = RoadLocalityRecord.DB_FIELD_CODE
         ),
+        @Index(
+                name = GeoPlugin.DEBUG_TABLE_PREFIX + RoadLocalityRecord.TABLE_NAME + RoadLocalityRecord.DB_FIELD_REFERENCE,
+                columnList = RoadLocalityRecord.DB_FIELD_REFERENCE + DatabaseEntry.REF
+        )
 })
 public class RoadLocalityRecord extends LocalityReferenceRecord<RoadEntity> {
 

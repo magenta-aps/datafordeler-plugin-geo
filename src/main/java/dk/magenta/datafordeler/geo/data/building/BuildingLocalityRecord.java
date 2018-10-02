@@ -19,6 +19,10 @@ import java.util.UUID;
                 name = GeoPlugin.DEBUG_TABLE_PREFIX + BuildingLocalityRecord.TABLE_NAME + BuildingLocalityRecord.DB_FIELD_CODE,
                 columnList = BuildingLocalityRecord.DB_FIELD_CODE
         ),
+        @Index(
+                name = GeoPlugin.DEBUG_TABLE_PREFIX + BuildingLocalityRecord.TABLE_NAME + BuildingLocalityRecord.DB_FIELD_REFERENCE,
+                columnList = BuildingLocalityRecord.DB_FIELD_REFERENCE + DatabaseEntry.REF
+        )
 })
 public class BuildingLocalityRecord extends LocalityReferenceRecord<BuildingEntity> {
 
