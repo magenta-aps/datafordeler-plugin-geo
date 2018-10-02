@@ -33,6 +33,9 @@ public class LocalityRawData extends SumiffiikRawData {
             this.sumiffiikId = sumiffiikId;
         }
 
+        @JsonProperty("Lokalitetvejkode")
+        public Integer localityRoadcode;
+
         @JsonProperty("Location_type")
         public Integer type;
     }
@@ -63,6 +66,10 @@ public class LocalityRawData extends SumiffiikRawData {
 
         records.add(
                 new LocalityMunicipalityRecord(this.properties.municipality)
+        );
+
+        records.add(
+                new LocalityRoadcodeRecord(this.properties.localityRoadcode)
         );
 
         MultiPolygon multiPolygon = null;
