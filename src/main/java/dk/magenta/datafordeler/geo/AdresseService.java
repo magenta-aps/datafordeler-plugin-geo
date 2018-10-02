@@ -244,6 +244,7 @@ public class AdresseService {
         }
 
         HashSet<UUID> uuids = new HashSet<>();
+        uuids.add(roadSegment);
 
         if (localityCode != null && roadName != null) {
             RoadQuery query = new RoadQuery();
@@ -382,29 +383,39 @@ public class AdresseService {
             buildingNumber = null;
         }
         Session session = sessionManager.getSessionFactory().openSession();
+        ArrayNode results = objectMapper.createArrayNode();
         try {
-
             AccessAddressQuery query = new AccessAddressQuery();
             setQueryNow(query);
             setQueryNoLimit(query);
 
             StringJoiner where = new StringJoiner(" AND ");
 
+            String roadQueryPart = "";
             if (roadUUID != null) {
                 for (UUID uuid : this.getWholeRoad(session, roadUUID)) {
                     query.addRoadUUID(uuid);
                 }
-                where.add("road_identification.uuid IN :road");
+                roadQueryPart = "LEFT JOIN access.road access_road " +
+                        "LEFT JOIN access_road.reference road_identification ";
+                        where.add("road_identification.uuid IN :road");
             }
+
+            String localityQueryPart = "";
             if (localityUUID != null) {
                 query.addLocalityUUID(localityUUID);
+                localityQueryPart =  "LEFT JOIN access.locality access_locality " +
+                        "LEFT JOIN access_locality.reference locality_identification ";
                 where.add("locality_identification.uuid IN :locality");
             }
+
+            String houseNumberQueryPart = "";
             if (houseNumber != null) {
                 houseNumber = houseNumber.trim();
                 query.addHouseNumber(houseNumber);
                 query.addHouseNumber("0" + houseNumber);
                 query.addHouseNumber("00" + houseNumber);
+                houseNumberQueryPart = "LEFT JOIN access.houseNumber houseNumber ";
                 where.add("houseNumber.number IN :hnr");
             }
             if (buildingNumber != null) {
@@ -415,11 +426,9 @@ public class AdresseService {
             org.hibernate.query.Query databaseQuery = session.createQuery(
                     "SELECT DISTINCT unit, access FROM " + UnitAddressEntity.class.getCanonicalName() + " unit " +
                        "LEFT JOIN " + AccessAddressEntity.class.getCanonicalName() + " access ON unit.accessAddress = access.identification " +
-                            "LEFT JOIN access.road access_road " +
-                            "LEFT JOIN access_road.reference road_identification " +
-                            "LEFT JOIN access.locality access_locality " +
-                            "LEFT JOIN access_locality.reference locality_identification " +
-                       (houseNumber != null ? "LEFT JOIN access.houseNumber houseNumber " : "") +
+                            roadQueryPart +
+                           localityQueryPart +
+                       houseNumberQueryPart +
                        "WHERE " + where.toString()
             );
 
@@ -437,8 +446,6 @@ public class AdresseService {
             }
             databaseQuery.setFlushMode(FlushModeType.COMMIT);
 
-
-            ArrayNode results = objectMapper.createArrayNode();
 
             for (Object result : databaseQuery.getResultList()) {
                 Object[] resultItems = (Object[]) result;
@@ -470,13 +477,12 @@ public class AdresseService {
                 results.add(addressNode);
             }
 
-            return results.toString();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             session.close();
         }
-        return null;
+        return results.toString();
     }
 
     /**
