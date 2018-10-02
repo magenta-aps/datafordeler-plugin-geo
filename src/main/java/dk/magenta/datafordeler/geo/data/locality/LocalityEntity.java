@@ -140,6 +140,24 @@ public class LocalityEntity extends SumiffiikEntity implements IdentifiedEntity 
 
 
 
+    public static final String DB_FIELD_LOCALITY_ROADCODE = "localityRoadcode";
+    public static final String IO_FIELD_LOCALITY_ROADCODE = "lokalitetVejkode";
+    @OneToMany(mappedBy = LocalityMunicipalityRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
+    @Filters({
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_AFTER, condition = Monotemporal.FILTERLOGIC_REGISTRATION_AFTER),
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_BEFORE, condition = Monotemporal.FILTERLOGIC_REGISTRATION_BEFORE),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_AFTER, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_AFTER),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_BEFORE, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_BEFORE)
+    })
+    @JsonProperty(IO_FIELD_LOCALITY_ROADCODE)
+    Set<LocalityRoadcodeRecord> localityRoadcode = new HashSet<>();
+
+    public Set<LocalityRoadcodeRecord> getLocalityRoadcode() {
+        return this.localityRoadcode;
+    }
+
+
+
     public static final String DB_FIELD_SHAPE = "shape";
     public static final String IO_FIELD_SHAPE = "form";
     @OneToMany(mappedBy = LocalityShapeRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
@@ -177,6 +195,9 @@ public class LocalityEntity extends SumiffiikEntity implements IdentifiedEntity 
         if (record instanceof LocalityMunicipalityRecord) {
             added = addItem(this.municipality, record);
         }
+        if (record instanceof LocalityRoadcodeRecord) {
+            added = addItem(this.localityRoadcode, record);
+        }
         if (record instanceof LocalityShapeRecord) {
             added = addItem(this.shape, record);
         }
@@ -197,6 +218,7 @@ public class LocalityEntity extends SumiffiikEntity implements IdentifiedEntity 
         records.add(this.abbreviation);
         records.add(this.shape);
         records.add(this.municipality);
+        records.add(this.localityRoadcode);
         return records;
     }
 }
