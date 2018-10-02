@@ -276,24 +276,36 @@ public class AdresseService {
 
     public String getAccessAddresses(HttpServletRequest request) throws DataFordelerException {
         String roadUUID = request.getParameter(PARAM_ROAD);
+        String localityUUID = request.getParameter(PARAM_LOCALITY);
         DafoUserDetails user = dafoUserManager.getUserFromRequest(request);
         LoggerHelper loggerHelper = new LoggerHelper(log, request, user);
         loggerHelper.info(
                 "Incoming REST request for AddressService.building with road {}", roadUUID
         );
-        checkParameterExistence(PARAM_ROAD, roadUUID);
-        UUID road = parameterAsUUID(PARAM_ROAD, roadUUID);
-        return this.getAccessAddresses(road);
+        try {
+            checkParameterExistence(PARAM_ROAD, roadUUID);
+            UUID road = parameterAsUUID(PARAM_ROAD, roadUUID);
+            return this.getAccessAddresses(road, null);
+        } catch (MissingParameterException e) {
+            checkParameterExistence(PARAM_LOCALITY, localityUUID);
+            UUID locality = parameterAsUUID(PARAM_LOCALITY, localityUUID);
+            return this.getAccessAddresses(null, locality);
+        }
     }
 
-    public String getAccessAddresses(UUID road) throws DataFordelerException {
+    public String getAccessAddresses(UUID road, UUID locality) throws DataFordelerException {
         Session session = sessionManager.getSessionFactory().openSession();
         AccessAddressQuery accessAddressQuery = new AccessAddressQuery();
         setQueryNow(accessAddressQuery);
         setQueryNoLimit(accessAddressQuery);
 
-        for (UUID uuid : this.getWholeRoad(session, road)) {
-            accessAddressQuery.addRoadUUID(uuid);
+        if (road != null) {
+            for (UUID uuid : this.getWholeRoad(session, road)) {
+                accessAddressQuery.addRoadUUID(uuid);
+            }
+        }
+        if (locality != null) {
+            accessAddressQuery.setLocalityUUID(locality);
         }
 
         try {
@@ -343,6 +355,7 @@ public class AdresseService {
 
     public String getUnitAddresses(HttpServletRequest request) throws DataFordelerException {
         String roadUUID = request.getParameter(PARAM_ROAD);
+        String localityUUID = request.getParameter(PARAM_LOCALITY);
         String houseNumber = request.getParameter(PARAM_HOUSE);
         String buildingNumber = request.getParameter(PARAM_BNR);
         DafoUserDetails user = dafoUserManager.getUserFromRequest(request);
@@ -350,12 +363,18 @@ public class AdresseService {
         loggerHelper.info(
                 "Incoming REST request for AddressService.address with road {}, houseNumber {}, bNumber {}", roadUUID, houseNumber, buildingNumber
         );
-        checkParameterExistence(PARAM_ROAD, roadUUID);
-        UUID road = parameterAsUUID(PARAM_ROAD, roadUUID);
-        return this.getUnitAddresses(road, houseNumber, buildingNumber);
+        try {
+            checkParameterExistence(PARAM_ROAD, roadUUID);
+            UUID road = parameterAsUUID(PARAM_ROAD, roadUUID);
+            return this.getUnitAddresses(road, null, houseNumber, buildingNumber);
+        } catch (MissingParameterException e) {
+            checkParameterExistence(PARAM_LOCALITY, localityUUID);
+            UUID locality = parameterAsUUID(PARAM_LOCALITY, localityUUID);
+            return this.getUnitAddresses(null, locality, houseNumber, buildingNumber);
+        }
     }
 
-    public String getUnitAddresses(UUID roadUUID, String houseNumber, String buildingNumber) throws DataFordelerException {
+    public String getUnitAddresses(UUID roadUUID, UUID localityUUID, String houseNumber, String buildingNumber) throws DataFordelerException {
         if (houseNumber != null && houseNumber.trim().isEmpty()) {
             houseNumber = null;
         }
@@ -377,6 +396,10 @@ public class AdresseService {
                 }
                 where.add("road_identification.uuid IN :road");
             }
+            if (localityUUID != null) {
+                query.addLocalityUUID(localityUUID);
+                where.add("locality_identification.uuid IN :locality");
+            }
             if (houseNumber != null) {
                 houseNumber = houseNumber.trim();
                 query.addHouseNumber(houseNumber);
@@ -392,14 +415,19 @@ public class AdresseService {
             org.hibernate.query.Query databaseQuery = session.createQuery(
                     "SELECT DISTINCT unit, access FROM " + UnitAddressEntity.class.getCanonicalName() + " unit " +
                        "LEFT JOIN " + AccessAddressEntity.class.getCanonicalName() + " access ON unit.accessAddress = access.identification " +
-                       "LEFT JOIN access.road access_road " +
-                       "LEFT JOIN access_road.reference road_identification " +
+                            "LEFT JOIN access.road access_road " +
+                            "LEFT JOIN access_road.reference road_identification " +
+                            "LEFT JOIN access.locality access_locality " +
+                            "LEFT JOIN access_locality.reference locality_identification " +
                        (houseNumber != null ? "LEFT JOIN access.houseNumber houseNumber " : "") +
                        "WHERE " + where.toString()
             );
 
             if (roadUUID != null) {
                 databaseQuery.setParameterList("road", query.getRoadUUID());
+            }
+            if (localityUUID != null) {
+                databaseQuery.setParameterList("locality", query.getLocalityUUID());
             }
             if (houseNumber != null) {
                 databaseQuery.setParameterList("hnr", query.getHouseNumber());
@@ -545,23 +573,33 @@ public class AdresseService {
                     addressNode.put(OUTPUT_BCALLNAME, blockName.getName());
                 }
 
-                addressNode.put(OUTPUT_ROADUUID, road.getUUID().toString());
-
-                addressNode.put(OUTPUT_ROADCODE, road.getCode());
-
-                for (RoadNameRecord roadName : road.getName()) {
-                    addressNode.put(OUTPUT_ROADNAME, roadName.getName());
+                if (road != null) {
+                    addressNode.put(OUTPUT_ROADUUID, road.getUUID().toString());
+                    for (RoadNameRecord roadName : road.getName()) {
+                        addressNode.put(OUTPUT_ROADNAME, roadName.getName());
+                    }
+                    for (RoadMunicipalityRecord municipality : road.getMunicipality()) {
+                        addressNode.put(OUTPUT_MUNICIPALITYCODE, municipality.getCode());
+                    }
                 }
 
-                addressNode.put(OUTPUT_LOCALITYUUID, locality.getUUID().toString());
-
-                for (LocalityNameRecord localityName : locality.getName()) {
-                    addressNode.put(OUTPUT_LOCALITYNAME, localityName.getName());
+                if (road != null && road.getCode() != 0) {
+                    addressNode.put(OUTPUT_ROADCODE, road.getCode());
+                } else {
+                    for (AccessAddressRoadRecord roadRecord : accessAddress.getRoad()) {
+                        addressNode.put(OUTPUT_ROADCODE, roadRecord.getRoadCode());
+                        addressNode.put(OUTPUT_MUNICIPALITYCODE, roadRecord.getMunicipalityCode());
+                    }
                 }
 
-                for (RoadMunicipalityRecord municipality : road.getMunicipality()) {
-                    addressNode.put(OUTPUT_MUNICIPALITYCODE, municipality.getCode());
+                if (locality != null) {
+                    addressNode.put(OUTPUT_LOCALITYUUID, locality.getUUID().toString());
+
+                    for (LocalityNameRecord localityName : locality.getName()) {
+                        addressNode.put(OUTPUT_LOCALITYNAME, localityName.getName());
+                    }
                 }
+
 
             }
             return addressNode.toString();
