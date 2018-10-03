@@ -470,11 +470,17 @@ public class AdresseService {
 
                 UnitAddressFloorRecord floor = current(unitAddressEntity.getFloor());
                 if (floor != null) {
-                    addressNode.put(OUTPUT_FLOOR, floor.getFloor());
+                    String floorValue = floor.getFloor();
+                    if (floorValue != null && !floorValue.isEmpty()) {
+                        addressNode.put(OUTPUT_FLOOR, floorValue);
+                    }
                 }
                 UnitAddressDoorRecord door = current(unitAddressEntity.getDoor());
                 if (door != null) {
-                    addressNode.put(OUTPUT_DOOR, door.getDoor());
+                    String doorValue = door.getDoor();
+                    if (doorValue != null && !doorValue.isEmpty()) {
+                        addressNode.put(OUTPUT_DOOR, door.getDoor());
+                    }
                 }
                 UnitAddressUsageRecord usage = current(unitAddressEntity.getUsage());
                 if (usage != null) {
