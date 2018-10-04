@@ -193,7 +193,7 @@ public class AdresseService {
             for (RoadEntity road : roads) {
                 for (RoadNameRecord nameRecord : road.getName()) {
                     if (nameRecord.getRegistrationTo() == null) {
-                        roadMap.add(nameRecord.getName(), road);
+                        roadMap.add(nameRecord.getName().trim(), road);
                     }
                 }
             }
@@ -402,6 +402,7 @@ public class AdresseService {
             setQueryNoLimit(query);
 
             StringJoiner where = new StringJoiner(" AND ");
+            where.add("unit_usage.usage = 1");
 
             String roadQueryPart = "";
             if (roadUUID != null) {
@@ -431,11 +432,12 @@ public class AdresseService {
 
             org.hibernate.query.Query databaseQuery = session.createQuery(
                     "SELECT DISTINCT unit, access FROM " + UnitAddressEntity.class.getCanonicalName() + " unit " +
+                       "JOIN unit.usage unit_usage " +
                        "LEFT JOIN " + AccessAddressEntity.class.getCanonicalName() + " access ON unit.accessAddress = access.identification " +
-                            roadQueryPart +
+                       roadQueryPart +
                        houseNumberQueryPart +
                        "WHERE " + where.toString() + " " +
-                            "order by access.bnr"
+                       "order by access.bnr"
             );
 
             if (roadUUID != null) {
