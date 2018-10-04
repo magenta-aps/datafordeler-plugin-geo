@@ -193,7 +193,7 @@ public class AdresseService {
             for (RoadEntity road : roads) {
                 for (RoadNameRecord nameRecord : road.getName()) {
                     if (nameRecord.getRegistrationTo() == null) {
-                        roadMap.add(nameRecord.getName().trim(), road);
+                        roadMap.add(nameRecord.getName() != null ? nameRecord.getName().trim() : null, road);
                     }
                 }
             }
