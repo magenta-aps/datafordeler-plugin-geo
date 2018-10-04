@@ -434,7 +434,8 @@ public class AdresseService {
                        "LEFT JOIN " + AccessAddressEntity.class.getCanonicalName() + " access ON unit.accessAddress = access.identification " +
                             roadQueryPart +
                        houseNumberQueryPart +
-                       "WHERE " + where.toString()
+                       "WHERE " + where.toString() + " " +
+                            "order by access.bnr"
             );
 
             if (roadUUID != null) {
@@ -545,7 +546,7 @@ public class AdresseService {
                     "LEFT JOIN access.locality access_locality "+
                     "LEFT JOIN "+LocalityEntity.class.getCanonicalName()+" locality ON access_locality.reference = locality.identification "+
 
-                    "WHERE unit_identification.uuid = :uuid "
+                    "WHERE unit_identification.uuid = :uuid order by access.bnr"
             );
             databaseQuery.setParameter("uuid", unitAddressUUID);
             databaseQuery.setFlushMode(FlushModeType.COMMIT);
