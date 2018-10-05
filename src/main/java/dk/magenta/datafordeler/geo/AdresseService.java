@@ -226,7 +226,7 @@ public class AdresseService {
                         RoadNameRecord nameRecord = current(road.getName());
                         if (nameRecord != null) {
                             String altName = nameRecord.getAddressingName();
-                            roadNode.put(OUTPUT_ALTNAME, altName != null ? altName.trim() : altName);
+                            roadNode.put(OUTPUT_ALTNAME, altName != null ? altName.trim() : null);
                         }
                         if (road.getCode() != 0) {
                             roadNode.put(OUTPUT_ROADCODE, road.getCode());
@@ -261,18 +261,26 @@ public class AdresseService {
                     break;
                 }
             }
-            String roadName = null;
-            for (RoadNameRecord nameRecord : roadEntity.getName()) {
-                if (nameRecord.getRegistrationTo() == null) {
-                    roadName = nameRecord.getName();
-                    break;
+            String name = null;
+            int code = roadEntity.getCode();
+            if (code == 0) {
+                for (RoadNameRecord nameRecord : roadEntity.getName()) {
+                    if (nameRecord.getRegistrationTo() == null) {
+                        name = nameRecord.getName();
+                        break;
+                    }
                 }
             }
 
-            if (localityCode != null && roadName != null) {
+            if (localityCode != null && (code != 0 || name != null)) {
                 RoadQuery query = new RoadQuery();
                 query.setLocality(localityCode);
-                query.setName(roadName);
+                if (code != 0) {
+                    query.setCode(Integer.toString(code));
+                }
+                if (name != null) {
+                    query.setName(name);
+                }
 
                 for (RoadEntity roadEntity1 : QueryManager.getAllEntities(session, query, RoadEntity.class)) {
                     UUID u = roadEntity1.getUUID();
