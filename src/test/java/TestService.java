@@ -56,6 +56,8 @@ public class TestService extends GeoTest {
     public void testRoad() throws DataFordelerException, IOException {
         this.load(localityEntityManager, "/locality.json");
         this.load(roadEntityManager,"/road.json");
+        this.load(accessAddressEntityManager, "/access.json");
+        this.load(unitAddressEntityManager, "/unit.json");
         ResponseEntity<String> response = this.lookup("/geo/adresse/vej?lokalitet=f0966470-f09f-474d-a820-e8a46ed6fcc7");
         Assert.assertEquals(200, response.getStatusCode().value());
         ArrayNode roads = (ArrayNode) objectMapper.readTree(response.getBody());

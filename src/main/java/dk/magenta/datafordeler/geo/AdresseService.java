@@ -187,14 +187,29 @@ public class AdresseService {
         query.setLocalityUUID(locality);
         Session session = sessionManager.getSessionFactory().openSession();
         try {
-            List<RoadEntity> roads = QueryManager.getAllEntities(session, query, RoadEntity.class);
+
+            org.hibernate.query.Query databaseQuery = session.createQuery(
+                    "SELECT DISTINCT road FROM " + RoadEntity.class.getCanonicalName() + " road " +
+                        "JOIN road.locality locality " +
+                        "JOIN locality.reference locality_reference " +
+                        "JOIN " + AccessAddressRoadRecord.class.getCanonicalName() + " access_road ON access_road.reference = road.identification " +
+                        "JOIN " + AccessAddressEntity.class.getCanonicalName() + " access ON access_road.entity = access " +
+                        "JOIN " + UnitAddressEntity.class.getCanonicalName() + " unit ON unit.accessAddress = access.identification " +
+                        "JOIN unit.usage unit_usage " +
+                        "WHERE locality_reference.uuid = :uuid " +
+                        "AND road.code != null " +
+                        "AND unit_usage.usage = 1 "
+            );
+            databaseQuery.setParameter("uuid", locality);
+
             ArrayNode results = objectMapper.createArrayNode();
             ListHashMap<String, RoadEntity> roadMap = new ListHashMap<>();
-            for (RoadEntity road : roads) {
-                for (RoadNameRecord nameRecord : road.getName()) {
+            for (Object result : databaseQuery.getResultList()) {
+                RoadEntity roadEntity = (RoadEntity) result;
+                for (RoadNameRecord nameRecord : roadEntity.getName()) {
                     if (nameRecord.getRegistrationTo() == null) {
                         String nameValue = nameRecord.getName();
-                        roadMap.add(nameValue != null ? nameValue.trim() : null, road);
+                        roadMap.add(nameValue != null ? nameValue.trim() : null, roadEntity);
                     }
                 }
             }
@@ -216,7 +231,10 @@ public class AdresseService {
                 }
             }
 
-            for (String roadName : roadMap.keySet()) {
+            ArrayList<String> roadNames = new ArrayList<>(roadMap.keySet());
+            roadNames.sort(Comparator.nullsLast(Comparator.naturalOrder()));
+
+            for (String roadName : roadNames) {
                 if (roadName != null) {
                     ObjectNode roadNode = objectMapper.createObjectNode();
                     roadNode.put(OUTPUT_NAME, roadName);
@@ -340,27 +358,32 @@ public class AdresseService {
         try {
             ArrayNode results = objectMapper.createArrayNode();
 
+            HashSet<String> bnrs = new HashSet<>();
+
             if (!addressEntities.isEmpty()) {
 
                 for (AccessAddressEntity addressEntity : addressEntities) {
-                    ObjectNode addressNode = objectMapper.createObjectNode();
-                    addressNode.set(OUTPUT_HOUSENUMBER, null);
-                    addressNode.set(OUTPUT_BNUMBER, null);
-                    addressNode.set(OUTPUT_BCALLNAME, null);
+                    String bnr = addressEntity.getBnr();
 
-                    AccessAddressHouseNumberRecord houseNumber = current(addressEntity.getHouseNumber());
-                    if (houseNumber != null) {
-                        addressNode.put(OUTPUT_HOUSENUMBER, houseNumber.getNumber());
+                    if (!bnrs.contains(bnr)) {
+                        AccessAddressHouseNumberRecord houseNumber = current(addressEntity.getHouseNumber());
+                        String houseNumberValue = null;
+                        if (houseNumber != null) {
+                            houseNumberValue = houseNumber.getNumber();
+                        }
+                        if (!"0".equals(houseNumberValue)) {
+                            ObjectNode addressNode = objectMapper.createObjectNode();
+                            addressNode.put(OUTPUT_BNUMBER, bnr);
+                            addressNode.put(OUTPUT_HOUSENUMBER, houseNumberValue);
+                            AccessAddressBlockNameRecord blockName = current(addressEntity.getBlockName());
+                            addressNode.set(OUTPUT_BCALLNAME, null);
+                            if (blockName != null) {
+                                addressNode.put(OUTPUT_BCALLNAME, blockName.getName());
+                            }
+                            bnrs.add(bnr);
+                            results.add(addressNode);
+                        }
                     }
-
-                    addressNode.put(OUTPUT_BNUMBER, addressEntity.getBnr());
-
-                    AccessAddressBlockNameRecord blockName = current(addressEntity.getBlockName());
-                    if (blockName != null) {
-                        addressNode.put(OUTPUT_BCALLNAME, blockName.getName());
-                    }
-
-                    results.add(addressNode);
                 }
             }
             return results.toString();
@@ -426,18 +449,21 @@ public class AdresseService {
                 where.add("(road_identification.uuid IN :road OR locality_identification.uuid IN :road)");
             }
 
-            String houseNumberQueryPart = "";
+            String houseNumberQueryPart = "LEFT JOIN access.houseNumber houseNumber ";
             if (houseNumber != null) {
                 houseNumber = houseNumber.trim();
                 query.addHouseNumber(houseNumber);
                 query.addHouseNumber("0" + houseNumber);
                 query.addHouseNumber("00" + houseNumber);
-                houseNumberQueryPart = "LEFT JOIN access.houseNumber houseNumber ";
                 where.add("houseNumber.number IN :hnr");
+            } else {
+                where.add("houseNumber.number != '0'");
             }
             if (buildingNumber != null) {
                 query.addBnr(buildingNumber.trim());
                 where.add("access.bnr IN :bnr");
+            } else {
+                where.add("access.bnr != 'B-0000'");
             }
 
             org.hibernate.query.Query databaseQuery = session.createQuery(
@@ -461,46 +487,56 @@ public class AdresseService {
             }
             databaseQuery.setFlushMode(FlushModeType.COMMIT);
 
-
+            HashSet<String> existing = new HashSet<>();
             for (Object result : databaseQuery.getResultList()) {
                 Object[] resultItems = (Object[]) result;
                 UnitAddressEntity unitAddressEntity = (UnitAddressEntity) resultItems[0];
                 AccessAddressEntity accessAddressEntity = (AccessAddressEntity) resultItems[1];
 
                 ObjectNode addressNode = objectMapper.createObjectNode();
-
-                addressNode.put(OUTPUT_UUID, unitAddressEntity.getUUID().toString());
-                AccessAddressHouseNumberRecord houseNumberRecord = current(accessAddressEntity.getHouseNumber());
-                if (houseNumberRecord != null) {
-                    addressNode.put(OUTPUT_HOUSENUMBER, houseNumberRecord.getNumber());
-                }
-                AccessAddressBlockNameRecord blockname = current(accessAddressEntity.getBlockName());
-                if (blockname != null) {
-                    addressNode.put(OUTPUT_BCALLNAME, blockname.getName());
-                }
-
-                addressNode.put(OUTPUT_BNUMBER, accessAddressEntity.getBnr());
-
+                String floorValue = null;
+                String doorValue = null;
                 UnitAddressFloorRecord floor = current(unitAddressEntity.getFloor());
                 if (floor != null) {
-                    String floorValue = floor.getFloor();
-                    if (floorValue != null && !floorValue.isEmpty()) {
-                        addressNode.put(OUTPUT_FLOOR, floorValue);
-                    }
+                    floorValue = floor.getFloor();
                 }
                 UnitAddressDoorRecord door = current(unitAddressEntity.getDoor());
                 if (door != null) {
-                    String doorValue = door.getDoor();
+                    doorValue = door.getDoor();
+                }
+
+                String key = accessAddressEntity.getId() + "|" + floorValue + "|" + doorValue;
+
+                if (!existing.contains(key)) {
+                    existing.add(key);
+
+                    if (floorValue != null && !floorValue.isEmpty()) {
+                        addressNode.put(OUTPUT_FLOOR, floorValue);
+                    }
                     if (doorValue != null && !doorValue.isEmpty()) {
                         addressNode.put(OUTPUT_DOOR, door.getDoor());
                     }
-                }
-                UnitAddressUsageRecord usage = current(unitAddressEntity.getUsage());
-                if (usage != null) {
-                    addressNode.put(OUTPUT_USAGE, usage.getUsage());
-                }
 
-                results.add(addressNode);
+                    addressNode.put(OUTPUT_UUID, unitAddressEntity.getUUID().toString());
+                    AccessAddressHouseNumberRecord houseNumberRecord = current(accessAddressEntity.getHouseNumber());
+                    if (houseNumberRecord != null) {
+                        addressNode.put(OUTPUT_HOUSENUMBER, houseNumberRecord.getNumber());
+                    }
+                    AccessAddressBlockNameRecord blockname = current(accessAddressEntity.getBlockName());
+                    if (blockname != null) {
+                        addressNode.put(OUTPUT_BCALLNAME, blockname.getName());
+                    }
+
+                    addressNode.put(OUTPUT_BNUMBER, accessAddressEntity.getBnr());
+
+
+                    UnitAddressUsageRecord usage = current(unitAddressEntity.getUsage());
+                    if (usage != null) {
+                        addressNode.put(OUTPUT_USAGE, usage.getUsage());
+                    }
+
+                    results.add(addressNode);
+                }
             }
 
         } catch (Exception e) {
@@ -512,11 +548,7 @@ public class AdresseService {
     }
 
     /**
-     * Finds all addreses on a road, filtered by housenumber or bnumber.
-     * Only current data is included.
-     * @param request HTTP request containing a road parameter,
-     *                and optionally a house parameter or bnr parameter
-     * @return Json-formatted string containing a list of found objects
+     * Finds more detailed data on unit address
      */
     @RequestMapping("/adresseoplysninger")
     public void getAddressData(HttpServletRequest request, HttpServletResponse response) throws DataFordelerException, IOException {
