@@ -11,6 +11,7 @@ import dk.magenta.datafordeler.core.exception.MissingParameterException;
 import dk.magenta.datafordeler.core.fapi.BaseQuery;
 import dk.magenta.datafordeler.core.user.DafoUserDetails;
 import dk.magenta.datafordeler.core.user.DafoUserManager;
+import dk.magenta.datafordeler.core.util.DoubleListHashMap;
 import dk.magenta.datafordeler.core.util.ListHashMap;
 import dk.magenta.datafordeler.core.util.LoggerHelper;
 import dk.magenta.datafordeler.geo.data.accessaddress.*;
@@ -363,33 +364,45 @@ public class AdresseService {
         HashSet<String> bnrs = new HashSet<>();
         ArrayNode results = objectMapper.createArrayNode();
 
-        HashSet<String> houseNumbers = new HashSet<>();
+        DoubleListHashMap<String, String, ObjectNode> houseNumberMap = new DoubleListHashMap<>();
 
         try {
             for (Object result : databaseQuery.getResultList()) {
                 AccessAddressEntity addressEntity = (AccessAddressEntity) result;
                 String bnr = addressEntity.getBnr();
-                    if (!bnrs.contains(bnr)) {
-                        AccessAddressHouseNumberRecord houseNumber = current(addressEntity.getHouseNumber());
-                        String houseNumberValue = null;
-                        if (houseNumber != null) {
-                            houseNumberValue = houseNumber.getNumber();
+                if (!bnrs.contains(bnr)) {
+                    AccessAddressHouseNumberRecord houseNumber = current(addressEntity.getHouseNumber());
+                    String houseNumberValue = null;
+                    if (houseNumber != null) {
+                        houseNumberValue = houseNumber.getNumber();
+                    }
+                    if (!"0".equals(houseNumberValue)) {
+                        ObjectNode addressNode = objectMapper.createObjectNode();
+                        addressNode.put(OUTPUT_BNUMBER, bnr);
+                        addressNode.put(OUTPUT_HOUSENUMBER, houseNumberValue);
+                        AccessAddressBlockNameRecord blockName = current(addressEntity.getBlockName());
+                        addressNode.set(OUTPUT_BCALLNAME, null);
+                        if (blockName != null) {
+                            addressNode.put(OUTPUT_BCALLNAME, blockName.getName());
                         }
-                        if (!"0".equals(houseNumberValue) && !houseNumbers.contains(houseNumberValue)) {
-                            ObjectNode addressNode = objectMapper.createObjectNode();
-                            addressNode.put(OUTPUT_BNUMBER, bnr);
-                            addressNode.put(OUTPUT_HOUSENUMBER, houseNumberValue);
-                            AccessAddressBlockNameRecord blockName = current(addressEntity.getBlockName());
-                            addressNode.set(OUTPUT_BCALLNAME, null);
-                            if (blockName != null) {
-                                addressNode.put(OUTPUT_BCALLNAME, blockName.getName());
-                            }
-                            bnrs.add(bnr);
-                            results.add(addressNode);
-                            houseNumbers.add(houseNumberValue);
+                        bnrs.add(bnr);
+                        //results.add(addressNode);
+                        houseNumberMap.add(houseNumberValue, bnr, addressNode);
+                    }
+                }
+            }
+
+            // If a number exist with different BNRs, remove both
+            for (String houseNumber : houseNumberMap.keySet()) {
+                HashMap<String, ArrayList<ObjectNode>> housesByBnr = houseNumberMap.get(houseNumber);
+                if (housesByBnr.size() == 1) {
+                    for (String bnr : housesByBnr.keySet()) {
+                        for (ObjectNode node : housesByBnr.get(bnr)) {
+                            results.add(node);
                         }
                     }
                 }
+            }
 
             return results.toString();
         } finally {
@@ -492,6 +505,8 @@ public class AdresseService {
             }
             databaseQuery.setFlushMode(FlushModeType.COMMIT);
 
+            DoubleListHashMap<String, String, ObjectNode> houseNumberMap = new DoubleListHashMap<>();
+
             HashSet<String> existing = new HashSet<>();
             for (Object result : databaseQuery.getResultList()) {
                 Object[] resultItems = (Object[]) result;
@@ -499,13 +514,13 @@ public class AdresseService {
                 AccessAddressEntity accessAddressEntity = (AccessAddressEntity) resultItems[1];
 
                 ObjectNode addressNode = objectMapper.createObjectNode();
-                String housenumberValue = null;
+                String houseNumberValue = null;
                 String floorValue = null;
                 String doorValue = null;
 
                 AccessAddressHouseNumberRecord houseNumberRecord = current(accessAddressEntity.getHouseNumber());
                 if (houseNumberRecord != null) {
-                    housenumberValue = houseNumberRecord.getNumber();
+                    houseNumberValue = houseNumberRecord.getNumber();
                 }
                 UnitAddressFloorRecord floor = current(unitAddressEntity.getFloor());
                 if (floor != null) {
@@ -516,7 +531,7 @@ public class AdresseService {
                     doorValue = door.getDoor();
                 }
 
-                String key = housenumberValue + "|" + floorValue + "|" + doorValue;
+                String key = houseNumberValue + "|" + floorValue + "|" + doorValue;
 
                 if (!existing.contains(key)) {
                     existing.add(key);
@@ -529,14 +544,15 @@ public class AdresseService {
                     }
 
                     addressNode.put(OUTPUT_UUID, unitAddressEntity.getUUID().toString());
-                    addressNode.put(OUTPUT_HOUSENUMBER, housenumberValue);
+                    addressNode.put(OUTPUT_HOUSENUMBER, houseNumberValue);
 
                     AccessAddressBlockNameRecord blockname = current(accessAddressEntity.getBlockName());
                     if (blockname != null) {
                         addressNode.put(OUTPUT_BCALLNAME, blockname.getName());
                     }
 
-                    addressNode.put(OUTPUT_BNUMBER, accessAddressEntity.getBnr());
+                    String bnr = accessAddressEntity.getBnr();
+                    addressNode.put(OUTPUT_BNUMBER, bnr);
 
 
                     UnitAddressUsageRecord usage = current(unitAddressEntity.getUsage());
@@ -544,7 +560,20 @@ public class AdresseService {
                         addressNode.put(OUTPUT_USAGE, usage.getUsage());
                     }
 
-                    results.add(addressNode);
+                    houseNumberMap.add(houseNumberValue, bnr, addressNode);
+                    //results.add(addressNode);
+                }
+            }
+
+            // If a number exist with different BNRs, remove both
+            for (String number : houseNumberMap.keySet()) {
+                HashMap<String, ArrayList<ObjectNode>> housesByBnr = houseNumberMap.get(number);
+                if (housesByBnr.size() == 1) {
+                    for (String bnr : housesByBnr.keySet()) {
+                        for (ObjectNode node : housesByBnr.get(bnr)) {
+                            results.add(node);
+                        }
+                    }
                 }
             }
 
