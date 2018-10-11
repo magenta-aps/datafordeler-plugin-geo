@@ -339,39 +339,43 @@ public class AdresseService {
 
     public String getAccessAddresses(UUID road) throws DataFordelerException {
         Session session = sessionManager.getSessionFactory().openSession();
-        AccessAddressQuery accessAddressQuery = new AccessAddressQuery();
-        setQueryNow(accessAddressQuery);
-        setQueryNoLimit(accessAddressQuery);
 
-        accessAddressQuery.setLocalityUUID(road);
-        List<AccessAddressEntity> addressEntities = QueryManager.getAllEntities(session, accessAddressQuery, AccessAddressEntity.class);
-        if (addressEntities == null || addressEntities.isEmpty()) {
-            accessAddressQuery.setLocalityUUID(null);
-            if (road != null) {
-                for (UUID uuid : this.getWholeRoad(session, road)) {
-                    accessAddressQuery.addRoadUUID(uuid);
-                }
-            }
-            addressEntities = QueryManager.getAllEntities(session, accessAddressQuery, AccessAddressEntity.class);
-        }
+        StringJoiner where = new StringJoiner(" AND ");
+        where.add("unit_usage.usage = 1");
+
+        ArrayList<UUID> segments = new ArrayList<>(this.getWholeRoad(session, road));
+        where.add("(road_identification.uuid IN :road OR locality_identification.uuid IN :road)");
+
+        org.hibernate.query.Query databaseQuery = session.createQuery(
+                "SELECT DISTINCT access FROM " + UnitAddressEntity.class.getCanonicalName() + " unit " +
+                        "JOIN unit.usage unit_usage " +
+                        "LEFT JOIN " + AccessAddressEntity.class.getCanonicalName() + " access ON unit.accessAddress = access.identification " +
+                        "LEFT JOIN access.road access_road " +
+                        "LEFT JOIN access_road.reference road_identification " +
+                        "LEFT JOIN access.locality access_locality " +
+                        "LEFT JOIN access_locality.reference locality_identification " +
+                        "WHERE " + where.toString() + " " +
+                        "order by access.bnr"
+        );
+
+        databaseQuery.setParameterList("road", segments);
+
+        HashSet<String> bnrs = new HashSet<>();
+        ArrayNode results = objectMapper.createArrayNode();
+
+        HashSet<String> houseNumbers = new HashSet<>();
 
         try {
-            ArrayNode results = objectMapper.createArrayNode();
-
-            HashSet<String> bnrs = new HashSet<>();
-
-            if (!addressEntities.isEmpty()) {
-
-                for (AccessAddressEntity addressEntity : addressEntities) {
-                    String bnr = addressEntity.getBnr();
-
+            for (Object result : databaseQuery.getResultList()) {
+                AccessAddressEntity addressEntity = (AccessAddressEntity) result;
+                String bnr = addressEntity.getBnr();
                     if (!bnrs.contains(bnr)) {
                         AccessAddressHouseNumberRecord houseNumber = current(addressEntity.getHouseNumber());
                         String houseNumberValue = null;
                         if (houseNumber != null) {
                             houseNumberValue = houseNumber.getNumber();
                         }
-                        if (!"0".equals(houseNumberValue)) {
+                        if (!"0".equals(houseNumberValue) && !houseNumbers.contains(houseNumberValue)) {
                             ObjectNode addressNode = objectMapper.createObjectNode();
                             addressNode.put(OUTPUT_BNUMBER, bnr);
                             addressNode.put(OUTPUT_HOUSENUMBER, houseNumberValue);
@@ -382,10 +386,11 @@ public class AdresseService {
                             }
                             bnrs.add(bnr);
                             results.add(addressNode);
+                            houseNumbers.add(houseNumberValue);
                         }
                     }
                 }
-            }
+
             return results.toString();
         } finally {
             session.close();
@@ -494,8 +499,14 @@ public class AdresseService {
                 AccessAddressEntity accessAddressEntity = (AccessAddressEntity) resultItems[1];
 
                 ObjectNode addressNode = objectMapper.createObjectNode();
+                String housenumberValue = null;
                 String floorValue = null;
                 String doorValue = null;
+
+                AccessAddressHouseNumberRecord houseNumberRecord = current(accessAddressEntity.getHouseNumber());
+                if (houseNumberRecord != null) {
+                    housenumberValue = houseNumberRecord.getNumber();
+                }
                 UnitAddressFloorRecord floor = current(unitAddressEntity.getFloor());
                 if (floor != null) {
                     floorValue = floor.getFloor();
@@ -505,7 +516,7 @@ public class AdresseService {
                     doorValue = door.getDoor();
                 }
 
-                String key = accessAddressEntity.getId() + "|" + floorValue + "|" + doorValue;
+                String key = housenumberValue + "|" + floorValue + "|" + doorValue;
 
                 if (!existing.contains(key)) {
                     existing.add(key);
@@ -518,10 +529,8 @@ public class AdresseService {
                     }
 
                     addressNode.put(OUTPUT_UUID, unitAddressEntity.getUUID().toString());
-                    AccessAddressHouseNumberRecord houseNumberRecord = current(accessAddressEntity.getHouseNumber());
-                    if (houseNumberRecord != null) {
-                        addressNode.put(OUTPUT_HOUSENUMBER, houseNumberRecord.getNumber());
-                    }
+                    addressNode.put(OUTPUT_HOUSENUMBER, housenumberValue);
+
                     AccessAddressBlockNameRecord blockname = current(accessAddressEntity.getBlockName());
                     if (blockname != null) {
                         addressNode.put(OUTPUT_BCALLNAME, blockname.getName());
