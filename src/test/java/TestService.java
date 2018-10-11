@@ -75,6 +75,7 @@ public class TestService extends GeoTest {
     public void testAccessAddress() throws DataFordelerException, IOException {
         this.load(roadEntityManager, "/road.json");
         this.load(accessAddressEntityManager, "/access.json");
+        this.load(unitAddressEntityManager, "/unit.json");
         ResponseEntity<String> response = this.lookup("/geo/adresse/hus?vej=e1274f15-9e2b-4b6e-8b7d-c8078df65aa2");
         Assert.assertEquals(200, response.getStatusCode().value());
         ArrayNode buildings = (ArrayNode) objectMapper.readTree(response.getBody());
