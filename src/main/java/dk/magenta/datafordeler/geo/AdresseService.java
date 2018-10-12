@@ -530,8 +530,9 @@ public class AdresseService {
                 if (door != null) {
                     doorValue = door.getDoor();
                 }
+                String bnr = accessAddressEntity.getBnr();
 
-                String key = houseNumberValue + "|" + floorValue + "|" + doorValue;
+                String key = bnr + "|" + floorValue + "|" + doorValue;
 
                 if (!existing.contains(key)) {
                     existing.add(key);
@@ -551,7 +552,6 @@ public class AdresseService {
                         addressNode.put(OUTPUT_BCALLNAME, blockname.getName());
                     }
 
-                    String bnr = accessAddressEntity.getBnr();
                     addressNode.put(OUTPUT_BNUMBER, bnr);
 
 
