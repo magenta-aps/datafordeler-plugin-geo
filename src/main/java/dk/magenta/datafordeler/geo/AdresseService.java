@@ -370,7 +370,7 @@ public class AdresseService {
             for (Object result : databaseQuery.getResultList()) {
                 AccessAddressEntity addressEntity = (AccessAddressEntity) result;
                 String bnr = addressEntity.getBnr();
-                if (!bnrs.contains(bnr)) {
+                //if (!bnrs.contains(bnr)) {
                     AccessAddressHouseNumberRecord houseNumber = current(addressEntity.getHouseNumber());
                     String houseNumberValue = null;
                     if (houseNumber != null) {
@@ -386,10 +386,9 @@ public class AdresseService {
                             addressNode.put(OUTPUT_BCALLNAME, blockName.getName());
                         }
                         bnrs.add(bnr);
-                        //results.add(addressNode);
                         houseNumberMap.add(houseNumberValue, bnr, addressNode);
                     }
-                }
+                //}
             }
 
             // If a number exist with different BNRs, remove both
