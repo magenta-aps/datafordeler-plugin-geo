@@ -76,7 +76,7 @@ public class TestParse extends GeoTest {
     }
 
     @Test
-    public void testMunicipality() throws DataFordelerException, IOException {
+    public void testMunicipality() throws IOException {
         this.load(municipalityEntityManager, "/municipality.json");
         this.load(municipalityEntityManager, "/municipality.json");
 
@@ -105,7 +105,7 @@ public class TestParse extends GeoTest {
 
 
     @Test
-    public void testLocality() throws DataFordelerException, IOException {
+    public void testLocality() throws IOException {
         this.load(localityEntityManager, "/locality.json");
         this.load(localityEntityManager, "/locality.json");
 
@@ -143,7 +143,7 @@ public class TestParse extends GeoTest {
 
 
     @Test
-    public void testRoad() throws DataFordelerException, IOException {
+    public void testRoad() throws IOException {
         this.load(roadEntityManager, "/road.json");
         this.load(roadEntityManager, "/road.json");
 
@@ -173,7 +173,7 @@ public class TestParse extends GeoTest {
 
 
     @Test
-    public void testBuilding() throws DataFordelerException, IOException {
+    public void testBuilding() throws IOException {
         this.load(localityEntityManager, "/locality.json");
         this.load(buildingEntityManager, "/building.json");
         this.load(buildingEntityManager, "/building.json");
@@ -203,7 +203,7 @@ public class TestParse extends GeoTest {
 
 
     @Test
-    public void testAccessAddress() throws DataFordelerException, IOException {
+    public void testAccessAddress() throws IOException {
         this.load(buildingEntityManager, "/building.json");
         this.load(accessAddressEntityManager, "/access.json");
         this.load(accessAddressEntityManager, "/access.json");
@@ -254,7 +254,7 @@ public class TestParse extends GeoTest {
 
 
     @Test
-    public void testUnitAddress() throws DataFordelerException, IOException {
+    public void testUnitAddress() throws IOException {
         this.load(unitAddressEntityManager, "unit.json");
         this.load(unitAddressEntityManager, "unit.json");
 
@@ -289,7 +289,7 @@ public class TestParse extends GeoTest {
     }
 
     @Test
-    public void testPostcode() throws DataFordelerException, IOException {
+    public void testPostcode() throws IOException {
         this.load(postcodeEntityManager, "/post.json");
         this.load(postcodeEntityManager, "/post.json");
 

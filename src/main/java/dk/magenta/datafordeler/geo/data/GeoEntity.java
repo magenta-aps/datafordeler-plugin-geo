@@ -13,7 +13,6 @@ import javax.persistence.*;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -75,6 +74,13 @@ public abstract class GeoEntity extends DatabaseEntry implements IdentifiedEntit
 
     @Override
     public void forceLoad(Session session) {
+    }
+
+    public void update(RawData rawData, OffsetDateTime timestamp) {
+        for (GeoMonotemporalRecord record : rawData.getMonotemporalRecords()) {
+            record.setDafoUpdated(timestamp);
+            this.addMonotemporalRecord(record);
+        }
     }
 
     protected static <E extends GeoMonotemporalRecord> boolean addItem(Set<E> set, GeoMonotemporalRecord newItem) {

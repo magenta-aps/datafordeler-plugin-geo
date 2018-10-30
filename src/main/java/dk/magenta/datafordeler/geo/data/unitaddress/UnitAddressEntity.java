@@ -1,5 +1,6 @@
 package dk.magenta.datafordeler.geo.data.unitaddress;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import dk.magenta.datafordeler.core.database.Identification;
@@ -40,10 +41,6 @@ public class UnitAddressEntity extends SumiffiikEntity implements IdentifiedEnti
         super(record);
     }
 
-    public static UUID generateUUID(int localityCode) {
-        String uuidInput = "enhedsadresse:"+localityCode;
-        return UUID.nameUUIDFromBytes(uuidInput.getBytes());
-    }
 
 
 
@@ -203,11 +200,13 @@ public class UnitAddressEntity extends SumiffiikEntity implements IdentifiedEnti
     }
 
     @Override
+    @JsonIgnore
     public IdentifiedEntity getNewest(Collection<IdentifiedEntity> collection) {
         return null;
     }
 
     @Override
+    @JsonIgnore
     public Set<Set<? extends GeoMonotemporalRecord>> getAllRecords() {
         HashSet<Set<? extends GeoMonotemporalRecord>> records = new HashSet<>();
         records.add(this.door);

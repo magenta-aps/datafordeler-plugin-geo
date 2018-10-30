@@ -109,7 +109,7 @@ public class AdresseService {
     @RequestMapping("/lokalitet")
     public void getLocalities(HttpServletRequest request, HttpServletResponse response) throws DataFordelerException, IOException {
         String payload = this.getLocalities(request);
-        this.setHeaders(response);
+        setHeaders(response);
         response.getWriter().write(payload);
     }
 
@@ -181,7 +181,7 @@ public class AdresseService {
         return this.getRoads(parameterAsUUID(PARAM_LOCALITY, locality));
     }
 
-    public String getRoads(UUID locality) throws DataFordelerException {
+    public String getRoads(UUID locality) {
         RoadQuery query = new RoadQuery();
         setQueryNow(query);
         setQueryNoLimit(query);
@@ -338,7 +338,7 @@ public class AdresseService {
         return this.getAccessAddresses(road);
     }
 
-    public String getAccessAddresses(UUID road) throws DataFordelerException {
+    public String getAccessAddresses(UUID road) {
         Session session = sessionManager.getSessionFactory().openSession();
 
         StringJoiner where = new StringJoiner(" AND ");
@@ -437,7 +437,7 @@ public class AdresseService {
         return this.getUnitAddresses(road, houseNumber, buildingNumber);
     }
 
-    public String getUnitAddresses(UUID roadUUID, String houseNumber, String buildingNumber) throws DataFordelerException {
+    public String getUnitAddresses(UUID roadUUID, String houseNumber, String buildingNumber) {
         if (houseNumber != null && houseNumber.trim().isEmpty()) {
             houseNumber = null;
         }
@@ -606,7 +606,7 @@ public class AdresseService {
         return this.getAddressData(address);
     }
 
-    public String getAddressData(UUID unitAddressUUID) throws DataFordelerException {
+    public String getAddressData(UUID unitAddressUUID) {
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {

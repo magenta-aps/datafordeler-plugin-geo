@@ -2,14 +2,12 @@ package dk.magenta.datafordeler.geo.data.postcode;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import dk.magenta.datafordeler.geo.data.RawData;
 import dk.magenta.datafordeler.geo.data.SumiffiikRawData;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
 import org.geojson.MultiPolygon;
 import org.geojson.Polygon;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)

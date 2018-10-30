@@ -22,7 +22,6 @@ import dk.magenta.datafordeler.core.util.Stopwatch;
 import dk.magenta.datafordeler.geo.GeoRegisterManager;
 import dk.magenta.datafordeler.geo.configuration.GeoConfiguration;
 import dk.magenta.datafordeler.geo.configuration.GeoConfigurationManager;
-import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
@@ -32,6 +31,7 @@ import org.springframework.stereotype.Component;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.time.OffsetDateTime;
@@ -144,7 +144,7 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
     }
 
     @Override
-    protected ItemInputStream<? extends EntityReference> parseChecksumResponse(InputStream responseContent) throws DataFordelerException {
+    protected ItemInputStream<? extends EntityReference> parseChecksumResponse(InputStream responseContent) {
         return ItemInputStream.parseJsonStream(responseContent, this.managedEntityReferenceClass, "items", this.getObjectMapper());
     }
 
@@ -185,8 +185,9 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
         }
         timer.clear();
         final WireCache wireCache = new WireCache();
+        Charset charset = this.geoConfigurationManager.getConfiguration().getCharset();
 
-        parseJsonStream(jsonData, "features", this.objectMapper, jsonNode -> {
+        this.parseJsonStream(jsonData, charset, "features", this.objectMapper, jsonNode -> {
             try {
                 timer.start(TASK_PARSE);
                 T rawData = objectMapper.readerFor(this.getRawClass()).readValue(jsonNode);
@@ -229,15 +230,17 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
     }
 
     public static long parseJsonStream(String jsonData, String searchKey, ObjectMapper objectMapper, Consumer<JsonNode> callback) throws DataStreamException {
-        return parseJsonStream(new ByteArrayInputStream(jsonData.getBytes(Charset.forName("utf-8"))), searchKey, objectMapper, callback);
+        Charset charset = Charset.forName("utf-8");
+        return parseJsonStream(new ByteArrayInputStream(jsonData.getBytes(charset)), charset, searchKey, objectMapper, callback);
     }
 
-    public static long parseJsonStream(InputStream jsonData, String searchKey, ObjectMapper objectMapper, Consumer<JsonNode> callback) throws DataStreamException {
+    public static long parseJsonStream(InputStream jsonData, Charset charset, String searchKey, ObjectMapper objectMapper, Consumer<JsonNode> callback) throws DataStreamException {
         JsonFactory factory = objectMapper.getFactory();
         long count = 0;
 
+        InputStreamReader reader = new InputStreamReader(jsonData, charset);
         try {
-            JsonParser parser = factory.createParser(jsonData);
+            JsonParser parser = factory.createParser(reader);
             JsonToken token;
             boolean found;
             while ((token = parser.nextToken()) != null) {
@@ -271,20 +274,22 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
                     }
                 }
             }
-            jsonData.close();
 
         } catch (IOException e) {
             throw new DataStreamException(e);
+        } finally {
+            try {
+                reader.close();
+            } catch (IOException e) {
+                throw new DataStreamException(e);
+            }
         }
         return count;
     }
 
 
     protected void updateEntity(E entity, T rawData, ImportMetadata importMetadata) {
-        for (GeoMonotemporalRecord record : rawData.getMonotemporalRecords()) {
-            record.setDafoUpdated(importMetadata.getImportTime());
-            entity.addMonotemporalRecord(record);
-        }
+        entity.update(rawData, importMetadata.getImportTime());
     }
 
     protected boolean filter(JsonNode record, ObjectNode importConfiguration) {

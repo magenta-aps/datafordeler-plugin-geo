@@ -61,8 +61,7 @@ public abstract class GeoNontemporalRecord<E extends GeoEntity> extends Database
     }
 
     public boolean equalData(Object o) {
-        if (o==null || (getClass() != o.getClass())) return false;
-        return true;
+        return o != null && (getClass() == o.getClass());
     }
 
 }

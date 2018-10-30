@@ -74,7 +74,7 @@ public class BuildingService extends FapiBaseService<BuildingEntity, PostcodeQue
     }
 
     @Override
-    protected void checkAccess(DafoUserDetails dafoUserDetails) throws AccessDeniedException, AccessRequiredException {
+    protected void checkAccess(DafoUserDetails dafoUserDetails) {
         // All have access
     }
 
@@ -84,12 +84,12 @@ public class BuildingService extends FapiBaseService<BuildingEntity, PostcodeQue
     }
 
     @Override
-    protected void sendAsCSV(Stream<BuildingEntity> stream, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException, HttpNotFoundException {
+    protected void sendAsCSV(Stream<BuildingEntity> stream, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
 
     }
 
     @Override
-    protected void applyAreaRestrictionsToQuery(PostcodeQuery query, DafoUserDetails user) throws InvalidClientInputException {
+    protected void applyAreaRestrictionsToQuery(PostcodeQuery query, DafoUserDetails user) {
         Collection<AreaRestriction> restrictions = user.getAreaRestrictionsForRole(GeoRolesDefinition.READ_GEO_ROLE);
         AreaRestrictionDefinition areaRestrictionDefinition = this.geoPlugin.getAreaRestrictionDefinition();
         AreaRestrictionType municipalityType = areaRestrictionDefinition.getAreaRestrictionTypeByName(GeoAreaRestrictionDefinition.RESTRICTIONTYPE_KOMMUNEKODER);

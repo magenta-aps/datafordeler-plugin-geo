@@ -28,6 +28,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -177,12 +178,18 @@ public class GeoRegisterManager extends RegisterManager {
                 Session session = this.sessionManager.getSessionFactory().openSession();
                 session.close();
                 File cacheFile = new File("local/geo/" + entityManager.getSchema() + "_" + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+                Charset charset = this.getConfigurationManager().getConfiguration().getCharset();
                 try {
                     if (!cacheFile.exists()) {
                         log.info("Cache file "+cacheFile.getAbsolutePath()+" doesn't exist. Creating new and filling from source");
 
                         cacheFile.createNewFile();
-                        FileWriter fileWriter = new FileWriter(cacheFile);
+
+                        OutputStreamWriter fileWriter = new OutputStreamWriter(
+                                new FileOutputStream(cacheFile),
+                                charset.newEncoder()
+                        );
+
                         int count = 1000;
 
                         String query = eventInterface.getQuery();
@@ -193,7 +200,7 @@ public class GeoRegisterManager extends RegisterManager {
                             eventInterface = new URI(eventInterface.getScheme(), eventInterface.getUserInfo(), eventInterface.getHost(), eventInterface.getPort(), eventInterface.getPath(), offsetQuery, eventInterface.getFragment());
                             responseBody = communicator.fetch(eventInterface);
                             try {
-                                String data = InputStreamReader.readInputStream(responseBody);
+                                String data = InputStreamReader.readInputStream(responseBody, charset.name());
                                 long responseCount = GeoEntityManager.parseJsonStream(data, "features", this.objectMapper, null);
                                 if (responseCount == 0) {
                                     break;
@@ -231,7 +238,7 @@ public class GeoRegisterManager extends RegisterManager {
     }
 
     @Override
-    protected ItemInputStream<? extends PluginSourceData> parseEventResponse(InputStream rawData, EntityManager entityManager) throws DataFordelerException {
+    protected ItemInputStream<? extends PluginSourceData> parseEventResponse(InputStream rawData, EntityManager entityManager) {
         return null;
     }
 

@@ -1,5 +1,6 @@
 package dk.magenta.datafordeler.geo.data.municipality;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import dk.magenta.datafordeler.core.database.IdentifiedEntity;
@@ -7,12 +8,14 @@ import dk.magenta.datafordeler.core.database.Monotemporal;
 import dk.magenta.datafordeler.core.database.Nontemporal;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
+import dk.magenta.datafordeler.geo.data.RawData;
 import dk.magenta.datafordeler.geo.data.SumiffiikEntity;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Filters;
 
 import javax.persistence.*;
+import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -84,8 +87,14 @@ public class MunicipalityEntity extends SumiffiikEntity implements IdentifiedEnt
 
 
 
-
-
+    @Override
+    public void update(RawData rawData, OffsetDateTime timestamp) {
+        super.update(rawData, timestamp);
+        if (rawData instanceof MunicipalityRawData) {
+            MunicipalityRawData municipalityRawData = (MunicipalityRawData) rawData;
+            this.code = municipalityRawData.properties.code;
+        }
+    }
 
 
     public static final String DB_FIELD_SHAPE = "shape";
@@ -125,11 +134,13 @@ public class MunicipalityEntity extends SumiffiikEntity implements IdentifiedEnt
     }
 
     @Override
+    @JsonIgnore
     public IdentifiedEntity getNewest(Collection<IdentifiedEntity> collection) {
         return null;
     }
 
     @Override
+    @JsonIgnore
     public Set<Set<? extends GeoMonotemporalRecord>> getAllRecords() {
         HashSet<Set<? extends GeoMonotemporalRecord>> records = new HashSet<>();
         records.add(this.name);

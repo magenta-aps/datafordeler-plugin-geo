@@ -11,9 +11,10 @@ import dk.magenta.datafordeler.geo.data.road.RoadEntity;
 import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressEntity;
 
 import javax.persistence.*;
+import java.nio.charset.Charset;
 
 @Entity
-@Table(name="geo_config")
+@Table(name = "geo_config")
 public class GeoConfiguration implements Configuration {
 
     public enum RegisterType {
@@ -22,12 +23,36 @@ public class GeoConfiguration implements Configuration {
         REMOTE_HTTP(2);
 
         private int value;
+
         RegisterType(int value) {
             this.value = value;
         }
 
         public int getValue() {
             return this.value;
+        }
+    }
+
+    public enum CharsetValue {
+        UTF_8(0),
+        ISO_8859_1(1);
+
+        private int value;
+
+        CharsetValue(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return this.value;
+        }
+
+        public String asString() {
+            return this.name().replace('_', '-');
+        }
+
+        public Charset asCharset() {
+            return Charset.forName(this.asString());
         }
     }
 
@@ -47,17 +72,43 @@ public class GeoConfiguration implements Configuration {
 
     @Column
     @Enumerated(EnumType.ORDINAL)
+    private CharsetValue charsetName = CharsetValue.UTF_8;
+
+    public CharsetValue getCharsetName() {
+        return this.charsetName;
+    }
+
+    public Charset getCharset() {
+        return this.charsetName.asCharset();
+    }
+
+    public void setCharsetName(CharsetValue charsetName) {
+        this.charsetName = charsetName;
+    }
+
+
+    @Column
+    @Enumerated(EnumType.ORDINAL)
     private RegisterType municipalityRegisterType = RegisterType.DISABLED;
 
     public RegisterType getMunicipalityRegisterType() {
         return this.municipalityRegisterType;
     }
 
+    public void setMunicipalityRegisterType(RegisterType municipalityRegisterType) {
+        this.municipalityRegisterType = municipalityRegisterType;
+    }
+
+
     @Column(length = 1024)
     private String municipalityRegisterURL = "";
 
     public String getMunicipalityRegisterURL() {
         return this.municipalityRegisterURL;
+    }
+
+    public void setMunicipalityRegisterURL(String municipalityRegisterURL) {
+        this.municipalityRegisterURL = municipalityRegisterURL;
     }
 
     @Column
@@ -68,11 +119,20 @@ public class GeoConfiguration implements Configuration {
         return this.postcodeRegisterType;
     }
 
+    public void setPostcodeRegisterType(RegisterType postcodeRegisterType) {
+        this.postcodeRegisterType = postcodeRegisterType;
+    }
+
     @Column(length = 1024)
     private String postcodeRegisterURL = "";
 
     public String getPostcodeRegisterURL() {
         return this.postcodeRegisterURL;
+    }
+
+
+    public void setPostcodeRegisterURL(String postcodeRegisterURL) {
+        this.postcodeRegisterURL = postcodeRegisterURL;
     }
 
     @Column
@@ -83,11 +143,20 @@ public class GeoConfiguration implements Configuration {
         return this.localityRegisterType;
     }
 
+    public void setLocalityRegisterType(RegisterType localityRegisterType) {
+        this.localityRegisterType = localityRegisterType;
+    }
+
     @Column(length = 1024)
     private String localityRegisterURL = "";
 
     public String getLocalityRegisterURL() {
         return this.localityRegisterURL;
+    }
+
+
+    public void setLocalityRegisterURL(String localityRegisterURL) {
+        this.localityRegisterURL = localityRegisterURL;
     }
 
     @Column
@@ -98,12 +167,20 @@ public class GeoConfiguration implements Configuration {
         return this.roadRegisterType;
     }
 
+    public void setRoadRegisterType(RegisterType roadRegisterType) {
+        this.roadRegisterType = roadRegisterType;
+    }
+
     @Column(length = 1024)
     private String roadRegisterURL = "";
 
 
     public String getRoadRegisterURL() {
         return this.roadRegisterURL;
+    }
+
+    public void setRoadRegisterURL(String roadRegisterURL) {
+        this.roadRegisterURL = roadRegisterURL;
     }
 
     @Column
@@ -114,12 +191,20 @@ public class GeoConfiguration implements Configuration {
         return this.buildingRegisterType;
     }
 
+    public void setBuildingRegisterType(RegisterType buildingRegisterType) {
+        this.buildingRegisterType = buildingRegisterType;
+    }
+
     @Column(length = 1024)
     private String buildingRegisterURL = "";
 
 
     public String getBuildingRegisterURL() {
         return this.buildingRegisterURL;
+    }
+
+    public void setBuildingRegisterURL(String buildingRegisterURL) {
+        this.buildingRegisterURL = buildingRegisterURL;
     }
 
     @Column
@@ -130,6 +215,10 @@ public class GeoConfiguration implements Configuration {
         return this.accessAddressRegisterType;
     }
 
+    public void setAccessAddressRegisterType(RegisterType accessAddressRegisterType) {
+        this.accessAddressRegisterType = accessAddressRegisterType;
+    }
+
     @Column(length = 1024)
     private String accessAddressRegisterURL = "";
 
@@ -138,12 +227,21 @@ public class GeoConfiguration implements Configuration {
         return this.accessAddressRegisterURL;
     }
 
+    public void setAccessAddressRegisterURL(String accessAddressRegisterURL) {
+        this.accessAddressRegisterURL = accessAddressRegisterURL;
+    }
+
+
     @Column
     @Enumerated(EnumType.ORDINAL)
     private RegisterType unitAddressRegisterType = RegisterType.DISABLED;
 
     public RegisterType getUnitAddressRegisterType() {
         return this.unitAddressRegisterType;
+    }
+
+    public void setUnitAddressRegisterType(RegisterType unitAddressRegisterType) {
+        this.unitAddressRegisterType = unitAddressRegisterType;
     }
 
     @Column(length = 1024)
@@ -154,8 +252,9 @@ public class GeoConfiguration implements Configuration {
         return this.unitAddressRegisterURL;
     }
 
-
-
+    public void setUnitAddressRegisterURL(String unitAddressRegisterURL) {
+        this.unitAddressRegisterURL = unitAddressRegisterURL;
+    }
 
 
     public RegisterType getRegisterType(String schema) {

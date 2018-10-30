@@ -40,7 +40,7 @@ public class TestService extends GeoTest {
 
 
     @Test
-    public void testLocality() throws DataFordelerException, IOException {
+    public void testLocality() throws IOException {
         this.load(localityEntityManager, "/locality.json");
         ResponseEntity<String> response = this.lookup("/geo/adresse/lokalitet?kommune=956");
         Assert.assertEquals(200, response.getStatusCode().value());
@@ -53,7 +53,7 @@ public class TestService extends GeoTest {
 
 
     @Test
-    public void testRoad() throws DataFordelerException, IOException {
+    public void testRoad() throws IOException {
         this.load(localityEntityManager, "/locality.json");
         this.load(roadEntityManager,"/road.json");
         this.load(accessAddressEntityManager, "/access.json");
@@ -72,7 +72,7 @@ public class TestService extends GeoTest {
 
 
     @Test
-    public void testAccessAddress() throws DataFordelerException, IOException {
+    public void testAccessAddress() throws IOException {
         this.load(roadEntityManager, "/road.json");
         this.load(accessAddressEntityManager, "/access.json");
         this.load(unitAddressEntityManager, "/unit.json");
@@ -87,7 +87,7 @@ public class TestService extends GeoTest {
     }
 
     @Test
-    public void testUnitAddress() throws DataFordelerException, IOException {
+    public void testUnitAddress() throws IOException {
         this.load(roadEntityManager, "/road.json");
         this.load(accessAddressEntityManager, "/access.json");
         this.load(unitAddressEntityManager, "/unit.json");
@@ -120,7 +120,7 @@ public class TestService extends GeoTest {
     }
 
     @Test
-    public void testUnitAddressDetails() throws DataFordelerException, IOException {
+    public void testUnitAddressDetails() throws IOException {
         this.load(localityEntityManager,"/locality.json");
         this.load(roadEntityManager,"/road.json");
         this.load(accessAddressEntityManager, "/access.json");
