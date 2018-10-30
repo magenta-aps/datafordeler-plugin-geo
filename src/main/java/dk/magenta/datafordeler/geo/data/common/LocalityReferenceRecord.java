@@ -11,7 +11,6 @@ import org.hibernate.Session;
 import javax.persistence.Column;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.Transient;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;

@@ -1,5 +1,6 @@
 package dk.magenta.datafordeler.geo.data.postcode;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import dk.magenta.datafordeler.core.database.IdentifiedEntity;
@@ -121,9 +122,13 @@ public class PostcodeEntity extends SumiffiikEntity implements IdentifiedEntity 
     }
 
     @Override
+    @JsonIgnore
     public IdentifiedEntity getNewest(Collection<IdentifiedEntity> collection) {
         return null;
-    }@Override
+    }
+
+    @Override
+    @JsonIgnore
     public Set<Set<? extends GeoMonotemporalRecord>> getAllRecords() {
         return Collections.emptySet();
     }

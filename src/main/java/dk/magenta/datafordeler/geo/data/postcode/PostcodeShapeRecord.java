@@ -4,7 +4,6 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import dk.magenta.datafordeler.core.database.DatabaseEntry;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.common.AreaRecord;
-import dk.magenta.datafordeler.geo.data.municipality.MunicipalityEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.Index;

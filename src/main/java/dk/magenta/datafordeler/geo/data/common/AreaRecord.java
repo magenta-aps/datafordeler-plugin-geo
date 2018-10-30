@@ -70,9 +70,9 @@ public abstract class AreaRecord<E extends GeoEntity> extends GeoMonotemporalRec
     public static final String DB_FIELD_SHAPE = "shape";
     public static final String IO_FIELD_SHAPE = "form";
     @Column(name = DB_FIELD_SHAPE, columnDefinition = "geometry")
+    @JsonIgnore
     private MultiPolygon shape;
 
-    @JsonIgnore
     public MultiPolygon getShape() {
         return this.shape;
     }
