@@ -87,6 +87,42 @@ public class GeoConfiguration implements Configuration {
     }
 
 
+
+    @Column(length = 1024)
+    private String tokenService = "";
+
+    public String getTokenService() {
+        return this.tokenService;
+    }
+
+    public void setTokenService(String tokenService) {
+        this.tokenService = tokenService;
+    }
+
+    @Column
+    private String username = "";
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    @Column
+    private String password = "";
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+
+
     @Column
     @Enumerated(EnumType.ORDINAL)
     private RegisterType municipalityRegisterType = RegisterType.DISABLED;
