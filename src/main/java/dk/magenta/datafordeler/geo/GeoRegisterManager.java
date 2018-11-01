@@ -22,10 +22,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.*;
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -200,7 +197,7 @@ public class GeoRegisterManager extends RegisterManager {
                             String token = this.getToken(tokenUrl, configuration.getUsername(), configuration.getPassword());
                             Map<String, String> headers = Collections.singletonMap("Authorization", "Bearer " + token);
                             for (int offset = 0; offset < 1000000; offset += count) {
-                                String offsetQuery = query.replace("%{offset}", Integer.toString(offset));
+                                String offsetQuery = URLDecoder.decode(query.replace("%{offset}", Integer.toString(offset)), "utf-8");
                                 eventInterface = new URI(eventInterface.getScheme(), eventInterface.getUserInfo(), eventInterface.getHost(), eventInterface.getPort(), eventInterface.getPath(), offsetQuery, eventInterface.getFragment());
 
                                 responseBody = communicator.get(eventInterface, headers);
