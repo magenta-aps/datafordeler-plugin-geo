@@ -100,7 +100,7 @@ public class TestService extends GeoTest {
         ObjectNode address = (ObjectNode) addresses.get(0);
         Assert.assertEquals("18", address.get("husnummer").asText());
         Assert.assertEquals("House of Testing!", address.get("b_kaldenavn").asText());
-        Assert.assertEquals("B-3197", address.get("b_nummer").asText());
+        Assert.assertEquals("3197", address.get("b_nummer").asText());
         Assert.assertEquals("kld", address.get("etage").asText());
         Assert.assertEquals("1234", address.get("doer").asText());
         Assert.assertEquals(1, address.get("anvendelse").intValue());
@@ -132,7 +132,7 @@ public class TestService extends GeoTest {
         Assert.assertEquals("18", address.get("husnummer").asText());
         Assert.assertEquals("kld", address.get("etage").asText());
         Assert.assertEquals("1234", address.get("doer").asText());
-        Assert.assertEquals("B-3197", address.get("b_nummer").asText());
+        Assert.assertEquals("3197", address.get("b_nummer").asText());
         Assert.assertEquals("e1274f15-9e2b-4b6e-8b7d-c8078df65aa2", address.get("vej_uuid").asText());
         Assert.assertEquals(254, address.get("vejkode").intValue());
         Assert.assertEquals("Qarsaalik", address.get("vejnavn").asText());
