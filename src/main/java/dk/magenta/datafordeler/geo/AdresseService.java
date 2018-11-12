@@ -551,7 +551,7 @@ public class AdresseService {
                         addressNode.put(OUTPUT_BCALLNAME, blockname.getName());
                     }
 
-                    addressNode.put(OUTPUT_BNUMBER, bnr);
+                    addressNode.put(OUTPUT_BNUMBER, stripBnr(bnr));
 
 
                     UnitAddressUsageRecord usage = current(unitAddressEntity.getUsage());
@@ -679,7 +679,7 @@ public class AdresseService {
                             addressNode.put(OUTPUT_HOUSENUMBER, houseNumber.getNumber());
                         }
 
-                        addressNode.put(OUTPUT_BNUMBER, accessAddress.getBnr());
+                        addressNode.put(OUTPUT_BNUMBER, stripBnr(accessAddress.getBnr()));
 
                         AccessAddressBlockNameRecord blockName = current(accessAddress.getBlockName());
                         if (blockName != null) {
@@ -779,5 +779,17 @@ public class AdresseService {
             candidates.sort(Comparator.comparing(GeoMonotemporalRecord::getRegistrationFrom));
         }
         return candidates.isEmpty() ? null : candidates.get(candidates.size()-1);
+    }
+
+    private static String stripBnr(String bnr) {
+        if (bnr != null) {
+            if (bnr.toUpperCase().startsWith("B")) {
+                bnr = bnr.substring(1);
+                if (bnr.startsWith("-")) {
+                    bnr = bnr.substring(1);
+                }
+            }
+        }
+        return bnr;
     }
 }
