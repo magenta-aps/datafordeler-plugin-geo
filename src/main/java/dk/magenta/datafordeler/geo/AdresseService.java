@@ -341,7 +341,6 @@ public class AdresseService {
     }
 
     public String getAccessAddresses(UUID road) {
-        System.out.println("getAccessAddresses()");
         Session session = sessionManager.getSessionFactory().openSession();
 
         StringJoiner where = new StringJoiner(" AND ");
@@ -441,7 +440,6 @@ public class AdresseService {
     }
 
     public String getUnitAddresses(UUID roadUUID, String houseNumber, String buildingNumber) {
-        System.out.println("getUnitAddresses()");
         if (houseNumber != null && houseNumber.trim().isEmpty()) {
             houseNumber = null;
         }
@@ -555,7 +553,6 @@ public class AdresseService {
                         addressNode.put(OUTPUT_BCALLNAME, blockname.getName());
                     }
 
-                    System.out.println(bnr+" => "+stripBnr(bnr));
                     addressNode.put(OUTPUT_BNUMBER, stripBnr(bnr));
                     if (doorValue == null || doorValue.isEmpty()) {
                         String bnrDoor = bnrExtraLetter(bnr);
@@ -618,8 +615,6 @@ public class AdresseService {
     }
 
     public String getAddressData(UUID unitAddressUUID) {
-        System.out.println("getAddressData()");
-
         Session session = sessionManager.getSessionFactory().openSession();
         try {
             // We only get bnumber references here, and must look them up in the bnumber table
@@ -694,7 +689,6 @@ public class AdresseService {
 
                         String bnr = accessAddress.getBnr();
                         addressNode.put(OUTPUT_BNUMBER, stripBnr(bnr));
-                        System.out.println(bnr+" => "+stripBnr(bnr));
                         if (doorValue == null || doorValue.isEmpty()) {
                             String bnrDoor = bnrExtraLetter(bnr);
                             if (bnrDoor != null) {
@@ -808,7 +802,7 @@ public class AdresseService {
         if (bnr != null) {
             Matcher m = bnrPattern.matcher(bnr);
             if (m.find()) {
-                return bnr.substring(2);
+                return m.group(2);
             }
         }
         return null;
