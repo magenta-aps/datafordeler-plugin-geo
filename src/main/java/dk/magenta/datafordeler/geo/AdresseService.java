@@ -37,6 +37,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController("GeoAdresseService")
 @RequestMapping("/geo/adresse")
@@ -339,6 +341,7 @@ public class AdresseService {
     }
 
     public String getAccessAddresses(UUID road) {
+        System.out.println("getAccessAddresses()");
         Session session = sessionManager.getSessionFactory().openSession();
 
         StringJoiner where = new StringJoiner(" AND ");
@@ -438,6 +441,7 @@ public class AdresseService {
     }
 
     public String getUnitAddresses(UUID roadUUID, String houseNumber, String buildingNumber) {
+        System.out.println("getUnitAddresses()");
         if (houseNumber != null && houseNumber.trim().isEmpty()) {
             houseNumber = null;
         }
@@ -551,7 +555,14 @@ public class AdresseService {
                         addressNode.put(OUTPUT_BCALLNAME, blockname.getName());
                     }
 
+                    System.out.println(bnr+" => "+stripBnr(bnr));
                     addressNode.put(OUTPUT_BNUMBER, stripBnr(bnr));
+                    if (doorValue == null || doorValue.isEmpty()) {
+                        String bnrDoor = bnrExtraLetter(bnr);
+                        if (bnrDoor != null) {
+                            addressNode.put(OUTPUT_DOOR, bnrDoor);
+                        }
+                    }
 
 
                     UnitAddressUsageRecord usage = current(unitAddressEntity.getUsage());
@@ -607,6 +618,7 @@ public class AdresseService {
     }
 
     public String getAddressData(UUID unitAddressUUID) {
+        System.out.println("getAddressData()");
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {
@@ -639,6 +651,7 @@ public class AdresseService {
                 AccessAddressEntity accessAddress = results.length > 1 ? (AccessAddressEntity) results[1] : null;
                 RoadEntity road = results.length > 2 ? (RoadEntity) results[2] : null;
                 LocalityEntity locality = results.length > 3 ? (LocalityEntity) results[3] : null;
+                String doorValue = null;
 
                 if (unitAddress != null) {
                     addressNode.put(OUTPUT_UUID, unitAddress.getUUID().toString());
@@ -663,7 +676,7 @@ public class AdresseService {
                     }
                     UnitAddressDoorRecord door = current(unitAddress.getDoor());
                     if (door != null) {
-                        String doorValue = door.getDoor();
+                        doorValue = door.getDoor();
                         if (doorValue != null && !doorValue.isEmpty()) {
                             addressNode.put(OUTPUT_DOOR, doorValue);
                         }
@@ -679,7 +692,15 @@ public class AdresseService {
                             addressNode.put(OUTPUT_HOUSENUMBER, houseNumber.getNumber());
                         }
 
-                        addressNode.put(OUTPUT_BNUMBER, stripBnr(accessAddress.getBnr()));
+                        String bnr = accessAddress.getBnr();
+                        addressNode.put(OUTPUT_BNUMBER, stripBnr(bnr));
+                        System.out.println(bnr+" => "+stripBnr(bnr));
+                        if (doorValue == null || doorValue.isEmpty()) {
+                            String bnrDoor = bnrExtraLetter(bnr);
+                            if (bnrDoor != null) {
+                                addressNode.put(OUTPUT_DOOR, bnrDoor);
+                            }
+                        }
 
                         AccessAddressBlockNameRecord blockName = current(accessAddress.getBlockName());
                         if (blockName != null) {
@@ -781,15 +802,25 @@ public class AdresseService {
         return candidates.isEmpty() ? null : candidates.get(candidates.size()-1);
     }
 
+    private static Pattern bnrPattern = Pattern.compile("(B-)?(\\d+)([a-z]+)?", Pattern.CASE_INSENSITIVE);
+
     private static String stripBnr(String bnr) {
         if (bnr != null) {
-            if (bnr.toUpperCase().startsWith("B")) {
-                bnr = bnr.substring(1);
-                if (bnr.startsWith("-")) {
-                    bnr = bnr.substring(1);
-                }
+            Matcher m = bnrPattern.matcher(bnr);
+            if (m.find()) {
+                return bnr.substring(2);
             }
         }
-        return bnr;
+        return null;
+    }
+
+    private static String bnrExtraLetter(String bnr) {
+        if (bnr != null) {
+            Matcher m = bnrPattern.matcher(bnr);
+            if (m.find()) {
+                return m.group(3);
+            }
+        }
+        return null;
     }
 }
