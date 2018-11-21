@@ -380,7 +380,7 @@ public class AdresseService {
                     }
                     if (!"0".equals(houseNumberValue)) {
                         ObjectNode addressNode = objectMapper.createObjectNode();
-                        addressNode.put(OUTPUT_BNUMBER, bnr);
+                        addressNode.put(OUTPUT_BNUMBER, stripBnr(bnr));
                         addressNode.put(OUTPUT_HOUSENUMBER, houseNumberValue);
                         AccessAddressBlockNameRecord blockName = current(addressEntity.getBlockName());
                         addressNode.set(OUTPUT_BCALLNAME, null);
@@ -479,7 +479,7 @@ public class AdresseService {
                 where.add("houseNumber.number != '0'");
             }
             if (buildingNumber != null) {
-                query.addBnr(buildingNumber.trim());
+                query.addBnr(prefixBnr(buildingNumber.trim()));
                 where.add("access.bnr IN :bnr");
             } else {
                 where.add("access.bnr != 'B-0000'");
@@ -806,6 +806,13 @@ public class AdresseService {
             }
         }
         return null;
+    }
+
+    private static String prefixBnr(String bnr) {
+        if (!bnr.startsWith("B")) {
+            bnr = "B-" + bnr;
+        }
+        return bnr;
     }
 
     private static String bnrExtraLetter(String bnr) {

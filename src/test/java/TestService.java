@@ -94,7 +94,7 @@ public class TestService extends GeoTest {
         this.load(unitAddressEntityManager, "/unit.json");
         ResponseEntity<String> response = this.lookup("/geo/adresse/adresse?b_nummer=B-3197B");
         Assert.assertEquals(400, response.getStatusCode().value());
-        response = this.lookup("/geo/adresse/adresse?vej=e1274f15-9e2b-4b6e-8b7d-c8078df65aa2&b_nummer=B-3197B");
+        response = this.lookup("/geo/adresse/adresse?vej=e1274f15-9e2b-4b6e-8b7d-c8078df65aa2&b_nummer=3197B");
         Assert.assertEquals(200, response.getStatusCode().value());
         ArrayNode addresses = (ArrayNode) objectMapper.readTree(response.getBody());
         Assert.assertEquals(1, addresses.size());
