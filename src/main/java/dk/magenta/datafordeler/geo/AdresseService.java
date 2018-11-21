@@ -371,7 +371,7 @@ public class AdresseService {
         try {
             for (Object result : databaseQuery.getResultList()) {
                 AccessAddressEntity addressEntity = (AccessAddressEntity) result;
-                String bnr = addressEntity.getBnr();
+                String bnr = stripBnr(addressEntity.getBnr());
                 //if (!bnrs.contains(bnr)) {
                     AccessAddressHouseNumberRecord houseNumber = current(addressEntity.getHouseNumber());
                     String houseNumberValue = null;
@@ -380,7 +380,7 @@ public class AdresseService {
                     }
                     if (!"0".equals(houseNumberValue)) {
                         ObjectNode addressNode = objectMapper.createObjectNode();
-                        addressNode.put(OUTPUT_BNUMBER, stripBnr(bnr));
+                        addressNode.put(OUTPUT_BNUMBER, bnr);
                         addressNode.put(OUTPUT_HOUSENUMBER, houseNumberValue);
                         AccessAddressBlockNameRecord blockName = current(addressEntity.getBlockName());
                         addressNode.set(OUTPUT_BCALLNAME, null);
@@ -479,7 +479,14 @@ public class AdresseService {
                 where.add("houseNumber.number != '0'");
             }
             if (buildingNumber != null) {
-                query.addBnr(prefixBnr(buildingNumber.trim()));
+                String strippedBnr = prefixBnr(buildingNumber.trim());
+                query.addBnr(strippedBnr);
+                query.addBnr(strippedBnr+"A");
+                query.addBnr(strippedBnr+"B");
+                query.addBnr(strippedBnr+"C");
+                query.addBnr(strippedBnr+"D");
+                query.addBnr(strippedBnr+"E");
+                query.addBnr(strippedBnr+"F");
                 where.add("access.bnr IN :bnr");
             } else {
                 where.add("access.bnr != 'B-0000'");
