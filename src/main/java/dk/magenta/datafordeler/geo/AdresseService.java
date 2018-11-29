@@ -195,7 +195,10 @@ public class AdresseService {
                     "SELECT DISTINCT road FROM " + RoadEntity.class.getCanonicalName() + " road " +
                         "JOIN road.locality locality " +
                         "JOIN locality.reference locality_reference " +
-                        "JOIN " + AccessAddressRoadRecord.class.getCanonicalName() + " access_road ON access_road.reference = road.identification " +
+
+                        "LEFT JOIN road.municipality road_municipality "+
+                        "LEFT JOIN "+AccessAddressRoadRecord.class.getCanonicalName()+" access_road ON access_road.roadCode = road.code AND access_road.municipalityCode = road_municipality.code "+
+
                         "JOIN " + AccessAddressEntity.class.getCanonicalName() + " access ON access_road.entity = access " +
                         "JOIN " + UnitAddressEntity.class.getCanonicalName() + " unit ON unit.accessAddress = access.identification " +
                         "JOIN unit.usage unit_usage " +
@@ -354,7 +357,9 @@ public class AdresseService {
                         "JOIN unit.usage unit_usage " +
                         "LEFT JOIN " + AccessAddressEntity.class.getCanonicalName() + " access ON unit.accessAddress = access.identification " +
                         "LEFT JOIN access.road access_road " +
-                        "LEFT JOIN access_road.reference road_identification " +
+                        "LEFT JOIN " + RoadEntity.class.getCanonicalName() + " road on road.code = access_road.roadCode " +
+                        "JOIN " + RoadMunicipalityRecord.class.getCanonicalName() + " road_municipality on road_municipality.entity = road and road_municipality.code = access_road.municipalityCode " +
+                        "LEFT JOIN road.identification road_identification " +
                         "LEFT JOIN access.locality access_locality " +
                         "LEFT JOIN access_locality.reference locality_identification " +
                         "WHERE " + where.toString() + " " +
@@ -368,10 +373,12 @@ public class AdresseService {
 
         DoubleListHashMap<String, String, ObjectNode> houseNumberMap = new DoubleListHashMap<>();
 
+
+        // TODO: Fjern kun bagvedstillet bogstav hvis længde > 3
         try {
             for (Object result : databaseQuery.getResultList()) {
                 AccessAddressEntity addressEntity = (AccessAddressEntity) result;
-                String bnr = addressEntity.getBnr();
+                String bnr = stripBnr(addressEntity.getBnr(), true);
                 //if (!bnrs.contains(bnr)) {
                     AccessAddressHouseNumberRecord houseNumber = current(addressEntity.getHouseNumber());
                     String houseNumberValue = null;
@@ -380,7 +387,7 @@ public class AdresseService {
                     }
                     if (!"0".equals(houseNumberValue)) {
                         ObjectNode addressNode = objectMapper.createObjectNode();
-                        addressNode.put(OUTPUT_BNUMBER, stripBnr(bnr));
+                        addressNode.put(OUTPUT_BNUMBER, bnr);
                         addressNode.put(OUTPUT_HOUSENUMBER, houseNumberValue);
                         AccessAddressBlockNameRecord blockName = current(addressEntity.getBlockName());
                         addressNode.set(OUTPUT_BCALLNAME, null);
@@ -439,6 +446,8 @@ public class AdresseService {
         return this.getUnitAddresses(road, houseNumber, buildingNumber);
     }
 
+    Pattern endsWithLetter = Pattern.compile(".*[a-z]$", Pattern.CASE_INSENSITIVE);
+
     public String getUnitAddresses(UUID roadUUID, String houseNumber, String buildingNumber) {
         if (houseNumber != null && houseNumber.trim().isEmpty()) {
             houseNumber = null;
@@ -462,7 +471,9 @@ public class AdresseService {
                     query.addRoadUUID(uuid);
                 }
                 roadQueryPart = "LEFT JOIN access.road access_road " +
-                        "LEFT JOIN access_road.reference road_identification " +
+                        "LEFT JOIN " + RoadEntity.class.getCanonicalName() + " road on road.code = access_road.roadCode " +
+                        "JOIN " + RoadMunicipalityRecord.class.getCanonicalName() + " road_municipality on road_municipality.entity = road and road_municipality.code = access_road.municipalityCode " +
+                        "LEFT JOIN road.identification road_identification " +
                         "LEFT JOIN access.locality access_locality " +
                         "LEFT JOIN access_locality.reference locality_identification ";
                 where.add("(road_identification.uuid IN :road OR locality_identification.uuid IN :road)");
@@ -479,10 +490,20 @@ public class AdresseService {
                 where.add("houseNumber.number != '0'");
             }
             if (buildingNumber != null) {
-                query.addBnr(prefixBnr(buildingNumber.trim()));
+                String strippedBnr = prefixBnr(buildingNumber.trim());
+                query.addBnr(strippedBnr);
+                Matcher m = endsWithLetter.matcher(strippedBnr);
+                if (!m.find()) {
+                    query.addBnr(strippedBnr + "A");
+                    query.addBnr(strippedBnr + "B");
+                    query.addBnr(strippedBnr + "C");
+                    query.addBnr(strippedBnr + "D");
+                    query.addBnr(strippedBnr + "E");
+                    query.addBnr(strippedBnr + "F");
+                }
                 where.add("access.bnr IN :bnr");
             } else {
-                where.add("access.bnr != 'B-0000'");
+                where.add("(access.bnr is null or access.bnr != 'B-0000')");
             }
 
             org.hibernate.query.Query databaseQuery = session.createQuery(
@@ -553,7 +574,7 @@ public class AdresseService {
                         addressNode.put(OUTPUT_BCALLNAME, blockname.getName());
                     }
 
-                    addressNode.put(OUTPUT_BNUMBER, stripBnr(bnr));
+                    addressNode.put(OUTPUT_BNUMBER, stripBnr(bnr, true));
                     if (doorValue == null || doorValue.isEmpty()) {
                         String bnrDoor = bnrExtraLetter(bnr);
                         if (bnrDoor != null) {
@@ -629,7 +650,9 @@ public class AdresseService {
                     "LEFT JOIN "+AccessAddressEntity.class.getCanonicalName()+" access ON unit.accessAddress = access.identification "+
 
                     "LEFT JOIN access.road access_road "+
-                    "LEFT JOIN "+RoadEntity.class.getCanonicalName()+" road ON access_road.reference = road.identification "+
+                    //"LEFT JOIN "+RoadEntity.class.getCanonicalName()+" road ON access_road.reference = road.identification "+
+                    "LEFT JOIN "+RoadEntity.class.getCanonicalName()+" road ON access_road.roadCode = road.code "+
+                    "JOIN "+RoadMunicipalityRecord.class.getCanonicalName()+" road_municipality ON road_municipality.code = access_road.municipalityCode "+
 
                     "LEFT JOIN access.locality access_locality "+
                     "LEFT JOIN "+LocalityEntity.class.getCanonicalName()+" locality ON access_locality.reference = locality.identification "+
@@ -688,7 +711,7 @@ public class AdresseService {
                         }
 
                         String bnr = accessAddress.getBnr();
-                        addressNode.put(OUTPUT_BNUMBER, stripBnr(bnr));
+                        addressNode.put(OUTPUT_BNUMBER, stripBnr(bnr, true));
                         if (doorValue == null || doorValue.isEmpty()) {
                             String bnrDoor = bnrExtraLetter(bnr);
                             if (bnrDoor != null) {
@@ -796,13 +819,19 @@ public class AdresseService {
         return candidates.isEmpty() ? null : candidates.get(candidates.size()-1);
     }
 
-    private static Pattern bnrPattern = Pattern.compile("(B-)?(\\d+)([a-z]+)?", Pattern.CASE_INSENSITIVE);
-
+    private static Pattern bnrPattern = Pattern.compile("(B-)?(0+)?(\\d+)([a-z])?", Pattern.CASE_INSENSITIVE);
     private static String stripBnr(String bnr) {
+        return stripBnr(bnr, false);
+    }
+    private static String stripBnr(String bnr, boolean removeSuffixOnlyIfLong) {
         if (bnr != null) {
             Matcher m = bnrPattern.matcher(bnr);
             if (m.find()) {
-                return m.group(2);
+                String core = m.group(3);
+                if (removeSuffixOnlyIfLong && core.length() < 4 && m.group(4) != null) {
+                    return core + m.group(4);
+                }
+                return core;
             }
         }
         return null;
@@ -819,7 +848,9 @@ public class AdresseService {
         if (bnr != null) {
             Matcher m = bnrPattern.matcher(bnr);
             if (m.find()) {
-                return m.group(3);
+                if (m.group(3).length() >= 4) {
+                    return m.group(4);
+                }
             }
         }
         return null;
