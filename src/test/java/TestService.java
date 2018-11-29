@@ -83,7 +83,7 @@ public class TestService extends GeoTest {
         Assert.assertEquals(1, buildings.size());
         ObjectNode building = (ObjectNode) buildings.get(0);
         Assert.assertEquals("18", building.get("husnummer").asText());
-        Assert.assertEquals("B-3197B", building.get("b_nummer").asText());
+        Assert.assertEquals("3197", building.get("b_nummer").asText());
         Assert.assertEquals("House of Testing!", building.get("b_kaldenavn").asText());
     }
 
@@ -94,16 +94,17 @@ public class TestService extends GeoTest {
         this.load(unitAddressEntityManager, "/unit.json");
         ResponseEntity<String> response = this.lookup("/geo/adresse/adresse?b_nummer=B-3197B");
         Assert.assertEquals(400, response.getStatusCode().value());
-        response = this.lookup("/geo/adresse/adresse?vej=e1274f15-9e2b-4b6e-8b7d-c8078df65aa2&b_nummer=3197B");
+        response = this.lookup("/geo/adresse/adresse?vej=e1274f15-9e2b-4b6e-8b7d-c8078df65aa2");
         Assert.assertEquals(200, response.getStatusCode().value());
         ArrayNode addresses = (ArrayNode) objectMapper.readTree(response.getBody());
         Assert.assertEquals(1, addresses.size());
         ObjectNode address = (ObjectNode) addresses.get(0);
+        System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(address));
         Assert.assertEquals("18", address.get("husnummer").asText());
         Assert.assertEquals("House of Testing!", address.get("b_kaldenavn").asText());
         Assert.assertEquals("3197", address.get("b_nummer").asText());
         Assert.assertEquals("kld", address.get("etage").asText());
-        Assert.assertEquals("1234", address.get("doer").asText());
+        Assert.assertEquals("B", address.get("doer").asText());
         Assert.assertEquals(1, address.get("anvendelse").intValue());
         Assert.assertEquals("1b3ac64b-c28d-40b2-a106-16cee7c188b8", address.get("uuid").asText());
         response = this.lookup("/geo/adresse/adresse?vej=e1274f15-9e2b-4b6e-8b7d-c8078df65aa2&husnummer=18");
@@ -115,7 +116,7 @@ public class TestService extends GeoTest {
         Assert.assertEquals("House of Testing!", address.get("b_kaldenavn").asText());
         Assert.assertEquals("3197", address.get("b_nummer").asText());
         Assert.assertEquals("kld", address.get("etage").asText());
-        Assert.assertEquals("1234", address.get("doer").asText());
+        Assert.assertEquals("B", address.get("doer").asText());
         Assert.assertEquals(1, address.get("anvendelse").intValue());
         Assert.assertEquals("1b3ac64b-c28d-40b2-a106-16cee7c188b8", address.get("uuid").asText());
     }
@@ -132,7 +133,7 @@ public class TestService extends GeoTest {
         Assert.assertEquals("1b3ac64b-c28d-40b2-a106-16cee7c188b8", address.get("uuid").asText());
         Assert.assertEquals("18", address.get("husnummer").asText());
         Assert.assertEquals("kld", address.get("etage").asText());
-        Assert.assertEquals("1234", address.get("doer").asText());
+        Assert.assertEquals("B", address.get("doer").asText());
         Assert.assertEquals("3197", address.get("b_nummer").asText());
         Assert.assertEquals("e1274f15-9e2b-4b6e-8b7d-c8078df65aa2", address.get("vej_uuid").asText());
         Assert.assertEquals(254, address.get("vejkode").intValue());
