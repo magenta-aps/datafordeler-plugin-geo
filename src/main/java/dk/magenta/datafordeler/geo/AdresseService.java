@@ -23,9 +23,9 @@ import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressDoorRecord;
 import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressEntity;
 import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressFloorRecord;
 import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressUsageRecord;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -53,7 +53,7 @@ public class AdresseService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private Logger log = LoggerFactory.getLogger(AdresseService.class);
+    private Logger log = LogManager.getLogger(AdresseService.class);
 
     public static final String PARAM_MUNICIPALITY = "kommune";
     public static final String PARAM_LOCALITY = "lokalitet";
