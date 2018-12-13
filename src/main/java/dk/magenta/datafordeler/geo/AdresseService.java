@@ -196,15 +196,17 @@ public class AdresseService {
                         "JOIN road.locality locality " +
                         "JOIN locality.reference locality_reference " +
 
-                        "LEFT JOIN road.municipality road_municipality "+
-                        "LEFT JOIN "+AccessAddressRoadRecord.class.getCanonicalName()+" access_road ON access_road.roadCode = road.code AND access_road.municipalityCode = road_municipality.code "+
+                        "JOIN " + AccessAddressRoadRecord.class.getCanonicalName() + " access_road ON access_road.reference = road.identification " +
+                        //"LEFT JOIN road.municipality road_municipality "+
+                        //"LEFT JOIN "+AccessAddressRoadRecord.class.getCanonicalName()+" access_road ON access_road.roadCode = road.code AND access_road.municipalityCode = road_municipality.code "+
 
                         "JOIN " + AccessAddressEntity.class.getCanonicalName() + " access ON access_road.entity = access " +
                         "JOIN " + UnitAddressEntity.class.getCanonicalName() + " unit ON unit.accessAddress = access.identification " +
                         "JOIN unit.usage unit_usage " +
-                        "WHERE locality_reference.uuid = :uuid " +
+                        "WHERE locality_reference.uuid = :uuid "+
                         "AND road.code != null " +
-                        "AND unit_usage.usage = 1 "
+                        "AND road.code != 0 "
+                        //"AND unit_usage.usage = 1 "
             );
             databaseQuery.setParameter("uuid", locality);
 
@@ -357,9 +359,12 @@ public class AdresseService {
                         "JOIN unit.usage unit_usage " +
                         "LEFT JOIN " + AccessAddressEntity.class.getCanonicalName() + " access ON unit.accessAddress = access.identification " +
                         "LEFT JOIN access.road access_road " +
-                        "LEFT JOIN " + RoadEntity.class.getCanonicalName() + " road on road.code = access_road.roadCode " +
-                        "JOIN " + RoadMunicipalityRecord.class.getCanonicalName() + " road_municipality on road_municipality.entity = road and road_municipality.code = access_road.municipalityCode " +
-                        "LEFT JOIN road.identification road_identification " +
+
+                        "LEFT JOIN access_road.reference road_identification " +
+                        //"LEFT JOIN " + RoadEntity.class.getCanonicalName() + " road on road.code = access_road.roadCode " +
+                        //"JOIN " + RoadMunicipalityRecord.class.getCanonicalName() + " road_municipality on road_municipality.entity = road and road_municipality.code = access_road.municipalityCode " +
+                        //"LEFT JOIN road.identification road_identification " +
+
                         "LEFT JOIN access.locality access_locality " +
                         "LEFT JOIN access_locality.reference locality_identification " +
                         "WHERE " + where.toString() + " " +
@@ -471,9 +476,13 @@ public class AdresseService {
                     query.addRoadUUID(uuid);
                 }
                 roadQueryPart = "LEFT JOIN access.road access_road " +
-                        "LEFT JOIN " + RoadEntity.class.getCanonicalName() + " road on road.code = access_road.roadCode " +
-                        "JOIN " + RoadMunicipalityRecord.class.getCanonicalName() + " road_municipality on road_municipality.entity = road and road_municipality.code = access_road.municipalityCode " +
-                        "LEFT JOIN road.identification road_identification " +
+
+                        "LEFT JOIN access_road.reference road_identification " +
+                        //"LEFT JOIN " + RoadEntity.class.getCanonicalName() + " road on road.code = access_road.roadCode " +
+                        //"JOIN " + RoadMunicipalityRecord.class.getCanonicalName() + " road_municipality on road_municipality.entity = road and road_municipality.code = access_road.municipalityCode " +
+                        //"LEFT JOIN road.identification road_identification " +
+
+
                         "LEFT JOIN access.locality access_locality " +
                         "LEFT JOIN access_locality.reference locality_identification ";
                 where.add("(road_identification.uuid IN :road OR locality_identification.uuid IN :road)");
@@ -650,14 +659,15 @@ public class AdresseService {
                     "LEFT JOIN "+AccessAddressEntity.class.getCanonicalName()+" access ON unit.accessAddress = access.identification "+
 
                     "LEFT JOIN access.road access_road "+
-                    //"LEFT JOIN "+RoadEntity.class.getCanonicalName()+" road ON access_road.reference = road.identification "+
-                    "LEFT JOIN "+RoadEntity.class.getCanonicalName()+" road ON access_road.roadCode = road.code "+
-                    "JOIN "+RoadMunicipalityRecord.class.getCanonicalName()+" road_municipality ON road_municipality.code = access_road.municipalityCode "+
+                    "LEFT JOIN "+RoadEntity.class.getCanonicalName()+" road ON access_road.reference = road.identification "+
+                    //"LEFT JOIN "+RoadMunicipalityRecord.class.getCanonicalName()+" road_municipality ON road_municipality.code = access_road.municipalityCode "+
+                    //"LEFT JOIN "+RoadEntity.class.getCanonicalName()+" road ON access_road.roadCode = road.code AND road_municipality.entity = road "+
 
                     "LEFT JOIN access.locality access_locality "+
                     "LEFT JOIN "+LocalityEntity.class.getCanonicalName()+" locality ON access_locality.reference = locality.identification "+
 
-                    "WHERE unit_identification.uuid = :uuid order by access.bnr"
+                    "WHERE unit_identification.uuid = :uuid " +
+                    "ORDER BY access.bnr"
             );
             databaseQuery.setParameter("uuid", unitAddressUUID);
             databaseQuery.setFlushMode(FlushModeType.COMMIT);
@@ -754,7 +764,7 @@ public class AdresseService {
                             addressNode.put(OUTPUT_LOCALITYNAME, localityName.getName());
                         }
                         LocalityRoadcodeRecord localityRoadcode = current(locality.getLocalityRoadcode());
-                        if (localityRoadcode != null && localityRoadcode.getCode() != null) {
+                        if (localityRoadcode != null && localityRoadcode.getCode() != null && (addressNode.get(OUTPUT_ROADCODE) == null || addressNode.get(OUTPUT_ROADCODE).intValue() == 0)) {
                             addressNode.put(OUTPUT_ROADCODE, localityRoadcode.getCode());
                         }
                     }
