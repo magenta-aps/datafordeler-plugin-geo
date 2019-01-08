@@ -147,6 +147,19 @@ public class GeoConfiguration implements Configuration {
         this.municipalityRegisterURL = municipalityRegisterURL;
     }
 
+    @Column(length = 1024)
+    private String municipalityDeletionRegisterURL = "";
+
+    public String getMunicipalityDeletionRegisterURL() {
+        return this.municipalityDeletionRegisterURL;
+    }
+
+    public void setMunicipalityDeletionRegisterURL(String municipalityDeletionRegisterURL) {
+        this.municipalityDeletionRegisterURL = municipalityDeletionRegisterURL;
+    }
+
+
+
     @Column
     @Enumerated(EnumType.ORDINAL)
     private RegisterType postcodeRegisterType = RegisterType.DISABLED;
@@ -170,6 +183,19 @@ public class GeoConfiguration implements Configuration {
     public void setPostcodeRegisterURL(String postcodeRegisterURL) {
         this.postcodeRegisterURL = postcodeRegisterURL;
     }
+
+    @Column(length = 1024)
+    private String postcodeDeletionRegisterURL = "";
+
+    public String getPostcodeDeletionRegisterURL() {
+        return this.postcodeDeletionRegisterURL;
+    }
+
+    public void setPostcodeDeletionRegisterURL(String postcodeDeletionRegisterURL) {
+        this.postcodeDeletionRegisterURL = postcodeDeletionRegisterURL;
+    }
+
+
 
     @Column
     @Enumerated(EnumType.ORDINAL)
@@ -195,6 +221,19 @@ public class GeoConfiguration implements Configuration {
         this.localityRegisterURL = localityRegisterURL;
     }
 
+    @Column(length = 1024)
+    private String localityDeletionRegisterURL = "";
+
+    public String getLocalityDeletionRegisterURL() {
+        return this.localityDeletionRegisterURL;
+    }
+
+    public void setLocalityDeletionRegisterURL(String localityDeletionRegisterURL) {
+        this.localityDeletionRegisterURL = localityDeletionRegisterURL;
+    }
+
+
+
     @Column
     @Enumerated(EnumType.ORDINAL)
     private RegisterType roadRegisterType = RegisterType.DISABLED;
@@ -210,7 +249,6 @@ public class GeoConfiguration implements Configuration {
     @Column(length = 1024)
     private String roadRegisterURL = "";
 
-
     public String getRoadRegisterURL() {
         return this.roadRegisterURL;
     }
@@ -218,6 +256,19 @@ public class GeoConfiguration implements Configuration {
     public void setRoadRegisterURL(String roadRegisterURL) {
         this.roadRegisterURL = roadRegisterURL;
     }
+
+    @Column(length = 1024)
+    private String roadDeletionRegisterURL = "";
+
+    public String getRoadDeletionRegisterURL() {
+        return this.roadDeletionRegisterURL;
+    }
+
+    public void setRoadDeletionRegisterURL(String roadDeletionRegisterURL) {
+        this.roadDeletionRegisterURL = roadDeletionRegisterURL;
+    }
+
+
 
     @Column
     @Enumerated(EnumType.ORDINAL)
@@ -243,6 +294,19 @@ public class GeoConfiguration implements Configuration {
         this.buildingRegisterURL = buildingRegisterURL;
     }
 
+    @Column(length = 1024)
+    private String buildingDeletionRegisterURL = "";
+
+    public String getBuildingDeletionRegisterURL() {
+        return this.buildingDeletionRegisterURL;
+    }
+
+    public void setBuildingDeletionRegisterURL(String buildingDeletionRegisterURL) {
+        this.buildingDeletionRegisterURL = buildingDeletionRegisterURL;
+    }
+
+
+
     @Column
     @Enumerated(EnumType.ORDINAL)
     private RegisterType accessAddressRegisterType = RegisterType.DISABLED;
@@ -258,7 +322,6 @@ public class GeoConfiguration implements Configuration {
     @Column(length = 1024)
     private String accessAddressRegisterURL = "";
 
-
     public String getAccessAddressRegisterURL() {
         return this.accessAddressRegisterURL;
     }
@@ -266,6 +329,18 @@ public class GeoConfiguration implements Configuration {
     public void setAccessAddressRegisterURL(String accessAddressRegisterURL) {
         this.accessAddressRegisterURL = accessAddressRegisterURL;
     }
+
+    @Column(length = 1024)
+    private String accessAddressDeletionRegisterURL = "";
+
+    public String getAccessAddressDeletionRegisterURL() {
+        return this.accessAddressDeletionRegisterURL;
+    }
+
+    public void setAccessAddressDeletionRegisterURL(String accessAddressDeletionRegisterURL) {
+        this.accessAddressDeletionRegisterURL = accessAddressDeletionRegisterURL;
+    }
+
 
 
     @Column
@@ -291,6 +366,18 @@ public class GeoConfiguration implements Configuration {
     public void setUnitAddressRegisterURL(String unitAddressRegisterURL) {
         this.unitAddressRegisterURL = unitAddressRegisterURL;
     }
+
+    @Column(length = 1024)
+    private String unitAddressDeletionRegisterURL = "";
+
+    public String getUnitAddressDeletionRegisterURL() {
+        return this.unitAddressDeletionRegisterURL;
+    }
+
+    public void setUnitAddressDeletionRegisterURL(String unitAddressDeletionRegisterURL) {
+        this.unitAddressDeletionRegisterURL = unitAddressDeletionRegisterURL;
+    }
+
 
 
     public RegisterType getRegisterType(String schema) {
@@ -329,6 +416,26 @@ public class GeoConfiguration implements Configuration {
                 return this.accessAddressRegisterURL;
             case UnitAddressEntity.schema:
                 return this.unitAddressRegisterURL;
+        }
+        return null;
+    }
+
+    public String getDeletionURL(String schema) {
+        switch (schema) {
+            case MunicipalityEntity.schema:
+                return this.municipalityDeletionRegisterURL;
+            case PostcodeEntity.schema:
+                return this.postcodeDeletionRegisterURL;
+            case LocalityEntity.schema:
+                return this.localityDeletionRegisterURL;
+            case RoadEntity.schema:
+                return this.roadDeletionRegisterURL;
+            case BuildingEntity.schema:
+                return this.buildingDeletionRegisterURL;
+            case AccessAddressEntity.schema:
+                return this.accessAddressDeletionRegisterURL;
+            case UnitAddressEntity.schema:
+                return this.unitAddressDeletionRegisterURL;
         }
         return null;
     }
