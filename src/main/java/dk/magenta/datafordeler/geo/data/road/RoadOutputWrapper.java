@@ -1,10 +1,21 @@
 package dk.magenta.datafordeler.geo.data.road;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dk.magenta.datafordeler.geo.data.GeoOutputWrapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class RoadOutputWrapper extends GeoOutputWrapper<RoadEntity> {
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+
+    @Override
+    public ObjectMapper getObjectMapper() {
+        return this.objectMapper;
+    }
 
     @Override
     protected void fillContainer(OutputContainer container, RoadEntity item) {
