@@ -111,9 +111,27 @@
         "Enhedsanvendelse": 1,
         "Etage": "kld",
         "Objektstatus": 2,
-        "Dor_lejlighedsnummer": "B",
+        "Dor_lejlighedsnummer": "2",
         "EnhedsadresseSumiffik": "{EE4805F1-96AB-45A7-B045-ED4D3C28364C}",
         "GlobalID": "{1B3AC64B-C28D-40B2-A106-16CEE7C188B8}"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 36494,
+        "Enhedsnummer": "5678",
+        "access_adress_id": "{2E3776BF-05C2-433C-ADB9-8A07DF6B3E8F}",
+        "Creator": "TELDWST",
+        "CreationDate": 1535538077000,
+        "Editor": "TELDWST",
+        "EditDate": 1535538077000,
+        "Datakilde": 1,
+        "Enhedsanvendelse": 1,
+        "Etage": "kld",
+        "Objektstatus": 2,
+        "Dor_lejlighedsnummer": "1",
+        "EnhedsadresseSumiffik": "{EE4805F1-96AB-45A7-B045-ED4D3C28364D}",
+        "GlobalID": "{1B3AC64B-C28D-40B2-A106-16CEE7C188B9}"
       }
     }
   ]

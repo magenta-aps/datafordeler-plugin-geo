@@ -18,6 +18,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = Application.class)
@@ -97,28 +100,29 @@ public class TestService extends GeoTest {
         response = this.lookup("/geo/adresse/adresse?vej=e1274f15-9e2b-4b6e-8b7d-c8078df65aa2");
         Assert.assertEquals(200, response.getStatusCode().value());
         ArrayNode addresses = (ArrayNode) objectMapper.readTree(response.getBody());
-        Assert.assertEquals(1, addresses.size());
+        System.out.println(addresses);
+        Assert.assertEquals(2, addresses.size());
         ObjectNode address = (ObjectNode) addresses.get(0);
         System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(address));
         Assert.assertEquals("18", address.get("husnummer").asText());
         Assert.assertEquals("House of Testing!", address.get("b_kaldenavn").asText());
         Assert.assertEquals("3197", address.get("b_nummer").asText());
         Assert.assertEquals("kld", address.get("etage").asText());
-        Assert.assertEquals("B", address.get("doer").asText());
+        Assert.assertEquals("1", address.get("doer").asText());
         Assert.assertEquals(1, address.get("anvendelse").intValue());
-        Assert.assertEquals("1b3ac64b-c28d-40b2-a106-16cee7c188b8", address.get("uuid").asText());
+        Assert.assertEquals("1b3ac64b-c28d-40b2-a106-16cee7c188b9", address.get("uuid").asText());
         response = this.lookup("/geo/adresse/adresse?vej=e1274f15-9e2b-4b6e-8b7d-c8078df65aa2&husnummer=18");
         Assert.assertEquals(200, response.getStatusCode().value());
         addresses = (ArrayNode) objectMapper.readTree(response.getBody());
-        Assert.assertEquals(1, addresses.size());
+        Assert.assertEquals(2, addresses.size());
         address = (ObjectNode) addresses.get(0);
         Assert.assertEquals("18", address.get("husnummer").asText());
         Assert.assertEquals("House of Testing!", address.get("b_kaldenavn").asText());
         Assert.assertEquals("3197", address.get("b_nummer").asText());
         Assert.assertEquals("kld", address.get("etage").asText());
-        Assert.assertEquals("B", address.get("doer").asText());
+        Assert.assertEquals("1", address.get("doer").asText());
         Assert.assertEquals(1, address.get("anvendelse").intValue());
-        Assert.assertEquals("1b3ac64b-c28d-40b2-a106-16cee7c188b8", address.get("uuid").asText());
+        Assert.assertEquals("1b3ac64b-c28d-40b2-a106-16cee7c188b9", address.get("uuid").asText());
     }
 
     @Test
@@ -133,7 +137,7 @@ public class TestService extends GeoTest {
         Assert.assertEquals("1b3ac64b-c28d-40b2-a106-16cee7c188b8", address.get("uuid").asText());
         Assert.assertEquals("18", address.get("husnummer").asText());
         Assert.assertEquals("kld", address.get("etage").asText());
-        Assert.assertEquals("B", address.get("doer").asText());
+        Assert.assertEquals("2", address.get("doer").asText());
         Assert.assertEquals("3197", address.get("b_nummer").asText());
         Assert.assertEquals("e1274f15-9e2b-4b6e-8b7d-c8078df65aa2", address.get("vej_uuid").asText());
         Assert.assertEquals(254, address.get("vejkode").intValue());
@@ -143,6 +147,17 @@ public class TestService extends GeoTest {
         Assert.assertEquals(956, address.get("kommunekode").intValue());
         Assert.assertEquals(1, address.get("anvendelse").intValue());
         Assert.assertEquals("House of Testing!", address.get("b_kaldenavn").asText());
+    }
+
+    @Test
+    public void testNumberComparator() {
+        Comparator<String> c = AdresseService.fuzzyNumberComparator;
+        ArrayList<String> subjects = new ArrayList<>(Arrays.asList("101", "1A", "2", "1000", "V002", "1B", "1", "V001"));
+        subjects.sort(c);
+        Assert.assertEquals(
+                new ArrayList<>(Arrays.asList( "1", "1A", "1B", "2", "101", "1000", "V001", "V002")),
+                subjects
+        );
     }
 
 }
