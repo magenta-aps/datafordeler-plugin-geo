@@ -24,10 +24,12 @@ import java.util.Objects;
 
 @MappedSuperclass
 @FilterDefs({
-        @FilterDef(name = Monotemporal.FILTER_REGISTRATION_AFTER, parameters = @ParamDef(name = Monotemporal.FILTERPARAM_REGISTRATION_AFTER, type = "java.time.OffsetDateTime")),
-        @FilterDef(name = Monotemporal.FILTER_REGISTRATION_BEFORE, parameters = @ParamDef(name = Monotemporal.FILTERPARAM_REGISTRATION_BEFORE, type = "java.time.OffsetDateTime"))
+        @FilterDef(name = Monotemporal.FILTER_REGISTRATIONFROM_AFTER, parameters = @ParamDef(name = Monotemporal.FILTERPARAM_REGISTRATIONFROM_AFTER, type = "java.time.OffsetDateTime")),
+        @FilterDef(name = Monotemporal.FILTER_REGISTRATIONFROM_BEFORE, parameters = @ParamDef(name = Monotemporal.FILTERPARAM_REGISTRATIONFROM_BEFORE, type = "java.time.OffsetDateTime")),
+        @FilterDef(name = Monotemporal.FILTER_REGISTRATIONTO_AFTER, parameters = @ParamDef(name = Monotemporal.FILTERPARAM_REGISTRATIONTO_AFTER, type = "java.time.OffsetDateTime")),
+        @FilterDef(name = Monotemporal.FILTER_REGISTRATIONTO_BEFORE, parameters = @ParamDef(name = Monotemporal.FILTERPARAM_REGISTRATIONTO_BEFORE, type = "java.time.OffsetDateTime"))
 })
-public class GeoMonotemporalRecord<E extends GeoEntity> extends GeoNontemporalRecord<E> implements Monotemporal<E> {
+public class GeoMonotemporalRecord<E extends GeoEntity> extends GeoNontemporalRecord<E> implements Monotemporal {
 
     public static final String DB_FIELD_ENTITY = GeoNontemporalRecord.DB_FIELD_ENTITY;
 
@@ -43,13 +45,12 @@ public class GeoMonotemporalRecord<E extends GeoEntity> extends GeoNontemporalRe
         return this.registrationFrom;
     }
 
-    public GeoMonotemporalRecord setRegistrationFrom(OffsetDateTime registrationFrom) {
+    public void setRegistrationFrom(OffsetDateTime registrationFrom) {
         this.registrationFrom = registrationFrom;
-        return this;
     }
 
-    public GeoMonotemporalRecord setRegistrationFrom(long registrationFrom) {
-        return this.setRegistrationFrom(
+    public void setRegistrationFrom(long registrationFrom) {
+        this.setRegistrationFrom(
                 Instant.ofEpochMilli(registrationFrom).atOffset(ZoneOffset.UTC)
         );
     }
@@ -69,13 +70,12 @@ public class GeoMonotemporalRecord<E extends GeoEntity> extends GeoNontemporalRe
         return this.registrationTo;
     }
 
-    public GeoMonotemporalRecord setRegistrationTo(OffsetDateTime registrationTo) {
+    public void setRegistrationTo(OffsetDateTime registrationTo) {
         this.registrationTo = registrationTo;
-        return this;
     }
 
-    public GeoMonotemporalRecord setRegistrationTo(long registrationTo) {
-        return this.setRegistrationTo(
+    public void setRegistrationTo(long registrationTo) {
+        this.setRegistrationTo(
                 Instant.ofEpochMilli(registrationTo).atOffset(ZoneOffset.UTC)
         );
     }
@@ -124,9 +124,8 @@ public class GeoMonotemporalRecord<E extends GeoEntity> extends GeoNontemporalRe
 
 
 
-    public GeoMonotemporalRecord setDafoUpdated(OffsetDateTime updateTime) {
+    public void setDafoUpdated(OffsetDateTime updateTime) {
         super.setDafoUpdated(updateTime);
-        return this;
     }
 
 

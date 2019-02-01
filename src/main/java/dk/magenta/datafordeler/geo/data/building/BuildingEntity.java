@@ -1,5 +1,6 @@
 package dk.magenta.datafordeler.geo.data.building;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import dk.magenta.datafordeler.core.database.IdentifiedEntity;
@@ -7,12 +8,14 @@ import dk.magenta.datafordeler.core.database.Monotemporal;
 import dk.magenta.datafordeler.core.database.Nontemporal;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
+import dk.magenta.datafordeler.geo.data.RawData;
 import dk.magenta.datafordeler.geo.data.SumiffiikEntity;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Filters;
 
 import javax.persistence.*;
+import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -90,8 +93,8 @@ public class BuildingEntity extends SumiffiikEntity implements IdentifiedEntity 
     public static final String IO_FIELD_LOCALITY = "lokalitet";
     @OneToMany(mappedBy = BuildingLocalityRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
     @Filters({
-            @Filter(name = Monotemporal.FILTER_REGISTRATION_AFTER, condition = Monotemporal.FILTERLOGIC_REGISTRATION_AFTER),
-            @Filter(name = Monotemporal.FILTER_REGISTRATION_BEFORE, condition = Monotemporal.FILTERLOGIC_REGISTRATION_BEFORE),
+            @Filter(name = Monotemporal.FILTER_REGISTRATIONFROM_AFTER, condition = Monotemporal.FILTERLOGIC_REGISTRATIONFROM_AFTER),
+            @Filter(name = Monotemporal.FILTER_REGISTRATIONFROM_BEFORE, condition = Monotemporal.FILTERLOGIC_REGISTRATIONFROM_BEFORE),
             @Filter(name = Nontemporal.FILTER_LASTUPDATED_AFTER, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_AFTER),
             @Filter(name = Nontemporal.FILTER_LASTUPDATED_BEFORE, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_BEFORE)
     })
@@ -110,8 +113,8 @@ public class BuildingEntity extends SumiffiikEntity implements IdentifiedEntity 
     public static final String IO_FIELD_SHAPE = "form";
     @OneToMany(mappedBy = BuildingShapeRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
     @Filters({
-            @Filter(name = Monotemporal.FILTER_REGISTRATION_AFTER, condition = Monotemporal.FILTERLOGIC_REGISTRATION_AFTER),
-            @Filter(name = Monotemporal.FILTER_REGISTRATION_BEFORE, condition = Monotemporal.FILTERLOGIC_REGISTRATION_BEFORE),
+            @Filter(name = Monotemporal.FILTER_REGISTRATIONFROM_AFTER, condition = Monotemporal.FILTERLOGIC_REGISTRATIONFROM_AFTER),
+            @Filter(name = Monotemporal.FILTER_REGISTRATIONFROM_BEFORE, condition = Monotemporal.FILTERLOGIC_REGISTRATIONFROM_BEFORE),
             @Filter(name = Nontemporal.FILTER_LASTUPDATED_AFTER, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_AFTER),
             @Filter(name = Nontemporal.FILTER_LASTUPDATED_BEFORE, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_BEFORE)
     })
@@ -120,6 +123,18 @@ public class BuildingEntity extends SumiffiikEntity implements IdentifiedEntity 
 
     public Set<BuildingShapeRecord> getShape() {
         return this.shape;
+    }
+
+
+
+    @Override
+    public void update(RawData rawData, OffsetDateTime timestamp) {
+        super.update(rawData, timestamp);
+        if (rawData instanceof BuildingRawData) {
+            BuildingRawData buildingRawData = (BuildingRawData) rawData;
+            this.anr = buildingRawData.properties.anr;
+            this.bnr = buildingRawData.properties.bnr;
+        }
     }
 
 
@@ -143,6 +158,7 @@ public class BuildingEntity extends SumiffiikEntity implements IdentifiedEntity 
     }
 
     @Override
+    @JsonIgnore
     public Set<Set<? extends GeoMonotemporalRecord>> getAllRecords() {
         HashSet<Set<? extends GeoMonotemporalRecord>> records = new HashSet<>();
         records.add(this.locality);
@@ -151,6 +167,7 @@ public class BuildingEntity extends SumiffiikEntity implements IdentifiedEntity 
     }
 
     @Override
+    @JsonIgnore
     public IdentifiedEntity getNewest(Collection<IdentifiedEntity> collection) {
         return null;
     }

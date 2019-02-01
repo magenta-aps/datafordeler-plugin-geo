@@ -11,7 +11,6 @@ import org.hibernate.Session;
 import javax.persistence.Column;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.Transient;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -46,7 +45,8 @@ public class LocalityReferenceRecord<E extends GeoEntity> extends GeoMonotempora
 
 
 
-    @Transient
+    public static final String DB_FIELD_UUID = "uuid";
+    @Column(name = DB_FIELD_UUID)
     @JsonIgnore
     private UUID uuid;
 
@@ -87,7 +87,7 @@ public class LocalityReferenceRecord<E extends GeoEntity> extends GeoMonotempora
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equalData(o)) return false;
         LocalityReferenceRecord that = (LocalityReferenceRecord) o;
-        return Objects.equals(this.code, that.code);
+        return (this.code != null && Objects.equals(this.code, that.code)) || (this.uuid != null && Objects.equals(this.uuid, that.uuid));
     }
 
 }

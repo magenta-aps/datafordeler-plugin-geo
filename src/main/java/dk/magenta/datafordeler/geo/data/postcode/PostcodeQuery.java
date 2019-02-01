@@ -77,7 +77,7 @@ public class PostcodeQuery extends SumiffiikQuery<PostcodeEntity> {
             lookupDefinition.put(PostcodeEntity.DB_FIELD_CODE, this.code, Integer.class);
         }
         if (this.name != null && !this.name.isEmpty()) {
-            lookupDefinition.put(PostcodeEntity.DB_FIELD_NAME, this.name, String.class);
+            lookupDefinition.put(PostcodeEntity.DB_FIELD_NAME + BaseLookupDefinition.separator + PostcodeNameRecord.DB_FIELD_NAME, this.name, String.class);
         }
         return lookupDefinition;
     }

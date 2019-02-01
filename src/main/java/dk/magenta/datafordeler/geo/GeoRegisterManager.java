@@ -1,11 +1,9 @@
 package dk.magenta.datafordeler.geo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import dk.magenta.datafordeler.core.database.SessionManager;
-import dk.magenta.datafordeler.core.exception.ConfigurationException;
-import dk.magenta.datafordeler.core.exception.DataFordelerException;
-import dk.magenta.datafordeler.core.exception.DataStreamException;
-import dk.magenta.datafordeler.core.exception.ParseException;
+import dk.magenta.datafordeler.core.exception.*;
 import dk.magenta.datafordeler.core.io.ImportInputStream;
 import dk.magenta.datafordeler.core.io.ImportMetadata;
 import dk.magenta.datafordeler.core.io.PluginSourceData;
@@ -24,14 +22,15 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.*;
+import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class GeoRegisterManager extends RegisterManager {
@@ -177,41 +176,58 @@ public class GeoRegisterManager extends RegisterManager {
                 Session session = this.sessionManager.getSessionFactory().openSession();
                 session.close();
                 File cacheFile = new File("local/geo/" + entityManager.getSchema() + "_" + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+                Charset charset = this.getConfigurationManager().getConfiguration().getCharset();
                 try {
                     if (!cacheFile.exists()) {
                         log.info("Cache file "+cacheFile.getAbsolutePath()+" doesn't exist. Creating new and filling from source");
 
                         cacheFile.createNewFile();
-                        FileWriter fileWriter = new FileWriter(cacheFile);
-                        int count = 1000;
 
-                        String query = eventInterface.getQuery();
-                        query = query.replace("%{count}", Integer.toString(count));
-                        fileWriter.append("[\n");
-                        for (int offset = 0; offset < 1000000; offset += count) {
-                            String offsetQuery = query.replace("%{offset}", Integer.toString(offset));
-                            eventInterface = new URI(eventInterface.getScheme(), eventInterface.getUserInfo(), eventInterface.getHost(), eventInterface.getPort(), eventInterface.getPath(), offsetQuery, eventInterface.getFragment());
-                            responseBody = communicator.fetch(eventInterface);
-                            try {
-                                String data = InputStreamReader.readInputStream(responseBody);
-                                long responseCount = GeoEntityManager.parseJsonStream(data, "features", this.objectMapper, null);
-                                if (responseCount == 0) {
-                                    break;
+                        OutputStreamWriter fileWriter = new OutputStreamWriter(
+                                new FileOutputStream(cacheFile),
+                                charset.newEncoder()
+                        );
+                        try {
+                            fileWriter.append("[\n");
+                            int count = 1000;
+
+                            String query = eventInterface.getQuery();
+                            query = query.replace("%{count}", Integer.toString(count));
+                            URL tokenUrl = new URL(configuration.getTokenService());
+                            String token = this.getToken(tokenUrl, configuration.getUsername(), configuration.getPassword());
+                            Map<String, String> headers = Collections.singletonMap("Authorization", "Bearer " + token);
+                            for (int offset = 0; offset < 1000000; offset += count) {
+                                String offsetQuery = URLDecoder.decode(query.replace("%{offset}", Integer.toString(offset)), "utf-8");
+                                eventInterface = new URI(eventInterface.getScheme(), eventInterface.getUserInfo(), eventInterface.getHost(), eventInterface.getPort(), eventInterface.getPath(), offsetQuery, eventInterface.getFragment());
+
+                                responseBody = communicator.get(eventInterface, headers);
+                                try {
+                                    String data = InputStreamReader.readInputStream(responseBody, charset.name());
+                                    long responseCount = GeoEntityManager.parseJsonStream(data, "features", this.objectMapper, null);
+                                    if (responseCount == 0) {
+                                        break;
+                                    }
+                                    if (offset > 0) {
+                                        fileWriter.append(",\n");
+                                    }
+                                    fileWriter.append(data);
+                                    if (responseCount < count) {
+                                        break;
+                                    }
+                                } finally {
+                                    responseBody.close();
                                 }
-                                if (offset > 0) {
-                                    fileWriter.append(",\n");
-                                }
-                                fileWriter.append(data);
-                                if (responseCount < count) {
-                                    break;
-                                }
-                            } finally {
-                                responseBody.close();
                             }
+                            log.info("Loaded into cache file");
+                            fileWriter.append("\n]");
+                            fileWriter.close();
+                        } catch (Exception e) {
+                            fileWriter.close();
+                            cacheFile.delete();
+                            throw e;
                         }
-                        fileWriter.append("\n]");
-                        fileWriter.close();
-                        log.info("Loaded into cache file");
+                    } else {
+                        log.info("Cache file "+cacheFile.getAbsolutePath()+" exists.");
                     }
                 } catch (URISyntaxException | IOException e) {
                     throw new DataStreamException(e);
@@ -230,8 +246,27 @@ public class GeoRegisterManager extends RegisterManager {
         return null;
     }
 
+    private String getToken(URL tokenUrl, String username, String password) throws DataStreamException {
+        try {
+            HashMap<String, String> parameters = new HashMap<>();
+            parameters.put("username", username);
+            parameters.put("password", password);
+            parameters.put("f", "json");
+            parameters.put("client", "referer");
+            parameters.put("referer", "dafo");
+            parameters.put("expiration", "3600");
+            HttpCommunicator communicator = new HttpCommunicator();
+            InputStream response = communicator.post(tokenUrl.toURI(), parameters, null);
+            String responseString = InputStreamReader.readInputStream(response);
+            ObjectNode responseJson = (ObjectNode) objectMapper.readTree(responseString);
+            return responseJson.get("token").textValue();
+        } catch (HttpStatusException | NullPointerException | URISyntaxException | IOException e) {
+            throw new DataStreamException(e);
+        }
+    }
+
     @Override
-    protected ItemInputStream<? extends PluginSourceData> parseEventResponse(InputStream rawData, EntityManager entityManager) throws DataFordelerException {
+    protected ItemInputStream<? extends PluginSourceData> parseEventResponse(InputStream rawData, EntityManager entityManager) {
         return null;
     }
 

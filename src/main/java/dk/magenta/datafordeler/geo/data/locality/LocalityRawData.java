@@ -33,12 +33,20 @@ public class LocalityRawData extends SumiffiikRawData {
             this.sumiffiikId = sumiffiikId;
         }
 
+        @JsonProperty("Lokalitetvejkode")
+        public Integer localityRoadcode;
+
         @JsonProperty("Location_type")
         public Integer type;
     }
 
     @JsonProperty
     public LocalityRawProperties properties;
+
+    @JsonProperty("attributes")
+    public void setAttributes(LocalityRawProperties attributes) {
+        this.properties = attributes;
+    }
 
     @Override
     public List<GeoMonotemporalRecord> getMonotemporalRecords() {
@@ -58,6 +66,10 @@ public class LocalityRawData extends SumiffiikRawData {
 
         records.add(
                 new LocalityMunicipalityRecord(this.properties.municipality)
+        );
+
+        records.add(
+                new LocalityRoadcodeRecord(this.properties.localityRoadcode)
         );
 
         MultiPolygon multiPolygon = null;

@@ -76,13 +76,13 @@ public class TestParse extends GeoTest {
     }
 
     @Test
-    public void testMunicipality() throws DataFordelerException, IOException {
+    public void testMunicipality() throws IOException {
         this.load(municipalityEntityManager, "/municipality.json");
         this.load(municipalityEntityManager, "/municipality.json");
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {
-            MunicipalityEntity entity = QueryManager.getEntity(session, UUID.fromString("33960E68-2F0A-4CB0-BB3D-02D9F0B21304"), MunicipalityEntity.class);
+            MunicipalityEntity entity = QueryManager.getEntity(session, MunicipalityEntity.generateUUID(956), MunicipalityEntity.class);
             Assert.assertNotNull(entity);
             Assert.assertEquals(956, entity.getCode());
             Assert.assertTrue(OffsetDateTime.parse("2018-07-19T11:11:05Z").isEqual(entity.getCreationDate()));
@@ -96,7 +96,7 @@ public class TestParse extends GeoTest {
             session.close();
         }
 
-        ResponseEntity<String> response = this.uuidSearch("33960E68-2F0A-4CB0-BB3D-02D9F0B21304", "municipality");
+        ResponseEntity<String> response = this.uuidSearch(MunicipalityEntity.generateUUID(956).toString(), "municipality");
         Assert.assertEquals(200, response.getStatusCode().value());
         System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(
                 objectMapper.readTree(response.getBody())
@@ -105,13 +105,13 @@ public class TestParse extends GeoTest {
 
 
     @Test
-    public void testLocality() throws DataFordelerException, IOException {
+    public void testLocality() throws IOException {
         this.load(localityEntityManager, "/locality.json");
         this.load(localityEntityManager, "/locality.json");
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {
-            LocalityEntity entity = QueryManager.getEntity(session, UUID.fromString("F0966470-F09F-474D-A820-E8A46ED6FCC7"), LocalityEntity.class);
+            LocalityEntity entity = QueryManager.getEntity(session, UUID.fromString("f0966470-f09f-474d-a820-e8a46ed6fcc7"), LocalityEntity.class);
             Assert.assertNotNull(entity);
             Assert.assertEquals("0600", entity.getCode());
             Assert.assertTrue(OffsetDateTime.parse("2018-08-09T12:00:04Z").isEqual(entity.getCreationDate()));
@@ -143,7 +143,7 @@ public class TestParse extends GeoTest {
 
 
     @Test
-    public void testRoad() throws DataFordelerException, IOException {
+    public void testRoad() throws IOException {
         this.load(roadEntityManager, "/road.json");
         this.load(roadEntityManager, "/road.json");
 
@@ -173,7 +173,7 @@ public class TestParse extends GeoTest {
 
 
     @Test
-    public void testBuilding() throws DataFordelerException, IOException {
+    public void testBuilding() throws IOException {
         this.load(localityEntityManager, "/locality.json");
         this.load(buildingEntityManager, "/building.json");
         this.load(buildingEntityManager, "/building.json");
@@ -203,7 +203,7 @@ public class TestParse extends GeoTest {
 
 
     @Test
-    public void testAccessAddress() throws DataFordelerException, IOException {
+    public void testAccessAddress() throws IOException {
         this.load(buildingEntityManager, "/building.json");
         this.load(accessAddressEntityManager, "/access.json");
         this.load(accessAddressEntityManager, "/access.json");
@@ -254,7 +254,7 @@ public class TestParse extends GeoTest {
 
 
     @Test
-    public void testUnitAddress() throws DataFordelerException, IOException {
+    public void testUnitAddress() throws IOException {
         this.load(unitAddressEntityManager, "unit.json");
         this.load(unitAddressEntityManager, "unit.json");
 
@@ -289,7 +289,7 @@ public class TestParse extends GeoTest {
     }
 
     @Test
-    public void testPostcode() throws DataFordelerException, IOException {
+    public void testPostcode() throws IOException {
         this.load(postcodeEntityManager, "/post.json");
         this.load(postcodeEntityManager, "/post.json");
 

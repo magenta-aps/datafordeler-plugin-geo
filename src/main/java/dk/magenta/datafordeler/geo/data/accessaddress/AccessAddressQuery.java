@@ -38,6 +38,12 @@ public class AccessAddressQuery extends SumiffiikQuery<AccessAddressEntity> {
     private List<UUID> roadUUID = new ArrayList<>();
 
 
+    public static final String LOCALITY_UUID = AccessAddressEntity.IO_FIELD_LOCALITY + "_uuid";
+
+    @QueryField(type = QueryField.FieldType.STRING, queryName = LOCALITY_UUID)
+    private List<UUID> localityUUID = new ArrayList<>();
+
+
 
     public static final String HOUSE_NUMBER = AccessAddressEntity.IO_FIELD_HOUSE_NUMBER;
 
@@ -87,6 +93,8 @@ public class AccessAddressQuery extends SumiffiikQuery<AccessAddressEntity> {
 
 
 
+
+
     public List<String> getMunicipality() {
         return municipality;
     }
@@ -122,6 +130,23 @@ public class AccessAddressQuery extends SumiffiikQuery<AccessAddressEntity> {
     public void addRoadUUID(UUID roadUUID) {
         if (roadUUID != null) {
             this.roadUUID.add(roadUUID);
+            this.increaseDataParamCount();
+        }
+    }
+
+
+    public List<UUID> getLocalityUUID() {
+        return localityUUID;
+    }
+
+    public void setLocalityUUID(UUID localityUUID) {
+        this.localityUUID.clear();
+        this.addLocalityUUID(localityUUID);
+    }
+
+    public void addLocalityUUID(UUID localityUUID) {
+        if (localityUUID != null) {
+            this.localityUUID.add(localityUUID);
             this.increaseDataParamCount();
         }
     }
@@ -174,6 +199,9 @@ public class AccessAddressQuery extends SumiffiikQuery<AccessAddressEntity> {
         if (this.roadUUID != null && !this.roadUUID.isEmpty()) {
             lookupDefinition.put(AccessAddressEntity.DB_FIELD_ROAD + BaseLookupDefinition.separator + AccessAddressRoadRecord.DB_FIELD_ROAD_REFERENCE + BaseLookupDefinition.separator + Identification.DB_FIELD_UUID, this.roadUUID, UUID.class);
         }
+        if (this.localityUUID != null && !this.localityUUID.isEmpty()) {
+            lookupDefinition.put(AccessAddressEntity.DB_FIELD_LOCALITY + BaseLookupDefinition.separator + AccessAddressLocalityRecord.DB_FIELD_REFERENCE + BaseLookupDefinition.separator + Identification.DB_FIELD_UUID, this.localityUUID, UUID.class);
+        }
         if (this.municipality != null && !this.municipality.isEmpty()) {
             lookupDefinition.put(AccessAddressEntity.DB_FIELD_ROAD + BaseLookupDefinition.separator + AccessAddressRoadRecord.DB_FIELD_MUNICIPALITY_CODE, this.municipality, Integer.class);
         }
@@ -191,6 +219,14 @@ public class AccessAddressQuery extends SumiffiikQuery<AccessAddressEntity> {
                 this.setRoadUUID(UUID.fromString(roadUUID));
             } catch (IllegalArgumentException e) {
                 throw new InvalidClientInputException("Parameter " + ROAD_UUID + " must be a uuid", e);
+            }
+        }
+        String localityUUID = parameters.getFirst(LOCALITY_UUID);
+        if (localityUUID != null) {
+            try {
+                this.setLocalityUUID(UUID.fromString(localityUUID));
+            } catch (IllegalArgumentException e) {
+                throw new InvalidClientInputException("Parameter " + LOCALITY_UUID + " must be a uuid", e);
             }
         }
     }

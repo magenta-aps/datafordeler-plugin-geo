@@ -73,7 +73,7 @@ public class LocalityService extends FapiBaseService<LocalityEntity, LocalityQue
     }
 
     @Override
-    protected void checkAccess(DafoUserDetails dafoUserDetails) throws AccessDeniedException, AccessRequiredException {
+    protected void checkAccess(DafoUserDetails dafoUserDetails) {
         // All have access
     }
 
@@ -83,12 +83,12 @@ public class LocalityService extends FapiBaseService<LocalityEntity, LocalityQue
     }
 
     @Override
-    protected void sendAsCSV(Stream<LocalityEntity> stream, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException, HttpNotFoundException {
+    protected void sendAsCSV(Stream<LocalityEntity> stream, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
 
     }
 
     @Override
-    protected void applyAreaRestrictionsToQuery(LocalityQuery query, DafoUserDetails user) throws InvalidClientInputException {
+    protected void applyAreaRestrictionsToQuery(LocalityQuery query, DafoUserDetails user) {
         Collection<AreaRestriction> restrictions = user.getAreaRestrictionsForRole(GeoRolesDefinition.READ_GEO_ROLE);
         AreaRestrictionDefinition areaRestrictionDefinition = this.geoPlugin.getAreaRestrictionDefinition();
         AreaRestrictionType municipalityType = areaRestrictionDefinition.getAreaRestrictionTypeByName(GeoAreaRestrictionDefinition.RESTRICTIONTYPE_KOMMUNEKODER);

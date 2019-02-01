@@ -17,7 +17,7 @@ import javax.persistence.Table;
         @Index(
                 name = GeoPlugin.DEBUG_TABLE_PREFIX + RoadMunicipalityRecord.TABLE_NAME + RoadMunicipalityRecord.DB_FIELD_CODE,
                 columnList = RoadMunicipalityRecord.DB_FIELD_CODE
-        ),
+        )
 })
 public class RoadMunicipalityRecord extends MunicipalityReferenceRecord<RoadEntity> {
 

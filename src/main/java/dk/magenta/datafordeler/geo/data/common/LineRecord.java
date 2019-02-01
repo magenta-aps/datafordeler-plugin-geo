@@ -1,5 +1,6 @@
 package dk.magenta.datafordeler.geo.data.common;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -50,6 +51,7 @@ public abstract class LineRecord<E extends GeoEntity> extends GeoMonotemporalRec
     public static final String DB_FIELD_SHAPE = "shape";
     public static final String IO_FIELD_SHAPE = "form";
     @Column(name = DB_FIELD_SHAPE, columnDefinition = "geometry")
+    @JsonIgnore
     private MultiLineString shape;
 
     public MultiLineString getShape() {
@@ -64,6 +66,12 @@ public abstract class LineRecord<E extends GeoEntity> extends GeoMonotemporalRec
     public LineRecord setShape(org.geojson.MultiLineString shape) {
         this.shape = LineRecord.convert(shape);
         return this;
+    }
+
+    // Getter for shape as geoJSON?
+    @JsonProperty
+    public org.geojson.Geometry getGeoJson() {
+        return LineRecord.convert(this.shape);
     }
 
 

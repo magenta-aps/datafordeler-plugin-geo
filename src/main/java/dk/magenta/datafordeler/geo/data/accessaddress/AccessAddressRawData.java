@@ -40,7 +40,9 @@ public class AccessAddressRawData extends SumiffiikRawData {
 
         @JsonProperty("Vejkode")
         public void setRoadcode(String roadCode) {
-            this.roadcode = Integer.parseInt(roadCode, 10);
+            try {
+                this.roadcode = Integer.parseInt(roadCode, 10);
+            } catch (NumberFormatException|NullPointerException e) {}
         }
 
         @JsonProperty("DataKilde")
@@ -57,6 +59,12 @@ public class AccessAddressRawData extends SumiffiikRawData {
 
     @JsonProperty
     public AccessAddressRawProperties properties;
+
+
+    @JsonProperty("attributes")
+    public void setAttributes(AccessAddressRawProperties attributes) {
+        this.properties = attributes;
+    }
 
     @Override
     public List<GeoMonotemporalRecord> getMonotemporalRecords() {
