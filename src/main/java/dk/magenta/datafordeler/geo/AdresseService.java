@@ -603,11 +603,37 @@ public class AdresseService {
             }
 
             // If a number exist with different BNRs, remove both
-            for (String number : houseNumberMap.keySet()) {
+            List<String> numbers = new ArrayList<>(houseNumberMap.keySet());
+            numbers.sort(fuzzyNumberComparator);
+
+            for (String number : numbers) {
                 HashMap<String, ArrayList<ObjectNode>> housesByBnr = houseNumberMap.get(number);
                 if (housesByBnr.size() == 1) {
-                    for (String bnr : housesByBnr.keySet()) {
-                        for (ObjectNode node : housesByBnr.get(bnr)) {
+
+                    List<String> bnrs = new ArrayList<>(housesByBnr.keySet());
+                    bnrs.sort(String::compareToIgnoreCase);
+
+                    for (String bnr : bnrs) {
+                        ArrayList<ObjectNode> houses = housesByBnr.get(bnr);
+                        houses.sort(
+                                Comparator.nullsFirst(
+                                        Comparator.<ObjectNode, String>comparing(
+                                                jsonNode -> jsonNode.get(OUTPUT_FLOOR) != null ? jsonNode.get(OUTPUT_FLOOR).textValue() : null,
+                                                Comparator.nullsFirst(fuzzyNumberComparator)
+                                        )
+                                ).thenComparing(
+                                        Comparator.nullsFirst(
+                                                Comparator.<ObjectNode, String>comparing(
+                                                        jsonNode -> jsonNode.get(OUTPUT_DOOR) != null ? jsonNode.get(OUTPUT_DOOR).textValue() : null,
+                                                        Comparator.nullsFirst(fuzzyNumberComparator)
+                                                )
+                                        )
+                                )
+                        );
+                        try {
+                            System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(houses));
+                        } catch (Exception e) {}
+                        for (ObjectNode node : houses) {
                             results.add(node);
                         }
                     }
@@ -621,6 +647,27 @@ public class AdresseService {
         }
         return results.toString();
     }
+
+    private static Pattern numberPattern = Pattern.compile("^(\\d+).*$");
+    private static final Integer extractNumber(String str) {
+        Matcher m = numberPattern.matcher(str);
+        if (m.find()) {
+            try {
+                return Integer.parseInt(m.group(1), 10);
+            } catch (NumberFormatException e) {}
+        }
+        return null;
+    }
+    public static final Comparator<String> fuzzyNumberComparator = (o1, o2) -> {
+        if (o1 == null && o2 == null) return 0;
+        Integer i1 = extractNumber(o1);
+        Integer i2 = extractNumber(o2);
+        if (i1 != null && i2 != null) {
+            int r = Integer.compare(i1, i2);
+            if (r != 0) return r;
+        }
+        return o1 == null ? -1 : o1.compareToIgnoreCase(o2);
+    };
 
     /**
      * Finds more detailed data on unit address
