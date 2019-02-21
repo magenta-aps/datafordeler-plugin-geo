@@ -5,6 +5,8 @@ import dk.magenta.datafordeler.core.util.ListHashMap;
 import dk.magenta.datafordeler.geo.data.building.BuildingEntity;
 import dk.magenta.datafordeler.geo.data.locality.LocalityEntity;
 import dk.magenta.datafordeler.geo.data.locality.LocalityQuery;
+import dk.magenta.datafordeler.geo.data.postcode.PostcodeEntity;
+import dk.magenta.datafordeler.geo.data.postcode.PostcodeQuery;
 import dk.magenta.datafordeler.geo.data.road.RoadEntity;
 import dk.magenta.datafordeler.geo.data.road.RoadQuery;
 import org.hibernate.Session;
@@ -62,6 +64,21 @@ public class WireCache {
             this.roadCacheByCode.add(code, list);
         }
         return this.roadCacheByCode.get(code);
+    }
+
+
+    public HashMap<Integer, PostcodeEntity> postcodeCacheByCode = new HashMap<>();
+
+    public PostcodeEntity getPostcode(Session session, int code) {
+        if (!this.postcodeCacheByCode.containsKey(code)) {
+            PostcodeQuery query = new PostcodeQuery();
+            query.setCode(String.format("%4d", code));
+            List<PostcodeEntity> list = QueryManager.getAllEntities(session, query, PostcodeEntity.class);
+            if (list.size() > 0) {
+                this.postcodeCacheByCode.put(code, list.get(0));
+            }
+        }
+        return this.postcodeCacheByCode.get(code);
     }
 
 }
