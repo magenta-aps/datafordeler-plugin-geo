@@ -34,7 +34,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.charset.Charset;
-import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.function.Consumer;
@@ -298,9 +297,10 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
                 //long deletedDate = jsonNode.get("DeletedDate").asLong();
                 //Instant deletionTime = Instant.ofEpochMilli(deletedDate);
                 UUID uuid = SumiffiikRawData.getSumiffiikAsUUID(globalId);
-                //E entity = QueryManager.getEntity(session, uuid, this.getEntityClass());
-                //session.delete(entity);
-                System.out.println("Delete " + this.getEntityClass().getSimpleName() + " " + uuid);
+                E entity = QueryManager.getEntity(session, uuid, this.getEntityClass());
+                if (entity != null) {
+                    session.delete(entity);
+                }
             });
         } finally {
             session.close();

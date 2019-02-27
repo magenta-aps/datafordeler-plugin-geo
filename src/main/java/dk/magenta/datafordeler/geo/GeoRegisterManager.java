@@ -136,17 +136,16 @@ public class GeoRegisterManager extends RegisterManager {
     }
 
     public URI getDeletionInterface(EntityManager entityManager) throws ConfigurationException {
-        //https://nogd01test.knno.local/server/rest/services/OperationalLayers/Grunddata/MapServer/9/query?where=DeletedDate%3E'2010-10-31T12:05:02.377'&f=json&outFields=globalID
         Session session = this.sessionManager.getSessionFactory().openSession();
         OffsetDateTime lastUpdateTime = entityManager.getLastUpdated(session);
         session.close();
 
-        //if (lastUpdateTime == null) {
+        if (lastUpdateTime == null) {
             lastUpdateTime = OffsetDateTime.parse("1900-01-01T00:00:00Z");
-        /*    log.info("Last update time not found");
+            log.info("Last update time not found");
         } else {
             log.info("Last update time: "+lastUpdateTime.format(DateTimeFormatter.ISO_LOCAL_DATE));
-        }*/
+        }
 
         String address = this.configurationManager.getConfiguration().getDeletionURL(entityManager.getSchema());
         if (address == null || address.isEmpty()) {

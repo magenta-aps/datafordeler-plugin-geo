@@ -2,7 +2,6 @@ package dk.magenta.datafordeler.geo.data.accessaddress;
 
 import dk.magenta.datafordeler.core.database.DatabaseEntry;
 import dk.magenta.datafordeler.geo.GeoPlugin;
-import dk.magenta.datafordeler.geo.data.common.LocalityReferenceRecord;
 import dk.magenta.datafordeler.geo.data.common.PostcodeReferenceRecord;
 
 import javax.persistence.Entity;
