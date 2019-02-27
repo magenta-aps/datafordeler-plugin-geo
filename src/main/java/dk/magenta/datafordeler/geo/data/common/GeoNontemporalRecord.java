@@ -39,7 +39,6 @@ public abstract class GeoNontemporalRecord<E extends GeoEntity> extends Database
         this.entity = entity;
     }
 
-    @Override
     public void setEntity(IdentifiedEntity identifiedEntity) {
         this.setEntity((E) identifiedEntity);
     }
