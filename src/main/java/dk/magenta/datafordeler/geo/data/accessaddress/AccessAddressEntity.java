@@ -131,7 +131,24 @@ public class AccessAddressEntity extends SumiffiikEntity implements IdentifiedEn
     public Set<AccessAddressLocalityRecord> getLocality() {
         return this.locality;
     }
+	
+	
+	
+	public static final String DB_FIELD_POSTCODE = "postcode";
+    public static final String IO_FIELD_POSTCODE = "postnummer";
+    @OneToMany(mappedBy = AccessAddressPostcodeRecord.DB_FIELD_ENTITY, cascade = CascadeType.ALL)
+    @Filters({
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_AFTER, condition = Monotemporal.FILTERLOGIC_REGISTRATION_AFTER),
+            @Filter(name = Monotemporal.FILTER_REGISTRATION_BEFORE, condition = Monotemporal.FILTERLOGIC_REGISTRATION_BEFORE),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_AFTER, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_AFTER),
+            @Filter(name = Nontemporal.FILTER_LASTUPDATED_BEFORE, condition = Nontemporal.FILTERLOGIC_LASTUPDATED_BEFORE)
+    })
+    @JsonProperty(IO_FIELD_POSTCODE)
+    Set<AccessAddressPostcodeRecord> postcode = new HashSet<>();
 
+    public Set<AccessAddressPostcodeRecord> getPostcode() {
+        return this.postcode;
+    }
 
 
 
@@ -236,6 +253,9 @@ public class AccessAddressEntity extends SumiffiikEntity implements IdentifiedEn
         if (record instanceof AccessAddressLocalityRecord) {
             added = addItem(this.locality, record);
         }
+        if (record instanceof AccessAddressPostcodeRecord) {
+            added = addItem(this.postcode, record);
+        }
         if (record instanceof AccessAddressBuildingReferenceRecord) {
             added = addItem(this.building, record);
         }
@@ -267,6 +287,7 @@ public class AccessAddressEntity extends SumiffiikEntity implements IdentifiedEn
         records.add(this.road);
         records.add(this.building);
         records.add(this.blockName);
+		records.add(this.postcode);
         records.add(this.houseNumber);
         records.add(this.source);
         records.add(this.status);

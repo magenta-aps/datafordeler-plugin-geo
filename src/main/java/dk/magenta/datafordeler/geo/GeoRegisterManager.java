@@ -114,12 +114,12 @@ public class GeoRegisterManager extends RegisterManager {
         OffsetDateTime lastUpdateTime = entityManager.getLastUpdated(session);
         session.close();
 
-        if (lastUpdateTime == null) {
+        //if (lastUpdateTime == null) {
             lastUpdateTime = OffsetDateTime.parse("1900-01-01T00:00:00Z");
-            log.info("Last update time not found");
+        /*    log.info("Last update time not found");
         } else {
             log.info("Last update time: "+lastUpdateTime.format(DateTimeFormatter.ISO_LOCAL_DATE));
-        }
+        }*/
 
         String address = this.configurationManager.getConfiguration().getURL(entityManager.getSchema());
         if (address == null || address.isEmpty()) {
@@ -136,17 +136,16 @@ public class GeoRegisterManager extends RegisterManager {
     }
 
     public URI getDeletionInterface(EntityManager entityManager) throws ConfigurationException {
-        //https://nogd01test.knno.local/server/rest/services/OperationalLayers/Grunddata/MapServer/9/query?where=DeletedDate%3E'2010-10-31T12:05:02.377'&f=json&outFields=globalID
         Session session = this.sessionManager.getSessionFactory().openSession();
         OffsetDateTime lastUpdateTime = entityManager.getLastUpdated(session);
         session.close();
 
-        //if (lastUpdateTime == null) {
+        if (lastUpdateTime == null) {
             lastUpdateTime = OffsetDateTime.parse("1900-01-01T00:00:00Z");
-        /*    log.info("Last update time not found");
+            log.info("Last update time not found");
         } else {
             log.info("Last update time: "+lastUpdateTime.format(DateTimeFormatter.ISO_LOCAL_DATE));
-        }*/
+        }
 
         String address = this.configurationManager.getConfiguration().getDeletionURL(entityManager.getSchema());
         if (address == null || address.isEmpty()) {
@@ -176,7 +175,7 @@ public class GeoRegisterManager extends RegisterManager {
     public boolean pullsEventsCommonly() {
         return false;
     }
-/*
+
     @Override
     public void beforePull(EntityManager entityManager, ImportMetadata importMetadata) {
         // First delete items that are deleted on input server
@@ -186,7 +185,7 @@ public class GeoRegisterManager extends RegisterManager {
             e.printStackTrace();
         }
     }
-*/
+
     @Override
     public ImportInputStream pullRawData(URI eventInterface, EntityManager entityManager, ImportMetadata importMetadata) throws DataFordelerException {
 
@@ -237,7 +236,7 @@ public class GeoRegisterManager extends RegisterManager {
                             URL tokenUrl = new URL(configuration.getTokenService());
                             String token = this.getToken(tokenUrl, configuration.getUsername(), configuration.getPassword());
                             Map<String, String> headers = Collections.singletonMap("Authorization", "Bearer " + token);
-                            for (int offset = 0; offset < 10000; offset += count) {
+                            for (int offset = 0; offset < 100000000; offset += count) {
                                 String offsetQuery = URLDecoder.decode(query.replace("%{offset}", Integer.toString(offset)), "utf-8");
                                 eventInterface = new URI(eventInterface.getScheme(), eventInterface.getUserInfo(), eventInterface.getHost(), eventInterface.getPort(), eventInterface.getPath(), offsetQuery, eventInterface.getFragment());
 
@@ -289,7 +288,7 @@ public class GeoRegisterManager extends RegisterManager {
     }
 
     public void removeDeleted(GeoEntityManager entityManager, ImportMetadata importMetadata) throws DataFordelerException {
-        try {
+        /*try {
             ImportInputStream stream = this.pullRawData(this.getDeletionInterface(entityManager), entityManager, importMetadata);
             if (stream != null) {
                 try {
@@ -305,7 +304,7 @@ public class GeoRegisterManager extends RegisterManager {
             }
         } catch (ConfigurationException e) {
             System.out.println("Incorrect configuration for deletion at entity manager "+entityManager.getClass().getSimpleName());
-        }
+        }*/
     }
 
     private String getToken(URL tokenUrl, String username, String password) throws DataStreamException {

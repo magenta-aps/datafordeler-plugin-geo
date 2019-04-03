@@ -205,14 +205,16 @@ public class AdresseService {
                         "JOIN unit.usage unit_usage " +
                         "WHERE locality_reference.uuid = :uuid "+
                         "AND road.code != null " +
-                        "AND road.code != 0 "
-                        //"AND unit_usage.usage = 1 "
+						"AND road.code != 0 " +
+                        "AND unit_usage.usage = 1 "
             );
             databaseQuery.setParameter("uuid", locality);
 
             ArrayNode results = objectMapper.createArrayNode();
             ListHashMap<String, RoadEntity> roadMap = new ListHashMap<>();
-            for (Object result : databaseQuery.getResultList()) {
+			
+            List<Object> resultList = databaseQuery.getResultList();
+            for (Object result : resultList) {
                 RoadEntity roadEntity = (RoadEntity) result;
                 for (RoadNameRecord nameRecord : roadEntity.getName()) {
                     if (nameRecord.getRegistrationTo() == null) {
@@ -359,7 +361,6 @@ public class AdresseService {
                         "JOIN unit.usage unit_usage " +
                         "LEFT JOIN " + AccessAddressEntity.class.getCanonicalName() + " access ON unit.accessAddress = access.identification " +
                         "LEFT JOIN access.road access_road " +
-
                         "LEFT JOIN access_road.reference road_identification " +
                         //"LEFT JOIN " + RoadEntity.class.getCanonicalName() + " road on road.code = access_road.roadCode " +
                         //"JOIN " + RoadMunicipalityRecord.class.getCanonicalName() + " road_municipality on road_municipality.entity = road and road_municipality.code = access_road.municipalityCode " +
@@ -476,7 +477,6 @@ public class AdresseService {
                     query.addRoadUUID(uuid);
                 }
                 roadQueryPart = "LEFT JOIN access.road access_road " +
-
                         "LEFT JOIN access_road.reference road_identification " +
                         //"LEFT JOIN " + RoadEntity.class.getCanonicalName() + " road on road.code = access_road.roadCode " +
                         //"JOIN " + RoadMunicipalityRecord.class.getCanonicalName() + " road_municipality on road_municipality.entity = road and road_municipality.code = access_road.municipalityCode " +
@@ -601,13 +601,36 @@ public class AdresseService {
                     //results.add(addressNode);
                 }
             }
+			
+			// If a number exist with different BNRs, remove both
+            List<String> numbers = new ArrayList<>(houseNumberMap.keySet());
+            numbers.sort(fuzzyNumberComparator);
 
-            // If a number exist with different BNRs, remove both
-            for (String number : houseNumberMap.keySet()) {
+            for (String number : numbers) {
                 HashMap<String, ArrayList<ObjectNode>> housesByBnr = houseNumberMap.get(number);
                 if (housesByBnr.size() == 1) {
-                    for (String bnr : housesByBnr.keySet()) {
-                        for (ObjectNode node : housesByBnr.get(bnr)) {
+
+                    List<String> bnrs = new ArrayList<>(housesByBnr.keySet());
+                    bnrs.sort(String::compareToIgnoreCase);
+
+                    for (String bnr : bnrs) {
+                        ArrayList<ObjectNode> houses = housesByBnr.get(bnr);
+                        houses.sort(
+                                Comparator.nullsFirst(
+                                        Comparator.<ObjectNode, String>comparing(
+                                                jsonNode -> jsonNode.get(OUTPUT_FLOOR) != null ? jsonNode.get(OUTPUT_FLOOR).textValue() : null,
+                                                Comparator.nullsFirst(fuzzyNumberComparator)
+                                        )
+                                ).thenComparing(
+                                        Comparator.nullsFirst(
+                                                Comparator.<ObjectNode, String>comparing(
+                                                        jsonNode -> jsonNode.get(OUTPUT_DOOR) != null ? jsonNode.get(OUTPUT_DOOR).textValue() : null,
+                                                        Comparator.nullsFirst(fuzzyNumberComparator)
+                                                )
+                                        )
+                                )
+                        );
+                        for (ObjectNode node : houses) {
                             results.add(node);
                         }
                     }
@@ -621,6 +644,28 @@ public class AdresseService {
         }
         return results.toString();
     }
+	
+	
+    private static Pattern numberPattern = Pattern.compile("^(\\d+).*$");
+    private static final Integer extractNumber(String str) {
+        Matcher m = numberPattern.matcher(str);
+        if (m.find()) {
+            try {
+                return Integer.parseInt(m.group(1), 10);
+            } catch (NumberFormatException e) {}
+        }
+        return null;
+    }
+    public static final Comparator<String> fuzzyNumberComparator = (o1, o2) -> {
+        if (o1 == null && o2 == null) return 0;
+        Integer i1 = extractNumber(o1);
+        Integer i2 = extractNumber(o2);
+        if (i1 != null && i2 != null) {
+            int r = Integer.compare(i1, i2);
+            if (r != 0) return r;
+        }
+        return o1 == null ? -1 : o1.compareToIgnoreCase(o2);
+    };
 
     /**
      * Finds more detailed data on unit address

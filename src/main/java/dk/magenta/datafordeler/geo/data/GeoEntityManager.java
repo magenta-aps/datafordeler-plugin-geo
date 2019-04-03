@@ -177,7 +177,8 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
 
     @Override
     public List<? extends Registration> parseData(InputStream jsonData, ImportMetadata importMetadata) throws DataFordelerException {
-        HashMap<UUID, E> entityCache = new HashMap<>();
+        
+		HashMap<UUID, E> entityCache = new HashMap<>();
         Session session = importMetadata.getSession();
         boolean wrappedInTransaction = importMetadata.isTransactionInProgress();
         if (!wrappedInTransaction) {
@@ -203,6 +204,7 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
                     if (entity == null) {
                         entity = this.createBasicEntity(rawData, session);
                         entity.setIdentification(identification);
+						return;
                     }
                     entityCache.put(uuid, entity);
                 }
@@ -294,13 +296,24 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
         Session session = sessionManager.getSessionFactory().openSession();
         try {
             GeoEntityManager.parseJsonStream(jsonData, charset, "features", this.objectMapper, jsonNode -> {
-                String globalId = jsonNode.get("GlobalID").asText();
-                //long deletedDate = jsonNode.get("DeletedDate").asLong();
-                //Instant deletionTime = Instant.ofEpochMilli(deletedDate);
-                UUID uuid = SumiffiikRawData.getSumiffiikAsUUID(globalId);
-                //E entity = QueryManager.getEntity(session, uuid, this.getEntityClass());
-                //session.delete(entity);
-                System.out.println("Delete " + this.getEntityClass().getSimpleName() + " " + uuid);
+				if (jsonNode != null) {
+					System.out.println(jsonNode);
+					ObjectNode attributeNode = (ObjectNode) jsonNode.get("attributes");
+					if (attributeNode != null) {
+						JsonNode globalIdNode = attributeNode.get("GlobalID");
+						if (globalIdNode != null) {
+							String globalId = globalIdNode.asText();
+							//long deletedDate = jsonNode.get("DeletedDate").asLong();
+							//Instant deletionTime = Instant.ofEpochMilli(deletedDate);
+							UUID uuid = SumiffiikRawData.getSumiffiikAsUUID(globalId);
+							E entity = QueryManager.getEntity(session, uuid, this.getEntityClass());
+							if (entity != null) {
+							System.out.println("Delete " + this.getEntityClass().getSimpleName() + " " + uuid);
+							session.delete(entity);
+							}
+						}
+					}
+				}
             });
         } finally {
             session.close();
