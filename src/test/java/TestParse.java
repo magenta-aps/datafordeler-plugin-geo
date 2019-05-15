@@ -1,12 +1,8 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dk.magenta.datafordeler.core.Application;
-import dk.magenta.datafordeler.core.Engine;
-import dk.magenta.datafordeler.core.Pull;
 import dk.magenta.datafordeler.core.database.QueryManager;
 import dk.magenta.datafordeler.core.database.SessionManager;
-import dk.magenta.datafordeler.core.exception.DataFordelerException;
 import dk.magenta.datafordeler.core.fapi.ParameterMap;
-import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressEntity;
 import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressEntityManager;
 import dk.magenta.datafordeler.geo.data.building.BuildingEntity;
@@ -33,7 +29,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -83,12 +78,7 @@ public class TestParse extends GeoTest {
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {
-            //System.out.println(UUID.fromString("73124446-4bde-3694-90b2-31ef5ae76942"));
-            MunicipalityEntity entity = QueryManager.getEntity(session, UUID.fromString("73124446-4bde-3694-90b2-31ef5ae76942"), MunicipalityEntity.class);
-            //List<MunicipalityEntity> entities = QueryManager.getAllEntities(session, MunicipalityEntity.class);
-            //System.out.println(entities.size());
-            //System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(entities));
-            //MunicipalityEntity entity = entities.get(0);
+            MunicipalityEntity entity = QueryManager.getEntity(session, UUID.fromString("33960e68-2f0a-4cb0-bb3d-02d9f0b21304"), MunicipalityEntity.class);
             Assert.assertNotNull(entity);
             Assert.assertEquals(956, entity.getCode());
             Assert.assertTrue(OffsetDateTime.parse("2018-07-19T11:11:05Z").isEqual(entity.getCreationDate()));
@@ -189,7 +179,7 @@ public class TestParse extends GeoTest {
             BuildingEntity entity = QueryManager.getEntity(session, UUID.fromString("AF3550F5-2998-404D-B784-A70C4DEB2A18"), BuildingEntity.class);
             Assert.assertNotNull(entity);
             Assert.assertEquals(null, entity.getAnr());
-            Assert.assertEquals("B-3197", entity.getBnr());
+            Assert.assertEquals("B-3197B", entity.getBnr());
             Assert.assertEquals("{DC2CAE1B-1F98-44FF-AE8F-6A52556B13FD}", entity.getSumiffiikId());
             Assert.assertTrue(OffsetDateTime.parse("2017-09-29T16:12:36Z").isEqual(entity.getCreationDate()));
             Assert.assertEquals("thard_nukissiorfiit", entity.getCreator());
@@ -278,7 +268,7 @@ public class TestParse extends GeoTest {
             Assert.assertEquals(1, entity.getFloor().size());
             Assert.assertEquals("kld", entity.getFloor().iterator().next().getFloor());
             Assert.assertEquals(1, entity.getDoor().size());
-            Assert.assertEquals("1234", entity.getDoor().iterator().next().getDoor());
+            Assert.assertEquals("2", entity.getDoor().iterator().next().getDoor());
             Assert.assertEquals(1, entity.getNumber().size());
             Assert.assertEquals("5678", entity.getNumber().iterator().next().getNumber());
             Assert.assertEquals(1, entity.getSource().size());
@@ -306,7 +296,7 @@ public class TestParse extends GeoTest {
             PostcodeEntity entity = QueryManager.getEntity(session, PostcodeEntity.generateUUID(3900), PostcodeEntity.class);
             Assert.assertNotNull(entity);
             Assert.assertEquals(3900, entity.getCode());
-            Assert.assertEquals("Nuuk", entity.getName());
+            Assert.assertEquals("Nuuk", entity.getName().iterator().next().getName());
         } finally {
             session.close();
         }
