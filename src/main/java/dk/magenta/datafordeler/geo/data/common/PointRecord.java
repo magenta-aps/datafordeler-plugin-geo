@@ -65,7 +65,7 @@ public abstract class PointRecord<E extends GeoEntity> extends GeoMonotemporalRe
     }
 
 
-    private static GeometryFactory geometryFactory = new GeometryFactory();
+    private static GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), GeoPlugin.SRID);
 
 
     public static Point convert(org.geojson.Point original) {
