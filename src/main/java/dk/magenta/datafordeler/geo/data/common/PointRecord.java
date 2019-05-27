@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.PrecisionModel;
+import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 import org.geojson.LngLatAlt;
 
@@ -63,13 +65,16 @@ public abstract class PointRecord<E extends GeoEntity> extends GeoMonotemporalRe
     }
 
 
-    private static GeometryFactory geometryFactory = new GeometryFactory();
+    private static GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), GeoPlugin.SRID);
 
 
     public static Point convert(org.geojson.Point original) {
-        Coordinate coordinate = PointRecord.convert(original.getCoordinates());
         return new Point(
-                geometryFactory.getCoordinateSequenceFactory().create(new Coordinate[]{coordinate}),
+                geometryFactory.getCoordinateSequenceFactory().create(
+                        new Coordinate[]{
+                                PointRecord.convert(original.getCoordinates())
+                        }
+                        ),
                 geometryFactory
         );
     }

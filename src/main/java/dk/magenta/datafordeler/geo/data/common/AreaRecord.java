@@ -3,6 +3,7 @@ package dk.magenta.datafordeler.geo.data.common;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.vividsolutions.jts.geom.*;
+import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 import org.geojson.LngLatAlt;
 
@@ -110,7 +111,7 @@ public abstract class AreaRecord<E extends GeoEntity> extends GeoMonotemporalRec
 
 
 
-    private static GeometryFactory geometryFactory = new GeometryFactory();
+    private static GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), GeoPlugin.SRID);
 
 
     public static MultiPolygon convert(org.geojson.MultiPolygon original) {
