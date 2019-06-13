@@ -33,6 +33,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -82,7 +83,12 @@ public class TestParse extends GeoTest {
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {
-            MunicipalityEntity entity = QueryManager.getEntity(session, MunicipalityEntity.generateUUID(956), MunicipalityEntity.class);
+            //System.out.println(UUID.fromString("73124446-4bde-3694-90b2-31ef5ae76942"));
+            MunicipalityEntity entity = QueryManager.getEntity(session, UUID.fromString("73124446-4bde-3694-90b2-31ef5ae76942"), MunicipalityEntity.class);
+            //List<MunicipalityEntity> entities = QueryManager.getAllEntities(session, MunicipalityEntity.class);
+            //System.out.println(entities.size());
+            //System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(entities));
+            //MunicipalityEntity entity = entities.get(0);
             Assert.assertNotNull(entity);
             Assert.assertEquals(956, entity.getCode());
             Assert.assertTrue(OffsetDateTime.parse("2018-07-19T11:11:05Z").isEqual(entity.getCreationDate()));
@@ -204,6 +210,7 @@ public class TestParse extends GeoTest {
 
     @Test
     public void testAccessAddress() throws IOException {
+        this.load(postcodeEntityManager, "/post.json");
         this.load(buildingEntityManager, "/building.json");
         this.load(accessAddressEntityManager, "/access.json");
         this.load(accessAddressEntityManager, "/access.json");
@@ -212,7 +219,7 @@ public class TestParse extends GeoTest {
         try {
             AccessAddressEntity entity = QueryManager.getEntity(session, UUID.fromString("2E3776BF-05C2-433C-ADB9-8A07DF6B3E8F"), AccessAddressEntity.class);
             Assert.assertNotNull(entity);
-            Assert.assertEquals("B-3197", entity.getBnr());
+            Assert.assertEquals("B-3197B", entity.getBnr());
             Assert.assertTrue(OffsetDateTime.parse("2018-08-23T14:48:05Z").isEqual(entity.getCreationDate()));
             Assert.assertEquals("IRKS", entity.getCreator());
             Assert.assertEquals("{69231C66-F37A-4F78-80C1-E379BFEE165D}", entity.getSumiffiikId());
@@ -232,9 +239,10 @@ public class TestParse extends GeoTest {
             Assert.assertEquals(1, entity.getStatus().size());
             Assert.assertEquals(Integer.valueOf(2), entity.getStatus().iterator().next().getStatus());
             Assert.assertTrue(OffsetDateTime.parse("2018-08-29T10:42:07Z").isEqual(entity.getStatus().iterator().next().getRegistrationFrom()));
-
             Assert.assertEquals(1, entity.getBuilding().size());
             Assert.assertEquals("af3550f5-2998-404d-b784-a70c4deb2a18", entity.getBuilding().iterator().next().getReference().getUuid().toString());
+            Assert.assertEquals(1, entity.getPostcode().size());
+            Assert.assertEquals("867af985-d281-3d38-99bd-c96549c8790d", entity.getPostcode().iterator().next().getReference().getUuid().toString());
 
             Assert.assertEquals(1, entity.getRoad().size());
             Assert.assertEquals(Integer.valueOf(956), entity.getRoad().iterator().next().getMunicipalityCode());

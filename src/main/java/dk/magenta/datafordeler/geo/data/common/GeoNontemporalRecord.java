@@ -3,6 +3,7 @@ package dk.magenta.datafordeler.geo.data.common;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import dk.magenta.datafordeler.core.database.DatabaseEntry;
+import dk.magenta.datafordeler.core.database.IdentifiedEntity;
 import dk.magenta.datafordeler.core.database.Nontemporal;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 import org.hibernate.annotations.FilterDef;
@@ -38,6 +39,9 @@ public abstract class GeoNontemporalRecord<E extends GeoEntity> extends Database
         this.entity = entity;
     }
 
+    public void setEntity(IdentifiedEntity identifiedEntity) {
+        this.setEntity((E) identifiedEntity);
+    }
 
 
     public static final String DB_FIELD_UPDATED = "dafoUpdated";

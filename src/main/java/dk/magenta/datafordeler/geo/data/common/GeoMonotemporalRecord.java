@@ -2,6 +2,7 @@ package dk.magenta.datafordeler.geo.data.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import dk.magenta.datafordeler.core.database.IdentifiedEntity;
 import dk.magenta.datafordeler.core.database.Monotemporal;
 import dk.magenta.datafordeler.core.util.Monotemporality;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
@@ -121,8 +122,6 @@ public class GeoMonotemporalRecord<E extends GeoEntity> extends GeoNontemporalRe
             previous = record;
         }
     }
-
-
 
     public void setDafoUpdated(OffsetDateTime updateTime) {
         super.setDafoUpdated(updateTime);
