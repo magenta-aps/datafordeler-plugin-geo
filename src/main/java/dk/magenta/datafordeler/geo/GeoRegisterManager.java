@@ -236,7 +236,7 @@ public class GeoRegisterManager extends RegisterManager {
                             URL tokenUrl = new URL(configuration.getTokenService());
                             String token = this.getToken(tokenUrl, configuration.getUsername(), configuration.getPassword());
                             Map<String, String> headers = Collections.singletonMap("Authorization", "Bearer " + token);
-                            for (int offset = 0; offset < 10000; offset += count) {
+                            for (int offset = 0; offset < 1000000000; offset += count) {
                                 String offsetQuery = URLDecoder.decode(query.replace("%{offset}", Integer.toString(offset)), "utf-8");
                                 eventInterface = new URI(eventInterface.getScheme(), eventInterface.getUserInfo(), eventInterface.getHost(), eventInterface.getPort(), eventInterface.getPath(), offsetQuery, eventInterface.getFragment());
 
@@ -244,7 +244,6 @@ public class GeoRegisterManager extends RegisterManager {
                                 try {
                                     String data = InputStreamReader.readInputStream(responseBody, charset.name());
                                     long responseCount = GeoEntityManager.parseJsonStream(data, "features", this.objectMapper, null);
-                                    System.out.println("responseCount: "+responseCount);
                                     if (responseCount == 0) {
                                         break;
                                     }
