@@ -2,6 +2,7 @@ package dk.magenta.datafordeler.geo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import dk.magenta.datafordeler.core.database.QueryManager;
 import dk.magenta.datafordeler.core.database.SessionManager;
 import dk.magenta.datafordeler.core.exception.*;
 import dk.magenta.datafordeler.core.io.ImportInputStream;
@@ -134,6 +135,32 @@ public class GeoRegisterManager extends RegisterManager {
         }
     }
 
+    public URI getDeletionInterface(EntityManager entityManager) throws ConfigurationException {
+        Session session = this.sessionManager.getSessionFactory().openSession();
+        OffsetDateTime lastUpdateTime = entityManager.getLastUpdated(session);
+        session.close();
+
+        if (lastUpdateTime == null) {
+            lastUpdateTime = OffsetDateTime.parse("1900-01-01T00:00:00Z");
+            log.info("Last update time not found");
+        } else {
+            log.info("Last update time: "+lastUpdateTime.format(DateTimeFormatter.ISO_LOCAL_DATE));
+        }
+
+        String address = this.configurationManager.getConfiguration().getDeletionURL(entityManager.getSchema());
+        if (address == null || address.isEmpty()) {
+            throw new ConfigurationException("Invalid URL for schema "+entityManager.getSchema()+": "+address);
+        }
+        address = address.replace("%{editDate}", lastUpdateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+
+        try {
+            URL url = new URL(address);
+            return new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+        } catch (URISyntaxException | MalformedURLException e) {
+            throw new ConfigurationException("Invalid URL for schema "+entityManager.getSchema()+": "+address, e);
+        }
+    }
+
     @Override
     protected Communicator getChecksumFetcher() {
         return null;
@@ -148,9 +175,20 @@ public class GeoRegisterManager extends RegisterManager {
     public boolean pullsEventsCommonly() {
         return false;
     }
-
+/*
+    @Override
+    public void beforePull(EntityManager entityManager, ImportMetadata importMetadata) {
+        // First delete items that are deleted on input server
+        try {
+            this.removeDeleted((GeoEntityManager) entityManager, importMetadata);
+        } catch (DataFordelerException e) {
+            e.printStackTrace();
+        }
+    }
+*/
     @Override
     public ImportInputStream pullRawData(URI eventInterface, EntityManager entityManager, ImportMetadata importMetadata) throws DataFordelerException {
+
         this.log.info("eventInterface: "+eventInterface);
         GeoConfiguration configuration = this.configurationManager.getConfiguration();
         GeoConfiguration.RegisterType registerType = configuration.getRegisterType(entityManager.getSchema());
@@ -175,11 +213,13 @@ public class GeoRegisterManager extends RegisterManager {
 
                 Session session = this.sessionManager.getSessionFactory().openSession();
                 session.close();
-                File cacheFile = new File("local/geo/" + entityManager.getSchema() + "_" + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+                LocalDateTime now = LocalDateTime.now();
+                long s = 1000000000L * (3600L * now.getHour() + 60L * now.getMinute() + now.getSecond()) + now.getNano();
+                File cacheFile = new File("local/geo/" + entityManager.getSchema() + "_" + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE) + "_" + s);
                 Charset charset = this.getConfigurationManager().getConfiguration().getCharset();
                 try {
                     if (!cacheFile.exists()) {
-                        log.info("Cache file "+cacheFile.getAbsolutePath()+" doesn't exist. Creating new and filling from source");
+                        log.info("Cache file " + cacheFile.getAbsolutePath() + " doesn't exist. Creating new and filling from source");
 
                         cacheFile.createNewFile();
 
@@ -196,7 +236,7 @@ public class GeoRegisterManager extends RegisterManager {
                             URL tokenUrl = new URL(configuration.getTokenService());
                             String token = this.getToken(tokenUrl, configuration.getUsername(), configuration.getPassword());
                             Map<String, String> headers = Collections.singletonMap("Authorization", "Bearer " + token);
-                            for (int offset = 0; offset < 1000000; offset += count) {
+                            for (int offset = 0; offset < 1000000000; offset += count) {
                                 String offsetQuery = URLDecoder.decode(query.replace("%{offset}", Integer.toString(offset)), "utf-8");
                                 eventInterface = new URI(eventInterface.getScheme(), eventInterface.getUserInfo(), eventInterface.getHost(), eventInterface.getPort(), eventInterface.getPath(), offsetQuery, eventInterface.getFragment());
 
@@ -244,6 +284,26 @@ public class GeoRegisterManager extends RegisterManager {
                 }
         }
         return null;
+    }
+
+    public void removeDeleted(GeoEntityManager entityManager, ImportMetadata importMetadata) throws DataFordelerException {
+        try {
+            ImportInputStream stream = this.pullRawData(this.getDeletionInterface(entityManager), entityManager, importMetadata);
+            if (stream != null) {
+                try {
+                    entityManager.parseDeletionData(stream);
+                } finally {
+                    QueryManager.clearCaches();
+                    try {
+                        stream.close();
+                    } catch (IOException e) {
+                        throw new DataStreamException(e);
+                    }
+                }
+            }
+        } catch (ConfigurationException e) {
+            System.out.println("Incorrect configuration for deletion at entity manager "+entityManager.getClass().getSimpleName());
+        }
     }
 
     private String getToken(URL tokenUrl, String username, String password) throws DataStreamException {

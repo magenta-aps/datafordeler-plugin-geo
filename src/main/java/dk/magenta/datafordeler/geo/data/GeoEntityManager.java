@@ -187,7 +187,7 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
         final WireCache wireCache = new WireCache();
         Charset charset = this.geoConfigurationManager.getConfiguration().getCharset();
 
-        this.parseJsonStream(jsonData, charset, "features", this.objectMapper, jsonNode -> {
+        GeoEntityManager.parseJsonStream(jsonData, charset, "features", this.objectMapper, jsonNode -> {
             try {
                 timer.start(TASK_PARSE);
                 T rawData = objectMapper.readerFor(this.getRawClass()).readValue(jsonNode);
@@ -285,6 +285,26 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
             }
         }
         return count;
+    }
+
+
+    public void parseDeletionData(InputStream jsonData) throws DataStreamException {
+        Charset charset = this.geoConfigurationManager.getConfiguration().getCharset();
+        Session session = sessionManager.getSessionFactory().openSession();
+        try {
+            GeoEntityManager.parseJsonStream(jsonData, charset, "features", this.objectMapper, jsonNode -> {
+                String globalId = jsonNode.get("GlobalID").asText();
+                //long deletedDate = jsonNode.get("DeletedDate").asLong();
+                //Instant deletionTime = Instant.ofEpochMilli(deletedDate);
+                UUID uuid = SumiffiikRawData.getSumiffiikAsUUID(globalId);
+                E entity = QueryManager.getEntity(session, uuid, this.getEntityClass());
+                if (entity != null) {
+                    session.delete(entity);
+                }
+            });
+        } finally {
+            session.close();
+        }
     }
 
 

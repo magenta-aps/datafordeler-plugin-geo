@@ -91,6 +91,10 @@ public class AccessAddressRawData extends SumiffiikRawData {
         );
 
         records.add(
+                new AccessAddressPostcodeRecord(this.properties.postcode)
+        );
+
+        records.add(
                 new AccessAddressStatusRecord(this.properties.objectStatus)
         );
 

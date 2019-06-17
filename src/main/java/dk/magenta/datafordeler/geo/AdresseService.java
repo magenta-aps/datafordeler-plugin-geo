@@ -630,9 +630,6 @@ public class AdresseService {
                                         )
                                 )
                         );
-                        try {
-                            System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(houses));
-                        } catch (Exception e) {}
                         for (ObjectNode node : houses) {
                             results.add(node);
                         }
