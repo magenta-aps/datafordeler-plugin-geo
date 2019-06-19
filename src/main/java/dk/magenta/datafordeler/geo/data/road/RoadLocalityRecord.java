@@ -23,7 +23,7 @@ import javax.persistence.Table;
                 columnList = RoadLocalityRecord.DB_FIELD_REFERENCE + DatabaseEntry.REF
         )
 })
-public class RoadLocalityRecord extends LocalityReferenceRecord<RoadEntity> {
+public class RoadLocalityRecord extends LocalityReferenceRecord<GeoRoadEntity> {
 
     public static final String TABLE_NAME = "geo_road_locality";
 

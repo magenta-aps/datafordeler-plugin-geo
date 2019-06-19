@@ -16,7 +16,7 @@ import javax.persistence.Table;
                 columnList = RoadShapeRecord.DB_FIELD_ENTITY + DatabaseEntry.REF
         ),
 })
-public class RoadShapeRecord extends LineRecord<RoadEntity> {
+public class RoadShapeRecord extends LineRecord<GeoRoadEntity> {
 
     public static final String TABLE_NAME = "geo_road_shape";
 

@@ -19,7 +19,7 @@ import javax.persistence.Table;
                 columnList = MunicipalityNameRecord.DB_FIELD_NAME
         ),
 })
-public class MunicipalityNameRecord extends NameRecord<MunicipalityEntity> {
+public class MunicipalityNameRecord extends NameRecord<GeoMunicipalityEntity> {
 
     public static final String TABLE_NAME = "geo_municipality_name";
 

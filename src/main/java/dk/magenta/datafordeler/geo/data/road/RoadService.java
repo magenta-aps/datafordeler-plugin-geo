@@ -3,10 +3,6 @@ package dk.magenta.datafordeler.geo.data.road;
 import dk.magenta.datafordeler.core.MonitorService;
 import dk.magenta.datafordeler.core.arearestriction.AreaRestriction;
 import dk.magenta.datafordeler.core.arearestriction.AreaRestrictionType;
-import dk.magenta.datafordeler.core.exception.AccessDeniedException;
-import dk.magenta.datafordeler.core.exception.AccessRequiredException;
-import dk.magenta.datafordeler.core.exception.HttpNotFoundException;
-import dk.magenta.datafordeler.core.exception.InvalidClientInputException;
 import dk.magenta.datafordeler.core.fapi.FapiBaseService;
 import dk.magenta.datafordeler.core.fapi.OutputWrapper;
 import dk.magenta.datafordeler.core.plugin.AreaRestrictionDefinition;
@@ -22,13 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.stream.Stream;
 
 @RestController("GeoRoadService")
 @RequestMapping("/geo/road/1/rest")
-public class RoadService extends FapiBaseService<RoadEntity, RoadQuery> {
+public class RoadService extends FapiBaseService<GeoRoadEntity, RoadQuery> {
 
     @Autowired
     private GeoPlugin geoPlugin;
@@ -63,8 +58,8 @@ public class RoadService extends FapiBaseService<RoadEntity, RoadQuery> {
     }
 
     @Override
-    protected Class<RoadEntity> getEntityClass() {
-        return RoadEntity.class;
+    protected Class<GeoRoadEntity> getEntityClass() {
+        return GeoRoadEntity.class;
     }
 
     @Override
@@ -83,7 +78,7 @@ public class RoadService extends FapiBaseService<RoadEntity, RoadQuery> {
     }
 
     @Override
-    protected void sendAsCSV(Stream<RoadEntity> stream, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    protected void sendAsCSV(Stream<GeoRoadEntity> stream, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
 
     }
 

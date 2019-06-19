@@ -16,7 +16,7 @@ import javax.persistence.Table;
                 columnList = MunicipalityShapeRecord.DB_FIELD_ENTITY + DatabaseEntry.REF
         )
 })
-public class MunicipalityShapeRecord extends AreaRecord<MunicipalityEntity> {
+public class MunicipalityShapeRecord extends AreaRecord<GeoMunicipalityEntity> {
 
     public static final String TABLE_NAME = "geo_municipality_shape";
 

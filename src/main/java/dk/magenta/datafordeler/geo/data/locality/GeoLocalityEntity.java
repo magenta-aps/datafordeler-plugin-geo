@@ -22,27 +22,27 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = GeoPlugin.DEBUG_TABLE_PREFIX + LocalityEntity.TABLE_NAME, indexes = {
+@Table(name = GeoPlugin.DEBUG_TABLE_PREFIX + GeoLocalityEntity.TABLE_NAME, indexes = {
         @Index(
-                name = GeoPlugin.DEBUG_TABLE_PREFIX + LocalityEntity.TABLE_NAME + LocalityEntity.DB_FIELD_SUMIFFIIK_ID,
-                columnList = LocalityEntity.DB_FIELD_SUMIFFIIK_ID
+                name = GeoPlugin.DEBUG_TABLE_PREFIX + GeoLocalityEntity.TABLE_NAME + GeoLocalityEntity.DB_FIELD_SUMIFFIIK_ID,
+                columnList = GeoLocalityEntity.DB_FIELD_SUMIFFIIK_ID
         ),
         @Index(
-                name = GeoPlugin.DEBUG_TABLE_PREFIX + LocalityEntity.TABLE_NAME + LocalityEntity.DB_FIELD_CODE,
-                columnList = LocalityEntity.DB_FIELD_CODE
+                name = GeoPlugin.DEBUG_TABLE_PREFIX + GeoLocalityEntity.TABLE_NAME + GeoLocalityEntity.DB_FIELD_CODE,
+                columnList = GeoLocalityEntity.DB_FIELD_CODE
         ),
 })
-public class LocalityEntity extends SumiffiikEntity implements IdentifiedEntity {
+public class GeoLocalityEntity extends SumiffiikEntity implements IdentifiedEntity {
 
     public static final String TABLE_NAME = "geo_locality";
 
     @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="type")
     public static final String schema = "Locality";
 
-    public LocalityEntity() {
+    public GeoLocalityEntity() {
     }
 
-    public LocalityEntity(LocalityRawData record) {
+    public GeoLocalityEntity(LocalityRawData record) {
         super(record);
         this.setCode(record.properties.code);
     }

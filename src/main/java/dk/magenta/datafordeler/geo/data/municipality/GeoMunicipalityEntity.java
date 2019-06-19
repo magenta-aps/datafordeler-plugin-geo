@@ -12,9 +12,7 @@ import dk.magenta.datafordeler.geo.data.RawData;
 import dk.magenta.datafordeler.geo.data.SumiffiikEntity;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
 import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.Filters;
-import org.hibernate.annotations.ParamDef;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
@@ -24,27 +22,27 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = GeoPlugin.DEBUG_TABLE_PREFIX + MunicipalityEntity.TABLE_NAME, indexes = {
+@Table(name = GeoPlugin.DEBUG_TABLE_PREFIX + GeoMunicipalityEntity.TABLE_NAME, indexes = {
         @Index(
-                name = GeoPlugin.DEBUG_TABLE_PREFIX + MunicipalityEntity.TABLE_NAME + MunicipalityEntity.DB_FIELD_SUMIFFIIK_ID,
-                columnList = MunicipalityEntity.DB_FIELD_SUMIFFIIK_ID
+                name = GeoPlugin.DEBUG_TABLE_PREFIX + GeoMunicipalityEntity.TABLE_NAME + GeoMunicipalityEntity.DB_FIELD_SUMIFFIIK_ID,
+                columnList = GeoMunicipalityEntity.DB_FIELD_SUMIFFIIK_ID
         ),
         @Index(
-                name = GeoPlugin.DEBUG_TABLE_PREFIX + MunicipalityEntity.TABLE_NAME + MunicipalityEntity.DB_FIELD_CODE,
-                columnList = MunicipalityEntity.DB_FIELD_CODE
+                name = GeoPlugin.DEBUG_TABLE_PREFIX + GeoMunicipalityEntity.TABLE_NAME + GeoMunicipalityEntity.DB_FIELD_CODE,
+                columnList = GeoMunicipalityEntity.DB_FIELD_CODE
         ),
 })
-public class MunicipalityEntity extends SumiffiikEntity implements IdentifiedEntity {
+public class GeoMunicipalityEntity extends SumiffiikEntity implements IdentifiedEntity {
 
     public static final String TABLE_NAME = "geo_municipality";
 
     @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="type")
     public static final String schema = "Municipality";
 
-    public MunicipalityEntity() {
+    public GeoMunicipalityEntity() {
     }
 
-    public MunicipalityEntity(MunicipalityRawData record) {
+    public GeoMunicipalityEntity(MunicipalityRawData record) {
         super(record);
         this.setCode(record.properties.code);
     }

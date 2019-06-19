@@ -14,10 +14,10 @@ import java.util.Map;
 /**
  * Created by lars on 19-05-17.
  */
-public class MunicipalityQuery extends SumiffiikQuery<MunicipalityEntity> {
+public class MunicipalityQuery extends SumiffiikQuery<GeoMunicipalityEntity> {
 
-    public static final String CODE = MunicipalityEntity.IO_FIELD_CODE;
-    public static final String NAME = MunicipalityEntity.IO_FIELD_NAME;
+    public static final String CODE = GeoMunicipalityEntity.IO_FIELD_CODE;
+    public static final String NAME = GeoMunicipalityEntity.IO_FIELD_NAME;
 
     @QueryField(type = QueryField.FieldType.INT, queryName = CODE)
     private List<String> code = new ArrayList<>();
@@ -69,10 +69,10 @@ public class MunicipalityQuery extends SumiffiikQuery<MunicipalityEntity> {
     public BaseLookupDefinition getLookupDefinition() {
         BaseLookupDefinition lookupDefinition = super.getLookupDefinition();
         if (this.code != null && !this.code.isEmpty()) {
-            lookupDefinition.put(MunicipalityEntity.DB_FIELD_CODE, this.code, Integer.class);
+            lookupDefinition.put(GeoMunicipalityEntity.DB_FIELD_CODE, this.code, Integer.class);
         }
         if (this.name != null && !this.name.isEmpty()) {
-            lookupDefinition.put(MunicipalityEntity.DB_FIELD_NAME + BaseLookupDefinition.separator + MunicipalityNameRecord.DB_FIELD_NAME, this.name, String.class);
+            lookupDefinition.put(GeoMunicipalityEntity.DB_FIELD_NAME + BaseLookupDefinition.separator + MunicipalityNameRecord.DB_FIELD_NAME, this.name, String.class);
         }
         return lookupDefinition;
     }

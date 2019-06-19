@@ -7,7 +7,7 @@ import dk.magenta.datafordeler.core.database.Identification;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.WireCache;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
-import dk.magenta.datafordeler.geo.data.road.RoadEntity;
+import dk.magenta.datafordeler.geo.data.road.GeoRoadEntity;
 import org.hibernate.Session;
 
 import javax.persistence.*;
@@ -77,7 +77,7 @@ public class AccessAddressRoadRecord extends GeoMonotemporalRecord<AccessAddress
 
     public void wire(Session session, WireCache wireCache) {
         if (this.reference == null && this.municipalityCode != null && this.roadCode != null) {
-            for (RoadEntity road : wireCache.getRoad(session, this.municipalityCode, this.roadCode)) {
+            for (GeoRoadEntity road : wireCache.getRoad(session, this.municipalityCode, this.roadCode)) {
                 this.reference = road.getIdentification();
                 return;
             }

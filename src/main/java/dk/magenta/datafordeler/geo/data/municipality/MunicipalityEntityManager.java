@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component("GeoMunicipalityEntityManager")
-public class MunicipalityEntityManager extends GeoEntityManager<MunicipalityEntity, MunicipalityRawData> {
+public class MunicipalityEntityManager extends GeoEntityManager<GeoMunicipalityEntity, MunicipalityRawData> {
 
     @Autowired
     private MunicipalityService municipalityService;
@@ -33,12 +33,12 @@ public class MunicipalityEntityManager extends GeoEntityManager<MunicipalityEnti
 
     @Override
     public String getSchema() {
-        return MunicipalityEntity.schema;
+        return GeoMunicipalityEntity.schema;
     }
 
     @Override
-    protected Class<MunicipalityEntity> getEntityClass() {
-        return MunicipalityEntity.class;
+    protected Class<GeoMunicipalityEntity> getEntityClass() {
+        return GeoMunicipalityEntity.class;
     }
 
 
@@ -53,8 +53,8 @@ public class MunicipalityEntityManager extends GeoEntityManager<MunicipalityEnti
     }
 
     @Override
-    protected MunicipalityEntity createBasicEntity(MunicipalityRawData record, Session session) {
-        return new MunicipalityEntity(record);
+    protected GeoMunicipalityEntity createBasicEntity(MunicipalityRawData record, Session session) {
+        return new GeoMunicipalityEntity(record);
     }
 
 }

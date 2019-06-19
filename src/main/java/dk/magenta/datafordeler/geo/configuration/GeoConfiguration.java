@@ -4,10 +4,10 @@ import dk.magenta.datafordeler.core.configuration.Configuration;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressEntity;
 import dk.magenta.datafordeler.geo.data.building.BuildingEntity;
-import dk.magenta.datafordeler.geo.data.locality.LocalityEntity;
-import dk.magenta.datafordeler.geo.data.municipality.MunicipalityEntity;
+import dk.magenta.datafordeler.geo.data.locality.GeoLocalityEntity;
+import dk.magenta.datafordeler.geo.data.municipality.GeoMunicipalityEntity;
 import dk.magenta.datafordeler.geo.data.postcode.PostcodeEntity;
-import dk.magenta.datafordeler.geo.data.road.RoadEntity;
+import dk.magenta.datafordeler.geo.data.road.GeoRoadEntity;
 import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressEntity;
 
 import javax.persistence.*;
@@ -382,13 +382,13 @@ public class GeoConfiguration implements Configuration {
 
     public RegisterType getRegisterType(String schema) {
         switch (schema) {
-            case MunicipalityEntity.schema:
+            case GeoMunicipalityEntity.schema:
                 return this.municipalityRegisterType;
             case PostcodeEntity.schema:
                 return this.postcodeRegisterType;
-            case LocalityEntity.schema:
+            case GeoLocalityEntity.schema:
                 return this.localityRegisterType;
-            case RoadEntity.schema:
+            case GeoRoadEntity.schema:
                 return this.roadRegisterType;
             case BuildingEntity.schema:
                 return this.buildingRegisterType;
@@ -402,13 +402,13 @@ public class GeoConfiguration implements Configuration {
 
     public String getURL(String schema) {
         switch (schema) {
-            case MunicipalityEntity.schema:
+            case GeoMunicipalityEntity.schema:
                 return this.municipalityRegisterURL;
             case PostcodeEntity.schema:
                 return this.postcodeRegisterURL;
-            case LocalityEntity.schema:
+            case GeoLocalityEntity.schema:
                 return this.localityRegisterURL;
-            case RoadEntity.schema:
+            case GeoRoadEntity.schema:
                 return this.roadRegisterURL;
             case BuildingEntity.schema:
                 return this.buildingRegisterURL;
@@ -422,13 +422,13 @@ public class GeoConfiguration implements Configuration {
 
     public String getDeletionURL(String schema) {
         switch (schema) {
-            case MunicipalityEntity.schema:
+            case GeoMunicipalityEntity.schema:
                 return this.municipalityDeletionRegisterURL;
             case PostcodeEntity.schema:
                 return this.postcodeDeletionRegisterURL;
-            case LocalityEntity.schema:
+            case GeoLocalityEntity.schema:
                 return this.localityDeletionRegisterURL;
-            case RoadEntity.schema:
+            case GeoRoadEntity.schema:
                 return this.roadDeletionRegisterURL;
             case BuildingEntity.schema:
                 return this.buildingDeletionRegisterURL;
