@@ -19,7 +19,7 @@ import javax.persistence.Table;
                 columnList = LocalityNameRecord.DB_FIELD_NAME
         ),
 })
-public class LocalityNameRecord extends NameRecord<LocalityEntity> {
+public class LocalityNameRecord extends NameRecord<GeoLocalityEntity> {
 
     public static final String TABLE_NAME = "geo_locality_name";
 

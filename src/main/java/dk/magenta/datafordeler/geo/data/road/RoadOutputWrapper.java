@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RoadOutputWrapper extends GeoOutputWrapper<RoadEntity> {
+public class RoadOutputWrapper extends GeoOutputWrapper<GeoRoadEntity> {
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -18,7 +18,7 @@ public class RoadOutputWrapper extends GeoOutputWrapper<RoadEntity> {
     }
 
     @Override
-    protected void fillContainer(OutputContainer container, RoadEntity item) {
+    protected void fillContainer(OutputContainer container, GeoRoadEntity item) {
         container.addNontemporal("vejkode", item.getCode());
         container.addMonotemporal("navn", item.getName());
         container.addMonotemporal("lokalitet", item.getLocality());

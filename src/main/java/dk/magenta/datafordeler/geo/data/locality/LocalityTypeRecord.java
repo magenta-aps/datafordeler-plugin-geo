@@ -22,7 +22,7 @@ import java.util.Objects;
                 columnList = LocalityTypeRecord.DB_FIELD_TYPE
         ),
 })
-public class LocalityTypeRecord extends GeoMonotemporalRecord<LocalityEntity> {
+public class LocalityTypeRecord extends GeoMonotemporalRecord<GeoLocalityEntity> {
 
     public static final String TABLE_NAME = "geo_locality_type";
 

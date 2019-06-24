@@ -5,16 +5,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dk.magenta.datafordeler.core.database.Identification;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 import dk.magenta.datafordeler.geo.data.WireCache;
-import dk.magenta.datafordeler.geo.data.locality.LocalityEntity;
 import dk.magenta.datafordeler.geo.data.postcode.PostcodeEntity;
 import org.hibernate.Session;
 
 import javax.persistence.Column;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
-import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 @MappedSuperclass
 public class PostcodeReferenceRecord<E extends GeoEntity> extends GeoMonotemporalRecord<E> {

@@ -17,7 +17,7 @@ import dk.magenta.datafordeler.core.util.LoggerHelper;
 import dk.magenta.datafordeler.geo.data.accessaddress.*;
 import dk.magenta.datafordeler.geo.data.common.GeoMonotemporalRecord;
 import dk.magenta.datafordeler.geo.data.locality.*;
-import dk.magenta.datafordeler.geo.data.municipality.MunicipalityEntity;
+import dk.magenta.datafordeler.geo.data.municipality.GeoMunicipalityEntity;
 import dk.magenta.datafordeler.geo.data.road.*;
 import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressDoorRecord;
 import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressEntity;
@@ -93,8 +93,8 @@ public class AdresseService {
     public void loadMunicipalities() {
         Session session = sessionManager.getSessionFactory().openSession();
         try {
-            List<MunicipalityEntity> municipalities = QueryManager.getAllEntities(session, MunicipalityEntity.class);
-            for (MunicipalityEntity municipality : municipalities) {
+            List<GeoMunicipalityEntity> municipalities = QueryManager.getAllEntities(session, GeoMunicipalityEntity.class);
+            for (GeoMunicipalityEntity municipality : municipalities) {
                 this.municipalities.put(municipality.getCode(), municipality.getIdentification().getUuid());
             }
         } finally {
@@ -134,9 +134,9 @@ public class AdresseService {
         query.setMunicipality(municipality);
         Session session = sessionManager.getSessionFactory().openSession();
         try {
-            List<LocalityEntity> localities = QueryManager.getAllEntities(session, query, LocalityEntity.class);
+            List<GeoLocalityEntity> localities = QueryManager.getAllEntities(session, query, GeoLocalityEntity.class);
             ArrayNode results = objectMapper.createArrayNode();
-            for (LocalityEntity locality : localities) {
+            for (GeoLocalityEntity locality : localities) {
                 ObjectNode localityNode = objectMapper.createObjectNode();
                 localityNode.put(OUTPUT_UUID, locality.getUUID().toString());
 
@@ -192,7 +192,7 @@ public class AdresseService {
         try {
 
             org.hibernate.query.Query databaseQuery = session.createQuery(
-                    "SELECT DISTINCT road FROM " + RoadEntity.class.getCanonicalName() + " road " +
+                    "SELECT DISTINCT road FROM " + GeoRoadEntity.class.getCanonicalName() + " road " +
                         "JOIN road.locality locality " +
                         "JOIN locality.reference locality_reference " +
 
@@ -211,26 +211,26 @@ public class AdresseService {
             databaseQuery.setParameter("uuid", locality);
 
             ArrayNode results = objectMapper.createArrayNode();
-            ListHashMap<String, RoadEntity> roadMap = new ListHashMap<>();
+            ListHashMap<String, GeoRoadEntity> roadMap = new ListHashMap<>();
             for (Object result : databaseQuery.getResultList()) {
-                RoadEntity roadEntity = (RoadEntity) result;
-                for (RoadNameRecord nameRecord : roadEntity.getName()) {
+                GeoRoadEntity geoRoadEntity = (GeoRoadEntity) result;
+                for (RoadNameRecord nameRecord : geoRoadEntity.getName()) {
                     if (nameRecord.getRegistrationTo() == null) {
                         String nameValue = nameRecord.getName();
-                        roadMap.add(nameValue != null ? nameValue.trim() : null, roadEntity);
+                        roadMap.add(nameValue != null ? nameValue.trim() : null, geoRoadEntity);
                     }
                 }
             }
 
             if (roadMap.size() == 0 || (roadMap.size() == 1 && roadMap.keySet().contains(null))) {
-                LocalityEntity localityEntity = QueryManager.getEntity(session, locality, LocalityEntity.class);
-                if (localityEntity != null) {
+                GeoLocalityEntity geoLocalityEntity = QueryManager.getEntity(session, locality, GeoLocalityEntity.class);
+                if (geoLocalityEntity != null) {
                     ObjectNode roadNode = objectMapper.createObjectNode();
-                    LocalityNameRecord localityNameRecord = current(localityEntity.getName());
+                    LocalityNameRecord localityNameRecord = current(geoLocalityEntity.getName());
                     if (localityNameRecord != null) {
                         roadNode.put(OUTPUT_NAME, localityNameRecord.getName());
                     }
-                    LocalityRoadcodeRecord localityRoadcodeRecord = current(localityEntity.getLocalityRoadcode());
+                    LocalityRoadcodeRecord localityRoadcodeRecord = current(geoLocalityEntity.getLocalityRoadcode());
                     if (localityRoadcodeRecord != null) {
                         roadNode.put(OUTPUT_ROADCODE, localityRoadcodeRecord.getCode());
                     }
@@ -248,7 +248,7 @@ public class AdresseService {
                     roadNode.put(OUTPUT_NAME, roadName);
 
                     boolean hasUUID = false;
-                    for (RoadEntity road : roadMap.get(roadName)) {
+                    for (GeoRoadEntity road : roadMap.get(roadName)) {
                         RoadNameRecord nameRecord = current(road.getName());
                         if (nameRecord != null) {
                             String altName = nameRecord.getAddressingName();
@@ -278,19 +278,19 @@ public class AdresseService {
     private Set<UUID> getWholeRoad(Session session, UUID roadSegment) {
         HashSet<UUID> uuids = new HashSet<>();
         uuids.add(roadSegment);
-        RoadEntity roadEntity = QueryManager.getEntity(session, roadSegment, RoadEntity.class);
-        if (roadEntity != null) {
+        GeoRoadEntity geoRoadEntity = QueryManager.getEntity(session, roadSegment, GeoRoadEntity.class);
+        if (geoRoadEntity != null) {
             String localityCode = null;
-            for (RoadLocalityRecord localityRecord : roadEntity.getLocality()) {
+            for (RoadLocalityRecord localityRecord : geoRoadEntity.getLocality()) {
                 if (localityRecord.getRegistrationTo() == null) {
                     localityCode = localityRecord.getCode();
                     break;
                 }
             }
             String name = null;
-            int code = roadEntity.getCode();
+            int code = geoRoadEntity.getCode();
             if (code == 0) {
-                for (RoadNameRecord nameRecord : roadEntity.getName()) {
+                for (RoadNameRecord nameRecord : geoRoadEntity.getName()) {
                     if (nameRecord.getRegistrationTo() == null) {
                         name = nameRecord.getName();
                         break;
@@ -308,8 +308,8 @@ public class AdresseService {
                     query.setName(name);
                 }
 
-                for (RoadEntity roadEntity1 : QueryManager.getAllEntities(session, query, RoadEntity.class)) {
-                    UUID u = roadEntity1.getUUID();
+                for (GeoRoadEntity geoRoadEntity1 : QueryManager.getAllEntities(session, query, GeoRoadEntity.class)) {
+                    UUID u = geoRoadEntity1.getUUID();
                     if (u != null) {
                         uuids.add(u);
                     }
@@ -361,7 +361,7 @@ public class AdresseService {
                         "LEFT JOIN access.road access_road " +
 
                         "LEFT JOIN access_road.reference road_identification " +
-                        //"LEFT JOIN " + RoadEntity.class.getCanonicalName() + " road on road.code = access_road.roadCode " +
+                        //"LEFT JOIN " + GeoRoadEntity.class.getCanonicalName() + " road on road.code = access_road.roadCode " +
                         //"JOIN " + RoadMunicipalityRecord.class.getCanonicalName() + " road_municipality on road_municipality.entity = road and road_municipality.code = access_road.municipalityCode " +
                         //"LEFT JOIN road.identification road_identification " +
 
@@ -478,7 +478,7 @@ public class AdresseService {
                 roadQueryPart = "LEFT JOIN access.road access_road " +
 
                         "LEFT JOIN access_road.reference road_identification " +
-                        //"LEFT JOIN " + RoadEntity.class.getCanonicalName() + " road on road.code = access_road.roadCode " +
+                        //"LEFT JOIN " + GeoRoadEntity.class.getCanonicalName() + " road on road.code = access_road.roadCode " +
                         //"JOIN " + RoadMunicipalityRecord.class.getCanonicalName() + " road_municipality on road_municipality.entity = road and road_municipality.code = access_road.municipalityCode " +
                         //"LEFT JOIN road.identification road_identification " +
 
@@ -706,12 +706,12 @@ public class AdresseService {
                     "LEFT JOIN "+AccessAddressEntity.class.getCanonicalName()+" access ON unit.accessAddress = access.identification "+
 
                     "LEFT JOIN access.road access_road "+
-                    "LEFT JOIN "+RoadEntity.class.getCanonicalName()+" road ON access_road.reference = road.identification "+
+                    "LEFT JOIN "+ GeoRoadEntity.class.getCanonicalName()+" road ON access_road.reference = road.identification "+
                     //"LEFT JOIN "+RoadMunicipalityRecord.class.getCanonicalName()+" road_municipality ON road_municipality.code = access_road.municipalityCode "+
-                    //"LEFT JOIN "+RoadEntity.class.getCanonicalName()+" road ON access_road.roadCode = road.code AND road_municipality.entity = road "+
+                    //"LEFT JOIN "+GeoRoadEntity.class.getCanonicalName()+" road ON access_road.roadCode = road.code AND road_municipality.entity = road "+
 
                     "LEFT JOIN access.locality access_locality "+
-                    "LEFT JOIN "+LocalityEntity.class.getCanonicalName()+" locality ON access_locality.reference = locality.identification "+
+                    "LEFT JOIN "+ GeoLocalityEntity.class.getCanonicalName()+" locality ON access_locality.reference = locality.identification "+
 
                     "WHERE unit_identification.uuid = :uuid " +
                     "ORDER BY access.bnr"
@@ -724,8 +724,8 @@ public class AdresseService {
                 Object[] results = (Object[]) result;
                 UnitAddressEntity unitAddress = results.length > 0 ? (UnitAddressEntity) results[0] : null;
                 AccessAddressEntity accessAddress = results.length > 1 ? (AccessAddressEntity) results[1] : null;
-                RoadEntity road = results.length > 2 ? (RoadEntity) results[2] : null;
-                LocalityEntity locality = results.length > 3 ? (LocalityEntity) results[3] : null;
+                GeoRoadEntity road = results.length > 2 ? (GeoRoadEntity) results[2] : null;
+                GeoLocalityEntity locality = results.length > 3 ? (GeoLocalityEntity) results[3] : null;
                 String doorValue = null;
 
                 if (unitAddress != null) {
