@@ -390,7 +390,7 @@ public class AdresseService {
                     if (houseNumber != null) {
                         houseNumberValue = houseNumber.getNumber();
                     }
-                    if (!"0".equals(houseNumberValue)) {
+                    if (!"0".equals(houseNumberValue) && bnr != null) {
                         ObjectNode addressNode = objectMapper.createObjectNode();
                         addressNode.put(OUTPUT_BNUMBER, bnr);
                         addressNode.put(OUTPUT_HOUSENUMBER, houseNumberValue);
@@ -630,9 +630,6 @@ public class AdresseService {
                                         )
                                 )
                         );
-                        try {
-                            System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(houses));
-                        } catch (Exception e) {}
                         for (ObjectNode node : houses) {
                             results.add(node);
                         }
