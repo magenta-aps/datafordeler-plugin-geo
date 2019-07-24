@@ -90,7 +90,6 @@ public abstract class AreaRecord<E extends GeoEntity> extends GeoMonotemporalRec
 
 
     public AreaRecord setShape(MultiPolygon shape) {
-        System.out.println("Shape SRID: "+shape.getSRID());
         this.shape = shape;
         return this;
     }
@@ -117,13 +116,10 @@ public abstract class AreaRecord<E extends GeoEntity> extends GeoMonotemporalRec
 
 
     public static MultiPolygon convert(org.geojson.MultiPolygon original) {
-        System.out.println("AreaRecord SRID: "+geometryFactory.getSRID());
-        MultiPolygon m = new MultiPolygon(
+        return new MultiPolygon(
                 original.getCoordinates().stream().map(AreaRecord::convertList).filter(Objects::nonNull).toArray(Polygon[]::new),
                 geometryFactory
         );
-        System.out.println("Polygon SRID: "+m.getSRID());
-        return m;
     }
 
     public static org.geojson.MultiPolygon convert(MultiPolygon original) {
