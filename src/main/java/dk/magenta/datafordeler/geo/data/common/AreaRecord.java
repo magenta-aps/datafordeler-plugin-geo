@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.vividsolutions.jts.geom.*;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 import org.geojson.LngLatAlt;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
@@ -69,7 +68,6 @@ public abstract class AreaRecord<E extends GeoEntity> extends GeoMonotemporalRec
     public static final String DB_FIELD_SHAPE = "shape";
     public static final String IO_FIELD_SHAPE = "form";
     @Column(name = DB_FIELD_SHAPE, columnDefinition = "varbinary(max)")
-    @Type(type = "jts_geometry")
     @JsonIgnore
     private MultiPolygon shape;
 
