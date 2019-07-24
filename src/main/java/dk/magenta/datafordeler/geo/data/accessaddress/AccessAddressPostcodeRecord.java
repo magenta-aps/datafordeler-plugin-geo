@@ -25,7 +25,7 @@ import javax.persistence.Table;
 })
 public class AccessAddressPostcodeRecord extends PostcodeReferenceRecord<AccessAddressEntity> {
 
-    public static final String TABLE_NAME = "geo_accessaddress_postcode";
+    public static final String TABLE_NAME = "geo_access_address_postcode";
 
     public AccessAddressPostcodeRecord() {
     }
