@@ -6,6 +6,7 @@ import com.vividsolutions.jts.geom.*;
 import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 import org.geojson.LngLatAlt;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
@@ -66,10 +67,10 @@ public abstract class AreaRecord<E extends GeoEntity> extends GeoMonotemporalRec
     }
 
 
-
     public static final String DB_FIELD_SHAPE = "shape";
     public static final String IO_FIELD_SHAPE = "form";
-    @Column(name = DB_FIELD_SHAPE, columnDefinition = "geometry")
+    @Column(name = DB_FIELD_SHAPE, columnDefinition = "varbinary(max)")
+    @Type(type = "jts_geometry")
     @JsonIgnore
     private MultiPolygon shape;
 
@@ -89,6 +90,7 @@ public abstract class AreaRecord<E extends GeoEntity> extends GeoMonotemporalRec
 
 
     public AreaRecord setShape(MultiPolygon shape) {
+        System.out.println("Shape SRID: "+shape.getSRID());
         this.shape = shape;
         return this;
     }
@@ -101,7 +103,7 @@ public abstract class AreaRecord<E extends GeoEntity> extends GeoMonotemporalRec
     @Override
     public boolean equalData(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || this.getClass() != o.getClass()) return false;
         if (!super.equalData(o)) return false;
         AreaRecord that = (AreaRecord) o;
         return Objects.equals(this.area, that.area) &&
@@ -115,10 +117,13 @@ public abstract class AreaRecord<E extends GeoEntity> extends GeoMonotemporalRec
 
 
     public static MultiPolygon convert(org.geojson.MultiPolygon original) {
-        return new MultiPolygon(
+        System.out.println("AreaRecord SRID: "+geometryFactory.getSRID());
+        MultiPolygon m = new MultiPolygon(
                 original.getCoordinates().stream().map(AreaRecord::convertList).filter(Objects::nonNull).toArray(Polygon[]::new),
                 geometryFactory
         );
+        System.out.println("Polygon SRID: "+m.getSRID());
+        return m;
     }
 
     public static org.geojson.MultiPolygon convert(MultiPolygon original) {
