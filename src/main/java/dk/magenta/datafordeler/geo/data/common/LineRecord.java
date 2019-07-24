@@ -50,7 +50,7 @@ public abstract class LineRecord<E extends GeoEntity> extends GeoMonotemporalRec
 
     public static final String DB_FIELD_SHAPE = "shape";
     public static final String IO_FIELD_SHAPE = "form";
-    @Column(name = DB_FIELD_SHAPE, columnDefinition = "geometry")
+    @Column(name = DB_FIELD_SHAPE, columnDefinition = "varbinary(max)")
     @JsonIgnore
     private MultiLineString shape;
 
@@ -64,8 +64,7 @@ public abstract class LineRecord<E extends GeoEntity> extends GeoMonotemporalRec
     }
 
     public LineRecord setShape(org.geojson.MultiLineString shape) {
-        this.shape = LineRecord.convert(shape);
-        return this;
+        return this.setShape(LineRecord.convert(shape));
     }
 
     // Getter for shape as geoJSON?

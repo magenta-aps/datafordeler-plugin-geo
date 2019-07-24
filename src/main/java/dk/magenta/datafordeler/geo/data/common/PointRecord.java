@@ -44,7 +44,7 @@ public abstract class PointRecord<E extends GeoEntity> extends GeoMonotemporalRe
 
     public static final String DB_FIELD_SHAPE = "shape";
     public static final String IO_FIELD_SHAPE = "form";
-    @Column(name = DB_FIELD_SHAPE, columnDefinition = "geometry")
+    @Column(name = DB_FIELD_SHAPE, columnDefinition = "varbinary(max)")
     @JsonIgnore
     private Point shape;
 
@@ -58,8 +58,7 @@ public abstract class PointRecord<E extends GeoEntity> extends GeoMonotemporalRe
     }
 
     public PointRecord setShape(org.geojson.Point shape) {
-        this.shape = PointRecord.convert(shape);
-        return this;
+        return this.setShape(PointRecord.convert(shape));
     }
 
 

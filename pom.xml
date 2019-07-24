@@ -59,12 +59,7 @@
             <version>1.8</version>
         </dependency>
 
-
-
-
-
-
-
+        <!-- Apache commons (logging) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-log4j2</artifactId>
@@ -82,8 +77,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-
 
     </dependencies>
 
