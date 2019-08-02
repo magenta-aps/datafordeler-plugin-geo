@@ -291,9 +291,10 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
     public void parseDeletionData(InputStream jsonData) throws DataStreamException {
         Charset charset = this.geoConfigurationManager.getConfiguration().getCharset();
         Session session = sessionManager.getSessionFactory().openSession();
+        session.beginTransaction();
         try {
             GeoEntityManager.parseJsonStream(jsonData, charset, "features", this.objectMapper, jsonNode -> {
-                String globalId = jsonNode.get("GlobalID").asText();
+                String globalId = jsonNode.get("attributes").get("GlobalID").asText();
                 //long deletedDate = jsonNode.get("DeletedDate").asLong();
                 //Instant deletionTime = Instant.ofEpochMilli(deletedDate);
                 UUID uuid = SumiffiikRawData.getSumiffiikAsUUID(globalId);
@@ -302,6 +303,10 @@ public abstract class GeoEntityManager<E extends GeoEntity, T extends RawData> e
                     session.delete(entity);
                 }
             });
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+            throw e;
         } finally {
             session.close();
         }
