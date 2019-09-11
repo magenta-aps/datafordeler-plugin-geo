@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component("GeoRoadEntityManager")
-public class RoadEntityManager extends GeoEntityManager<RoadEntity, RoadRawData> {
+public class RoadEntityManager extends GeoEntityManager<GeoRoadEntity, RoadRawData> {
 
     @Autowired
     private RoadService roadService;
@@ -33,12 +33,12 @@ public class RoadEntityManager extends GeoEntityManager<RoadEntity, RoadRawData>
 
     @Override
     public String getSchema() {
-        return RoadEntity.schema;
+        return GeoRoadEntity.schema;
     }
 
     @Override
-    protected Class<RoadEntity> getEntityClass() {
-        return RoadEntity.class;
+    protected Class<GeoRoadEntity> getEntityClass() {
+        return GeoRoadEntity.class;
     }
 
 
@@ -53,8 +53,8 @@ public class RoadEntityManager extends GeoEntityManager<RoadEntity, RoadRawData>
     }
 
     @Override
-    protected RoadEntity createBasicEntity(RoadRawData record, Session session) {
-        return new RoadEntity(record);
+    protected GeoRoadEntity createBasicEntity(RoadRawData record, Session session) {
+        return new GeoRoadEntity(record);
     }
 
 }

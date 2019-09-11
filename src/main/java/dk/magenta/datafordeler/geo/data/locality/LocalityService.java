@@ -3,10 +3,6 @@ package dk.magenta.datafordeler.geo.data.locality;
 import dk.magenta.datafordeler.core.MonitorService;
 import dk.magenta.datafordeler.core.arearestriction.AreaRestriction;
 import dk.magenta.datafordeler.core.arearestriction.AreaRestrictionType;
-import dk.magenta.datafordeler.core.exception.AccessDeniedException;
-import dk.magenta.datafordeler.core.exception.AccessRequiredException;
-import dk.magenta.datafordeler.core.exception.HttpNotFoundException;
-import dk.magenta.datafordeler.core.exception.InvalidClientInputException;
 import dk.magenta.datafordeler.core.fapi.FapiBaseService;
 import dk.magenta.datafordeler.core.fapi.OutputWrapper;
 import dk.magenta.datafordeler.core.plugin.AreaRestrictionDefinition;
@@ -22,13 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.stream.Stream;
 
 @RestController("GeoLocalityService")
 @RequestMapping("/geo/locality/1/rest")
-public class LocalityService extends FapiBaseService<LocalityEntity, LocalityQuery> {
+public class LocalityService extends FapiBaseService<GeoLocalityEntity, LocalityQuery> {
 
     @Autowired
     private GeoPlugin geoPlugin;
@@ -63,8 +58,8 @@ public class LocalityService extends FapiBaseService<LocalityEntity, LocalityQue
     }
 
     @Override
-    protected Class<LocalityEntity> getEntityClass() {
-        return LocalityEntity.class;
+    protected Class<GeoLocalityEntity> getEntityClass() {
+        return GeoLocalityEntity.class;
     }
 
     @Override
@@ -83,7 +78,7 @@ public class LocalityService extends FapiBaseService<LocalityEntity, LocalityQue
     }
 
     @Override
-    protected void sendAsCSV(Stream<LocalityEntity> stream, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    protected void sendAsCSV(Stream<GeoLocalityEntity> stream, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
 
     }
 

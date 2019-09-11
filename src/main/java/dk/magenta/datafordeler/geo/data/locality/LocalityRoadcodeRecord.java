@@ -22,7 +22,7 @@ import java.util.Objects;
                 columnList = LocalityRoadcodeRecord.DB_FIELD_CODE
         ),
 })
-public class LocalityRoadcodeRecord extends GeoMonotemporalRecord<LocalityEntity> {
+public class LocalityRoadcodeRecord extends GeoMonotemporalRecord<GeoLocalityEntity> {
 
     public static final String TABLE_NAME = "geo_locality_roadcode";
 

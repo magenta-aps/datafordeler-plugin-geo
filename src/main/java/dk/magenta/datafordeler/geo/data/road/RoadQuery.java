@@ -12,10 +12,10 @@ import java.util.*;
 /**
  * Created by lars on 19-05-17.
  */
-public class RoadQuery extends SumiffiikQuery<RoadEntity> {
+public class RoadQuery extends SumiffiikQuery<GeoRoadEntity> {
 
-    public static final String CODE = RoadEntity.IO_FIELD_CODE;
-    public static final String NAME = RoadEntity.IO_FIELD_NAME;
+    public static final String CODE = GeoRoadEntity.IO_FIELD_CODE;
+    public static final String NAME = GeoRoadEntity.IO_FIELD_NAME;
     public static final String ADDRESSING_NAME = RoadNameRecord.IO_FIELD_ADDRESSING_NAME;
     public static final String MUNICIPALITY = RoadMunicipalityRecord.IO_FIELD_CODE;
     public static final String LOCALITY = RoadLocalityRecord.IO_FIELD_CODE;
@@ -153,39 +153,39 @@ public class RoadQuery extends SumiffiikQuery<RoadEntity> {
     public BaseLookupDefinition getLookupDefinition() {
         BaseLookupDefinition lookupDefinition = super.getLookupDefinition();
         if (this.code != null && !this.code.isEmpty()) {
-            lookupDefinition.put(RoadEntity.DB_FIELD_CODE, this.code, Integer.class);
+            lookupDefinition.put(GeoRoadEntity.DB_FIELD_CODE, this.code, Integer.class);
         }
         if (this.name != null && !this.name.isEmpty()) {
             lookupDefinition.put(
-                    RoadEntity.DB_FIELD_NAME + BaseLookupDefinition.separator + RoadNameRecord.DB_FIELD_NAME,
+                    GeoRoadEntity.DB_FIELD_NAME + BaseLookupDefinition.separator + RoadNameRecord.DB_FIELD_NAME,
                     this.name,
                     String.class
             );
         }
         if (this.addressingName != null && !this.addressingName.isEmpty()) {
             lookupDefinition.put(
-                    RoadEntity.DB_FIELD_NAME + BaseLookupDefinition.separator + RoadNameRecord.DB_FIELD_ADDRESSING_NAME,
+                    GeoRoadEntity.DB_FIELD_NAME + BaseLookupDefinition.separator + RoadNameRecord.DB_FIELD_ADDRESSING_NAME,
                     this.addressingName,
                     String.class
             );
         }
         if (this.locality != null && !this.locality.isEmpty()) {
             lookupDefinition.put(
-                    RoadEntity.DB_FIELD_LOCALITY + BaseLookupDefinition.separator + RoadLocalityRecord.DB_FIELD_CODE,
+                    GeoRoadEntity.DB_FIELD_LOCALITY + BaseLookupDefinition.separator + RoadLocalityRecord.DB_FIELD_CODE,
                     this.locality,
                     String.class
             );
         }
         if (this.localityUUID != null && !this.localityUUID.isEmpty()) {
             lookupDefinition.put(
-                    RoadEntity.DB_FIELD_LOCALITY + BaseLookupDefinition.separator + RoadLocalityRecord.DB_FIELD_REFERENCE + BaseLookupDefinition.separator + Identification.DB_FIELD_UUID,
+                    GeoRoadEntity.DB_FIELD_LOCALITY + BaseLookupDefinition.separator + RoadLocalityRecord.DB_FIELD_REFERENCE + BaseLookupDefinition.separator + Identification.DB_FIELD_UUID,
                     this.localityUUID,
                     UUID.class
             );
         }
         if (this.municipality != null && !this.municipality.isEmpty()) {
             lookupDefinition.put(
-                    RoadEntity.DB_FIELD_MUNICIPALITY + BaseLookupDefinition.separator + RoadMunicipalityRecord.DB_FIELD_CODE,
+                    GeoRoadEntity.DB_FIELD_MUNICIPALITY + BaseLookupDefinition.separator + RoadMunicipalityRecord.DB_FIELD_CODE,
                     this.municipality,
                     Integer.class
             );

@@ -25,7 +25,7 @@ import javax.persistence.Table;
                 columnList = RoadNameRecord.DB_FIELD_ADDRESSING_NAME
         ),
 })
-public class RoadNameRecord extends NameRecord<RoadEntity> {
+public class RoadNameRecord extends NameRecord<GeoRoadEntity> {
 
     public static final String TABLE_NAME = "geo_road_name";
 

@@ -16,7 +16,7 @@ import javax.persistence.Table;
                 columnList = LocalityShapeRecord.DB_FIELD_ENTITY + DatabaseEntry.REF
         ),
 })
-public class LocalityShapeRecord extends AreaRecord<LocalityEntity> {
+public class LocalityShapeRecord extends AreaRecord<GeoLocalityEntity> {
 
     public static final String TABLE_NAME = "geo_locality_shape";
 

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dk.magenta.datafordeler.core.database.Identification;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 import dk.magenta.datafordeler.geo.data.WireCache;
-import dk.magenta.datafordeler.geo.data.locality.LocalityEntity;
+import dk.magenta.datafordeler.geo.data.locality.GeoLocalityEntity;
 import org.hibernate.Session;
 
 import javax.persistence.Column;
@@ -67,17 +67,17 @@ public class LocalityReferenceRecord<E extends GeoEntity> extends GeoMonotempora
 
     public void wire(Session session, WireCache wireCache) {
         if (this.reference == null && this.code != null) {
-            List<LocalityEntity> localityEntities = wireCache.getLocality(session, this.code);
-            for (LocalityEntity locality : localityEntities) {
+            List<GeoLocalityEntity> localityEntities = wireCache.getLocality(session, this.code);
+            for (GeoLocalityEntity locality : localityEntities) {
                 this.reference = locality.getIdentification();
                 break;
             }
         }
         if (this.reference == null && this.uuid != null) {
-            LocalityEntity localityEntity = wireCache.getLocality(session, this.uuid);
-            if (localityEntity != null) {
-                this.reference = localityEntity.getIdentification();
-                this.code = localityEntity.getCode();
+            GeoLocalityEntity geoLocalityEntity = wireCache.getLocality(session, this.uuid);
+            if (geoLocalityEntity != null) {
+                this.reference = geoLocalityEntity.getIdentification();
+                this.code = geoLocalityEntity.getCode();
             }
         }
     }

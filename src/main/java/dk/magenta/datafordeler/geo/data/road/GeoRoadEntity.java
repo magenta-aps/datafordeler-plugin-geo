@@ -21,27 +21,27 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = GeoPlugin.DEBUG_TABLE_PREFIX + RoadEntity.TABLE_NAME, indexes = {
+@Table(name = GeoPlugin.DEBUG_TABLE_PREFIX + GeoRoadEntity.TABLE_NAME, indexes = {
         @Index(
-                name = GeoPlugin.DEBUG_TABLE_PREFIX + RoadEntity.TABLE_NAME + RoadEntity.DB_FIELD_SUMIFFIIK_ID,
-                columnList = RoadEntity.DB_FIELD_SUMIFFIIK_ID
+                name = GeoPlugin.DEBUG_TABLE_PREFIX + GeoRoadEntity.TABLE_NAME + GeoRoadEntity.DB_FIELD_SUMIFFIIK_ID,
+                columnList = GeoRoadEntity.DB_FIELD_SUMIFFIIK_ID
         ),
         @Index(
-                name = GeoPlugin.DEBUG_TABLE_PREFIX + RoadEntity.TABLE_NAME + RoadEntity.DB_FIELD_CODE,
-                columnList = RoadEntity.DB_FIELD_CODE
+                name = GeoPlugin.DEBUG_TABLE_PREFIX + GeoRoadEntity.TABLE_NAME + GeoRoadEntity.DB_FIELD_CODE,
+                columnList = GeoRoadEntity.DB_FIELD_CODE
         ),
 })
-public class RoadEntity extends SumiffiikEntity implements IdentifiedEntity {
+public class GeoRoadEntity extends SumiffiikEntity implements IdentifiedEntity {
 
     public static final String TABLE_NAME = "geo_road";
 
     @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="type")
     public static final String schema = "Road";
 
-    public RoadEntity() {
+    public GeoRoadEntity() {
     }
 
-    public RoadEntity(RoadRawData record) {
+    public GeoRoadEntity(RoadRawData record) {
         super(record);
         this.setCode(record.properties.code);
     }
