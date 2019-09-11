@@ -151,7 +151,7 @@ public class GeoRegisterManager extends RegisterManager {
         if (address == null || address.isEmpty()) {
             throw new ConfigurationException("Invalid URL for schema "+entityManager.getSchema()+": "+address);
         }
-        address = address.replace("%{editDate}", lastUpdateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        address = address.replace("%{editDate}", lastUpdateTime.minusDays(30).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 
         try {
             URL url = new URL(address);
@@ -175,7 +175,7 @@ public class GeoRegisterManager extends RegisterManager {
     public boolean pullsEventsCommonly() {
         return false;
     }
-/*
+
     @Override
     public void beforePull(EntityManager entityManager, ImportMetadata importMetadata) {
         // First delete items that are deleted on input server
@@ -185,7 +185,7 @@ public class GeoRegisterManager extends RegisterManager {
             e.printStackTrace();
         }
     }
-*/
+
     @Override
     public ImportInputStream pullRawData(URI eventInterface, EntityManager entityManager, ImportMetadata importMetadata) throws DataFordelerException {
 
