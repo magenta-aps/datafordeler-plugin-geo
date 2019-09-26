@@ -19,6 +19,7 @@ import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressEntity;
 import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressEntityManager;
 import org.hibernate.Session;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,10 +72,19 @@ public class TestParse extends GeoTest {
         return this.lookup("/geo/"+type+"/1/rest/" + id);
     }
 
+    @Before
+    public void initialize() throws Exception {
+        this.load(localityEntityManager, "/locality.json");
+        this.load(roadEntityManager,"/road.json");
+        this.load(unitAddressEntityManager, "/unit.json");
+        this.load(municipalityEntityManager, "/municipality.json");
+        this.load(postcodeEntityManager, "/post.json");
+        this.load(buildingEntityManager, "/building.json");
+        this.load(accessAddressEntityManager, "/access.json");
+    }
+
     @Test
     public void testMunicipality() throws IOException {
-        this.load(municipalityEntityManager, "/municipality.json");
-        this.load(municipalityEntityManager, "/municipality.json");
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {
@@ -102,8 +112,6 @@ public class TestParse extends GeoTest {
 
     @Test
     public void testLocality() throws IOException {
-        this.load(localityEntityManager, "/locality.json");
-        this.load(localityEntityManager, "/locality.json");
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {
@@ -140,8 +148,6 @@ public class TestParse extends GeoTest {
 
     @Test
     public void testRoad() throws IOException {
-        this.load(roadEntityManager, "/road.json");
-        this.load(roadEntityManager, "/road.json");
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {
@@ -170,9 +176,6 @@ public class TestParse extends GeoTest {
 
     @Test
     public void testBuilding() throws IOException {
-        this.load(localityEntityManager, "/locality.json");
-        this.load(buildingEntityManager, "/building.json");
-        this.load(buildingEntityManager, "/building.json");
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {
@@ -200,10 +203,6 @@ public class TestParse extends GeoTest {
 
     @Test
     public void testAccessAddress() throws IOException {
-        this.load(postcodeEntityManager, "/post.json");
-        this.load(buildingEntityManager, "/building.json");
-        this.load(accessAddressEntityManager, "/access.json");
-        this.load(accessAddressEntityManager, "/access.json");
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {
@@ -253,8 +252,6 @@ public class TestParse extends GeoTest {
 
     @Test
     public void testUnitAddress() throws IOException {
-        this.load(unitAddressEntityManager, "unit.json");
-        this.load(unitAddressEntityManager, "unit.json");
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {
@@ -288,8 +285,6 @@ public class TestParse extends GeoTest {
 
     @Test
     public void testPostcode() throws IOException {
-        this.load(postcodeEntityManager, "/post.json");
-        this.load(postcodeEntityManager, "/post.json");
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {

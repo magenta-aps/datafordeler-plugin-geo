@@ -2,13 +2,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import dk.magenta.datafordeler.core.Application;
-import dk.magenta.datafordeler.core.exception.DataFordelerException;
 import dk.magenta.datafordeler.geo.AdresseService;
 import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressEntityManager;
+import dk.magenta.datafordeler.geo.data.building.BuildingEntityManager;
 import dk.magenta.datafordeler.geo.data.locality.LocalityEntityManager;
+import dk.magenta.datafordeler.geo.data.municipality.MunicipalityEntityManager;
+import dk.magenta.datafordeler.geo.data.postcode.PostcodeEntityManager;
 import dk.magenta.datafordeler.geo.data.road.RoadEntityManager;
 import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressEntityManager;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,15 +40,34 @@ public class TestService extends GeoTest {
     private RoadEntityManager roadEntityManager;
 
     @Autowired
+    private BuildingEntityManager buildingEntityManager;
+
+    @Autowired
+    private MunicipalityEntityManager municipalityEntityManager;
+
+    @Autowired
+    private PostcodeEntityManager postcodeEntityManager;
+
+    @Autowired
     private AccessAddressEntityManager accessAddressEntityManager;
 
     @Autowired
     private UnitAddressEntityManager unitAddressEntityManager;
 
+    @Before
+    public void initialize() throws Exception {
+        this.load(localityEntityManager, "/locality.json");
+        this.load(roadEntityManager,"/road.json");
+        this.load(unitAddressEntityManager, "/unit.json");
+        this.load(municipalityEntityManager, "/municipality.json");
+        this.load(postcodeEntityManager, "/post.json");
+        this.load(buildingEntityManager, "/building.json");
+        this.load(accessAddressEntityManager, "/access.json");
+    }
+
 
     @Test
     public void testLocality() throws IOException {
-        this.load(localityEntityManager, "/locality.json");
         ResponseEntity<String> response = this.lookup("/geo/adresse/lokalitet?kommune=956");
         Assert.assertEquals(200, response.getStatusCode().value());
         ArrayNode localities = (ArrayNode) objectMapper.readTree(response.getBody());
@@ -58,10 +80,6 @@ public class TestService extends GeoTest {
 
     @Test
     public void testRoad() throws IOException {
-        this.load(localityEntityManager, "/locality.json");
-        this.load(roadEntityManager,"/road.json");
-        this.load(accessAddressEntityManager, "/access.json");
-        this.load(unitAddressEntityManager, "/unit.json");
         ResponseEntity<String> response = this.lookup("/geo/adresse/vej?lokalitet=f0966470-f09f-474d-a820-e8a46ed6fcc7");
         Assert.assertEquals(200, response.getStatusCode().value());
         ArrayNode roads = (ArrayNode) objectMapper.readTree(response.getBody());
@@ -77,9 +95,6 @@ public class TestService extends GeoTest {
 
     @Test
     public void testAccessAddress() throws IOException {
-        this.load(roadEntityManager, "/road.json");
-        this.load(accessAddressEntityManager, "/access.json");
-        this.load(unitAddressEntityManager, "/unit.json");
         ResponseEntity<String> response = this.lookup("/geo/adresse/hus?vej=e1274f15-9e2b-4b6e-8b7d-c8078df65aa2");
         Assert.assertEquals(200, response.getStatusCode().value());
         ArrayNode buildings = (ArrayNode) objectMapper.readTree(response.getBody());
@@ -92,9 +107,6 @@ public class TestService extends GeoTest {
 
     @Test
     public void testUnitAddress() throws IOException {
-        this.load(roadEntityManager, "/road.json");
-        this.load(accessAddressEntityManager, "/access.json");
-        this.load(unitAddressEntityManager, "/unit.json");
         ResponseEntity<String> response = this.lookup("/geo/adresse/adresse?b_nummer=B-3197B");
         Assert.assertEquals(400, response.getStatusCode().value());
         response = this.lookup("/geo/adresse/adresse?vej=e1274f15-9e2b-4b6e-8b7d-c8078df65aa2");
@@ -127,10 +139,6 @@ public class TestService extends GeoTest {
 
     @Test
     public void testUnitAddressDetails() throws IOException {
-        this.load(localityEntityManager,"/locality.json");
-        this.load(roadEntityManager,"/road.json");
-        this.load(accessAddressEntityManager, "/access.json");
-        this.load(unitAddressEntityManager, "/unit.json");
         ResponseEntity<String> response = this.lookup("/geo/adresse/adresseoplysninger?adresse=1b3ac64b-c28d-40b2-a106-16cee7c188b8");
         Assert.assertEquals(200, response.getStatusCode().value());
         ObjectNode address = (ObjectNode) objectMapper.readTree(response.getBody());
