@@ -1,5 +1,6 @@
 package dk.magenta.datafordeler.geo;
 
+import dk.magenta.datafordeler.core.database.DataItem;
 import dk.magenta.datafordeler.core.database.QueryManager;
 import dk.magenta.datafordeler.core.fapi.BaseQuery;
 
@@ -98,6 +99,12 @@ public class GeoLookupService {
 
 
         return geoLookupDTO;
+    }
+
+
+    public String getPostalCodeDistrict(int code) {
+        //TODO: Implement something or delete
+        return null;
     }
 
 
