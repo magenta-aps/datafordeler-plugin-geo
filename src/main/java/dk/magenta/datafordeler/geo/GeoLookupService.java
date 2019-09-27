@@ -19,13 +19,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class LookupService {
+public class GeoLookupService {
 
     public static final boolean COMPENSATE_2018_MUNICIPALITY_SPLIT = true;
     private Session session;
     private static Pattern houseNumberPattern = Pattern.compile("(\\d+)(.*)");
 
-    public LookupService(Session session) {
+    public GeoLookupService(Session session) {
         this.session = session;
     }
 
@@ -33,15 +33,15 @@ public class LookupService {
         return this.session;
     }
 
-    private DoubleHashMap<Integer, Integer, Lookup> cache = new DoubleHashMap<>();
+    private DoubleHashMap<Integer, Integer, GeoLookupDTO> cache = new DoubleHashMap<>();
 
-    public Lookup doLookup(int municipalityCode, int roadCode) {
+    public GeoLookupDTO doLookup(int municipalityCode, int roadCode) {
         return this.doLookup(municipalityCode, roadCode, null);
     }
 
-    public Lookup doLookup(int municipalityCode, int roadCode, String houseNumber) {
+    public GeoLookupDTO doLookup(int municipalityCode, int roadCode, String houseNumber) {
 
-        Lookup lookup = new Lookup();
+        GeoLookupDTO geoLookupDTO = new GeoLookupDTO();
 
         if (COMPENSATE_2018_MUNICIPALITY_SPLIT && (municipalityCode == 959 || municipalityCode == 960)) {
             municipalityCode = 958;
@@ -50,7 +50,7 @@ public class LookupService {
         if (municipalityCacheGR.containsKey(municipalityCode)) {
             municipalityEntity = municipalityCacheGR.get(municipalityCode);
             if (municipalityEntity != null) {
-                lookup.setMunicipalityName(municipalityEntity.getName().iterator().next().getName());
+                geoLookupDTO.setMunicipalityName(municipalityEntity.getName().iterator().next().getName());
             }
         } else {
             MunicipalityQuery query = new MunicipalityQuery();
@@ -58,9 +58,9 @@ public class LookupService {
             setQueryNow(query);
             List<GeoLocalityEntity> localities = QueryManager.getAllEntities(session, query, GeoLocalityEntity.class);
 
-            lookup.setMunicipalityName(localities.get(0).getName().iterator().next().getName());
-
-
+            if(localities != null && localities.size()>0) {
+                geoLookupDTO.setMunicipalityName(localities.get(0).getName().iterator().next().getName());
+            }
         }
 
         RoadQuery rq = new RoadQuery();
@@ -69,8 +69,8 @@ public class LookupService {
         setQueryNow(rq);
         List<GeoRoadEntity> roadEntities = QueryManager.getAllEntities(session, rq, GeoRoadEntity.class);
         if(roadEntities != null && roadEntities.size()>0) {
-            lookup.setRoadName(roadEntities.get(0).getName().iterator().next().getName());
-            lookup.setLocalityCode(roadEntities.get(0).getLocality().iterator().next().getCode());
+            geoLookupDTO.setRoadName(roadEntities.get(0).getName().iterator().next().getName());
+            geoLookupDTO.setLocalityCode(roadEntities.get(0).getLocality().iterator().next().getCode());
         }
 
 
@@ -81,23 +81,23 @@ public class LookupService {
         setQueryNow(bq);
         List<AccessAddressEntity> accAdd = QueryManager.getAllEntities(session, bq, AccessAddressEntity.class);
         if(accAdd != null && accAdd.size()>0) {
-            lookup.setbNumber(accAdd.get(0).getBnr());
-            lookup.setPostalCode(accAdd.get(0).getPostcode().iterator().next().getPostcode());
-            PostcodeEntity entity = QueryManager.getEntity(session, PostcodeEntity.generateUUID(lookup.getPostalCode()), PostcodeEntity.class);
-            lookup.setPostalDistrict(entity.getName().iterator().next().getName());
+            geoLookupDTO.setbNumber(accAdd.get(0).getBnr());
+            geoLookupDTO.setPostalCode(accAdd.get(0).getPostcode().iterator().next().getPostcode());
+            PostcodeEntity entity = QueryManager.getEntity(session, PostcodeEntity.generateUUID(geoLookupDTO.getPostalCode()), PostcodeEntity.class);
+            geoLookupDTO.setPostalDistrict(entity.getName().iterator().next().getName());
         }
 
         LocalityQuery lq = new LocalityQuery();//lookup.localityCode
-        lq.setCode(lookup.getLocalityCode());
+        lq.setCode(geoLookupDTO.getLocalityCode());
         List<GeoLocalityEntity> localities = QueryManager.getAllEntities(session, lq, GeoLocalityEntity.class);
 
         if(localities != null && localities.size()>0) {
-            lookup.setLocalityName(localities.get(0).getName().iterator().next().getName());
-            lookup.setLocalityAbbrev(localities.get(0).getAbbreviation().iterator().next().getName());
+            geoLookupDTO.setLocalityName(localities.get(0).getName().iterator().next().getName());
+            geoLookupDTO.setLocalityAbbrev(localities.get(0).getAbbreviation().iterator().next().getName());
         }
 
 
-        return lookup;
+        return geoLookupDTO;
     }
 
 

@@ -1,6 +1,6 @@
 package dk.magenta.datafordeler.geo;
 
-public class Lookup {
+public class GeoLookupDTO {
     private String municipalityName = null;
     private String roadName = null;
     private String localityCode = null;

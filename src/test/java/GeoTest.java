@@ -1,6 +1,13 @@
 import dk.magenta.datafordeler.core.database.SessionManager;
 import dk.magenta.datafordeler.core.io.ImportMetadata;
 import dk.magenta.datafordeler.geo.data.GeoEntityManager;
+import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressEntityManager;
+import dk.magenta.datafordeler.geo.data.building.BuildingEntityManager;
+import dk.magenta.datafordeler.geo.data.locality.LocalityEntityManager;
+import dk.magenta.datafordeler.geo.data.municipality.MunicipalityEntityManager;
+import dk.magenta.datafordeler.geo.data.postcode.PostcodeEntityManager;
+import dk.magenta.datafordeler.geo.data.road.RoadEntityManager;
+import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressEntityManager;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +26,40 @@ public abstract class GeoTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
+
+
+    @Autowired
+    private LocalityEntityManager localityEntityManager;
+
+    @Autowired
+    private RoadEntityManager roadEntityManager;
+
+    @Autowired
+    private BuildingEntityManager buildingEntityManager;
+
+    @Autowired
+    private MunicipalityEntityManager municipalityEntityManager;
+
+    @Autowired
+    private PostcodeEntityManager postcodeEntityManager;
+
+    @Autowired
+    private AccessAddressEntityManager accessAddressEntityManager;
+
+    @Autowired
+    private UnitAddressEntityManager unitAddressEntityManager;
+
+    protected void loadAll() throws IOException {
+        this.load(localityEntityManager, "/locality.json");
+        this.load(roadEntityManager,"/road.json");
+        this.load(unitAddressEntityManager, "/unit.json");
+        this.load(municipalityEntityManager, "/municipality.json");
+        this.load(postcodeEntityManager, "/post.json");
+        this.load(buildingEntityManager, "/building.json");
+        this.load(accessAddressEntityManager, "/access.json");
+    }
+
+
 
     @Autowired
     protected SessionManager sessionManager;
