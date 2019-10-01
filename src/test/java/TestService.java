@@ -33,36 +33,11 @@ public class TestService extends GeoTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private LocalityEntityManager localityEntityManager;
-
-    @Autowired
-    private RoadEntityManager roadEntityManager;
-
-    @Autowired
-    private BuildingEntityManager buildingEntityManager;
-
-    @Autowired
-    private MunicipalityEntityManager municipalityEntityManager;
-
-    @Autowired
-    private PostcodeEntityManager postcodeEntityManager;
-
-    @Autowired
-    private AccessAddressEntityManager accessAddressEntityManager;
-
-    @Autowired
-    private UnitAddressEntityManager unitAddressEntityManager;
 
     @Before
     public void initialize() throws Exception {
-        this.load(localityEntityManager, "/locality.json");
-        this.load(roadEntityManager,"/road.json");
-        this.load(unitAddressEntityManager, "/unit.json");
-        this.load(municipalityEntityManager, "/municipality.json");
-        this.load(postcodeEntityManager, "/post.json");
-        this.load(buildingEntityManager, "/building.json");
-        this.load(accessAddressEntityManager, "/access.json");
+        this.loadAll();
+        this.loadCprAddress();
     }
 
 

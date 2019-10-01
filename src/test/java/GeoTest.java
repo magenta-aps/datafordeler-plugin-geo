@@ -27,6 +27,8 @@ public abstract class GeoTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @Autowired
+    private dk.magenta.datafordeler.cpr.data.road.RoadEntityManager cprRoadEntityManager;
 
     @Autowired
     private LocalityEntityManager localityEntityManager;
@@ -57,6 +59,18 @@ public abstract class GeoTest {
         this.load(postcodeEntityManager, "/post.json");
         this.load(buildingEntityManager, "/building.json");
         this.load(accessAddressEntityManager, "/access.json");
+    }
+
+    public void loadCprAddress() throws Exception {
+        InputStream testData = GeoTest.class.getResourceAsStream("/roaddata.txt");
+        Session session = sessionManager.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        ImportMetadata importMetadata = new ImportMetadata();
+        importMetadata.setSession(session);
+        importMetadata.setTransactionInProgress(true);
+        cprRoadEntityManager.parseData(testData, importMetadata);
+        transaction.commit();
+        session.close();
     }
 
 

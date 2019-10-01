@@ -43,26 +43,6 @@ public class TestParse extends GeoTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private MunicipalityEntityManager municipalityEntityManager;
-
-    @Autowired
-    private LocalityEntityManager localityEntityManager;
-
-    @Autowired
-    private RoadEntityManager roadEntityManager;
-
-    @Autowired
-    private BuildingEntityManager buildingEntityManager;
-
-    @Autowired
-    private AccessAddressEntityManager accessAddressEntityManager;
-
-    @Autowired
-    private UnitAddressEntityManager unitAddressEntityManager;
-
-    @Autowired
-    private PostcodeEntityManager postcodeEntityManager;
 
     private ResponseEntity<String> restSearch(ParameterMap parameters, String type) {
         return this.lookup("/geo/"+type+"/1/rest/search?" + parameters.asUrlParams());
@@ -74,13 +54,8 @@ public class TestParse extends GeoTest {
 
     @Before
     public void initialize() throws Exception {
-        this.load(localityEntityManager, "/locality.json");
-        this.load(roadEntityManager,"/road.json");
-        this.load(unitAddressEntityManager, "/unit.json");
-        this.load(municipalityEntityManager, "/municipality.json");
-        this.load(postcodeEntityManager, "/post.json");
-        this.load(buildingEntityManager, "/building.json");
-        this.load(accessAddressEntityManager, "/access.json");
+        this.loadAll();
+        this.loadCprAddress();
     }
 
     @Test
