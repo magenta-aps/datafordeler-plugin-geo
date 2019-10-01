@@ -355,7 +355,6 @@ public class AdresseService {
         where.add("unit_usage.usage = 1");
 
         ArrayList<UUID> segments = new ArrayList<>(this.getWholeRoad(session, road));
-        System.out.println(segments);
         where.add("(road_identification.uuid IN :road OR locality_identification.uuid IN :road)");
 
         org.hibernate.query.Query databaseQuery = session.createQuery(
@@ -398,9 +397,6 @@ public class AdresseService {
                     }
                     if ((!"0".equals(houseNumberValue) && bnr != null) || debug) {
                         ObjectNode addressNode = objectMapper.createObjectNode();
-                        for (AccessAddressRoadRecord ar : addressEntity.getRoad()) {
-                            System.out.println(ar.getMunicipalityCode()+"|"+ar.getRoadCode()+"  "+ar.getReference().getUuid());
-                        }
                         addressNode.put(OUTPUT_BNUMBER, bnr);
                         addressNode.put(OUTPUT_HOUSENUMBER, houseNumberValue);
                         AccessAddressBlockNameRecord blockName = current(addressEntity.getBlockName());
