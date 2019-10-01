@@ -55,6 +55,8 @@ public class AdresseService {
 
     private Logger log = LogManager.getLogger(AdresseService.class);
 
+    public static final String PARAM_DEBUG = "debug";
+
     public static final String PARAM_MUNICIPALITY = "kommune";
     public static final String PARAM_LOCALITY = "lokalitet";
     public static final String PARAM_ROAD = "vej";
@@ -335,6 +337,7 @@ public class AdresseService {
 
     public String getAccessAddresses(HttpServletRequest request) throws DataFordelerException {
         String roadUUID = request.getParameter(PARAM_ROAD);
+        boolean debug = "1".equals(request.getParameter(PARAM_DEBUG));
         DafoUserDetails user = dafoUserManager.getUserFromRequest(request);
         LoggerHelper loggerHelper = new LoggerHelper(log, request, user);
         loggerHelper.info(
@@ -342,10 +345,10 @@ public class AdresseService {
         );
         checkParameterExistence(PARAM_ROAD, roadUUID);
         UUID road = parameterAsUUID(PARAM_ROAD, roadUUID);
-        return this.getAccessAddresses(road);
+        return this.getAccessAddresses(road, debug);
     }
 
-    public String getAccessAddresses(UUID road) {
+    public String getAccessAddresses(UUID road, boolean debug) {
         Session session = sessionManager.getSessionFactory().openSession();
 
         StringJoiner where = new StringJoiner(" AND ");
@@ -371,6 +374,7 @@ public class AdresseService {
                         "order by access.bnr"
         );
 
+
         databaseQuery.setParameterList("road", segments);
 
         HashSet<String> bnrs = new HashSet<>();
@@ -390,7 +394,7 @@ public class AdresseService {
                     if (houseNumber != null) {
                         houseNumberValue = houseNumber.getNumber();
                     }
-                    if (!"0".equals(houseNumberValue) && bnr != null) {
+                    if ((!"0".equals(houseNumberValue) && bnr != null) || debug) {
                         ObjectNode addressNode = objectMapper.createObjectNode();
                         addressNode.put(OUTPUT_BNUMBER, bnr);
                         addressNode.put(OUTPUT_HOUSENUMBER, houseNumberValue);
@@ -401,6 +405,12 @@ public class AdresseService {
                         }
                         bnrs.add(bnr);
                         houseNumberMap.add(houseNumberValue, bnr, addressNode);
+                        if (debug && !(!"0".equals(houseNumberValue) && bnr != null)) {
+                            addressNode.put("comment1", "Excluded due to missing housenumber and bnr");
+                        }
+                        if (debug) {
+                            addressNode.put("accessAddress_objectId", addressEntity.getObjectId());
+                        }
                     }
                 //}
             }
@@ -408,9 +418,12 @@ public class AdresseService {
             // If a number exist with different BNRs, remove both
             for (String houseNumber : houseNumberMap.keySet()) {
                 HashMap<String, ArrayList<ObjectNode>> housesByBnr = houseNumberMap.get(houseNumber);
-                if (housesByBnr.size() == 1) {
+                if (housesByBnr.size() == 1 || debug) {
                     for (String bnr : housesByBnr.keySet()) {
                         for (ObjectNode node : housesByBnr.get(bnr)) {
+                            if (debug && housesByBnr.size() > 1) {
+                                node.put("comment2", "Excluded due to collision on housenumber "+houseNumber+", colliding: ["+housesByBnr.keySet()+"]");
+                            }
                             results.add(node);
                         }
                     }
