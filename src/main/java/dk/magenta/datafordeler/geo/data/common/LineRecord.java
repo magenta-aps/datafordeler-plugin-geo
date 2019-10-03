@@ -2,10 +2,8 @@ package dk.magenta.datafordeler.geo.data.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.*;
+import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 import org.geojson.LngLatAlt;
 
@@ -50,7 +48,7 @@ public abstract class LineRecord<E extends GeoEntity> extends GeoMonotemporalRec
 
     public static final String DB_FIELD_SHAPE = "shape";
     public static final String IO_FIELD_SHAPE = "form";
-    @Column(name = DB_FIELD_SHAPE, columnDefinition = "geometry")
+    @Column(name = DB_FIELD_SHAPE, columnDefinition = "varbinary(max)")
     @JsonIgnore
     private MultiLineString shape;
 
@@ -64,8 +62,7 @@ public abstract class LineRecord<E extends GeoEntity> extends GeoMonotemporalRec
     }
 
     public LineRecord setShape(org.geojson.MultiLineString shape) {
-        this.shape = LineRecord.convert(shape);
-        return this;
+        return this.setShape(LineRecord.convert(shape));
     }
 
     // Getter for shape as geoJSON?
@@ -75,7 +72,7 @@ public abstract class LineRecord<E extends GeoEntity> extends GeoMonotemporalRec
     }
 
 
-    private static GeometryFactory geometryFactory = new GeometryFactory();
+    private static GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), GeoPlugin.SRID);
 
 
     public static MultiLineString convert(org.geojson.MultiLineString original) {

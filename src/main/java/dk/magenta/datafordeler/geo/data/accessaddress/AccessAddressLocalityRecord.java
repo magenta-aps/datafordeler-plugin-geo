@@ -25,7 +25,7 @@ import javax.persistence.Table;
 })
 public class AccessAddressLocalityRecord extends LocalityReferenceRecord<AccessAddressEntity> {
 
-    public static final String TABLE_NAME = "geo_accessaddress_locality";
+    public static final String TABLE_NAME = "geo_access_address_locality";
 
     public AccessAddressLocalityRecord() {
     }

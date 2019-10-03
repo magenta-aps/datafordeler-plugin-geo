@@ -3,6 +3,7 @@ package dk.magenta.datafordeler.geo.data.common;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.vividsolutions.jts.geom.*;
+import dk.magenta.datafordeler.geo.GeoPlugin;
 import dk.magenta.datafordeler.geo.data.GeoEntity;
 import org.geojson.LngLatAlt;
 
@@ -65,10 +66,9 @@ public abstract class AreaRecord<E extends GeoEntity> extends GeoMonotemporalRec
     }
 
 
-
     public static final String DB_FIELD_SHAPE = "shape";
     public static final String IO_FIELD_SHAPE = "form";
-    @Column(name = DB_FIELD_SHAPE, columnDefinition = "geometry")
+    @Column(name = DB_FIELD_SHAPE, columnDefinition = "varbinary(max)")
     @JsonIgnore
     private MultiPolygon shape;
 
@@ -100,7 +100,7 @@ public abstract class AreaRecord<E extends GeoEntity> extends GeoMonotemporalRec
     @Override
     public boolean equalData(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || this.getClass() != o.getClass()) return false;
         if (!super.equalData(o)) return false;
         AreaRecord that = (AreaRecord) o;
         return Objects.equals(this.area, that.area) &&
@@ -110,7 +110,7 @@ public abstract class AreaRecord<E extends GeoEntity> extends GeoMonotemporalRec
 
 
 
-    private static GeometryFactory geometryFactory = new GeometryFactory();
+    private static GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), GeoPlugin.SRID);
 
 
     public static MultiPolygon convert(org.geojson.MultiPolygon original) {

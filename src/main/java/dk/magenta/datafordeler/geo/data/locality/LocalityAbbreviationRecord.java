@@ -19,7 +19,7 @@ import javax.persistence.Table;
                 columnList = LocalityAbbreviationRecord.DB_FIELD_NAME
         ),
 })
-public class LocalityAbbreviationRecord extends NameRecord<LocalityEntity> {
+public class LocalityAbbreviationRecord extends NameRecord<GeoLocalityEntity> {
 
     public static final String TABLE_NAME = "geo_locality_abbreviation";
 

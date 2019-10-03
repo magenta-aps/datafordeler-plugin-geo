@@ -14,11 +14,11 @@ import java.util.Map;
 /**
  * Created by lars on 19-05-17.
  */
-public class LocalityQuery extends SumiffiikQuery<LocalityEntity> {
+public class LocalityQuery extends SumiffiikQuery<GeoLocalityEntity> {
 
-    public static final String CODE = LocalityEntity.IO_FIELD_CODE;
-    public static final String NAME = LocalityEntity.IO_FIELD_NAME;
-    public static final String MUNICIPALITY = LocalityEntity.IO_FIELD_MUNICIPALITY;
+    public static final String CODE = GeoLocalityEntity.IO_FIELD_CODE;
+    public static final String NAME = GeoLocalityEntity.IO_FIELD_NAME;
+    public static final String MUNICIPALITY = GeoLocalityEntity.IO_FIELD_MUNICIPALITY;
 
     @QueryField(type = QueryField.FieldType.STRING, queryName = CODE)
     private List<String> code = new ArrayList<>();
@@ -91,13 +91,13 @@ public class LocalityQuery extends SumiffiikQuery<LocalityEntity> {
     public BaseLookupDefinition getLookupDefinition() {
         BaseLookupDefinition lookupDefinition = super.getLookupDefinition();
         if (this.code != null && !this.code.isEmpty()) {
-            lookupDefinition.put(LocalityEntity.DB_FIELD_CODE, this.code, String.class);
+            lookupDefinition.put(GeoLocalityEntity.DB_FIELD_CODE, this.code, String.class);
         }
         if (this.name != null && !this.name.isEmpty()) {
-            lookupDefinition.put(LocalityEntity.DB_FIELD_NAME, this.name, String.class);
+            lookupDefinition.put(GeoLocalityEntity.DB_FIELD_NAME, this.name, String.class);
         }
         if (this.municipality != null && !this.municipality.isEmpty()) {
-            lookupDefinition.put(LocalityEntity.DB_FIELD_MUNICIPALITY + BaseLookupDefinition.separator + LocalityMunicipalityRecord.DB_FIELD_CODE, this.municipality, Integer.class);
+            lookupDefinition.put(GeoLocalityEntity.DB_FIELD_MUNICIPALITY + BaseLookupDefinition.separator + LocalityMunicipalityRecord.DB_FIELD_CODE, this.municipality, Integer.class);
         }
         return lookupDefinition;
     }

@@ -3,10 +3,6 @@ package dk.magenta.datafordeler.geo.data.municipality;
 import dk.magenta.datafordeler.core.MonitorService;
 import dk.magenta.datafordeler.core.arearestriction.AreaRestriction;
 import dk.magenta.datafordeler.core.arearestriction.AreaRestrictionType;
-import dk.magenta.datafordeler.core.exception.AccessDeniedException;
-import dk.magenta.datafordeler.core.exception.AccessRequiredException;
-import dk.magenta.datafordeler.core.exception.HttpNotFoundException;
-import dk.magenta.datafordeler.core.exception.InvalidClientInputException;
 import dk.magenta.datafordeler.core.fapi.FapiBaseService;
 import dk.magenta.datafordeler.core.fapi.OutputWrapper;
 import dk.magenta.datafordeler.core.plugin.AreaRestrictionDefinition;
@@ -22,13 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.stream.Stream;
 
 @RestController("GeoMunicipalityService")
 @RequestMapping("/geo/municipality/1/rest")
-public class MunicipalityService extends FapiBaseService<MunicipalityEntity, MunicipalityQuery> {
+public class MunicipalityService extends FapiBaseService<GeoMunicipalityEntity, MunicipalityQuery> {
 
     @Autowired
     private GeoPlugin geoPlugin;
@@ -63,8 +58,8 @@ public class MunicipalityService extends FapiBaseService<MunicipalityEntity, Mun
     }
 
     @Override
-    protected Class<MunicipalityEntity> getEntityClass() {
-        return MunicipalityEntity.class;
+    protected Class<GeoMunicipalityEntity> getEntityClass() {
+        return GeoMunicipalityEntity.class;
     }
 
     @Override
@@ -83,7 +78,7 @@ public class MunicipalityService extends FapiBaseService<MunicipalityEntity, Mun
     }
 
     @Override
-    protected void sendAsCSV(Stream<MunicipalityEntity> stream, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    protected void sendAsCSV(Stream<GeoMunicipalityEntity> stream, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
 
     }
 

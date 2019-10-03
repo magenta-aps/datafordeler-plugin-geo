@@ -32,6 +32,8 @@ public class GeoPlugin extends Plugin {
 
     public static final String DEBUG_TABLE_PREFIX = "";
 
+    public static final int SRID = 4326;
+
     @Autowired
     private GeoConfigurationManager configurationManager;
 
