@@ -50,10 +50,12 @@ public class TestGeoGeoLookupDTOService extends GeoTest {
 
         GeoLookupDTO geoLookupDTO = ll.doLookup(956, 254, "18");
 
-        Assert.assertEquals("Nuuk", geoLookupDTO.getMunicipalityName());
+        Assert.assertEquals("Kommuneqarfik Sermersooq", geoLookupDTO.getMunicipalityName());
         Assert.assertEquals("B-3197B", geoLookupDTO.getbNumber());
         Assert.assertEquals("Qarsaalik", geoLookupDTO.getRoadName());
         Assert.assertEquals("0600", geoLookupDTO.getLocalityCode());
+        Assert.assertEquals("NUK", geoLookupDTO.getLocalityAbbrev());
+        Assert.assertEquals("Nuuk", geoLookupDTO.getLocalityName());
     }
 
 }
