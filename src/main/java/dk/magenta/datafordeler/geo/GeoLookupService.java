@@ -46,9 +46,6 @@ public class GeoLookupService extends CprLookupService{
             return super.doLookup(municipalityCode, roadCode, houseNumber);
         } else {
             GeoLookupDTO geoLookupDTO = new GeoLookupDTO();
-            if (COMPENSATE_2018_MUNICIPALITY_SPLIT && (municipalityCode == 959 || municipalityCode == 960)) {
-                municipalityCode = 958;
-            }
             GeoMunicipalityEntity municipalityEntity = null;
             if (municipalityCacheGR.containsKey(municipalityCode)) {
                 municipalityEntity = municipalityCacheGR.get(municipalityCode);
