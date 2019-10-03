@@ -3,15 +3,8 @@ import dk.magenta.datafordeler.core.Application;
 import dk.magenta.datafordeler.core.database.QueryManager;
 import dk.magenta.datafordeler.geo.GeoLookupDTO;
 import dk.magenta.datafordeler.geo.GeoLookupService;
-import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressEntityManager;
-import dk.magenta.datafordeler.geo.data.building.BuildingEntityManager;
-import dk.magenta.datafordeler.geo.data.locality.LocalityEntityManager;
 import dk.magenta.datafordeler.geo.data.municipality.GeoMunicipalityEntity;
-import dk.magenta.datafordeler.geo.data.municipality.MunicipalityEntityManager;
 import dk.magenta.datafordeler.geo.data.municipality.MunicipalityQuery;
-import dk.magenta.datafordeler.geo.data.postcode.PostcodeEntityManager;
-import dk.magenta.datafordeler.geo.data.road.RoadEntityManager;
-import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressEntityManager;
 import org.hibernate.Session;
 import org.junit.Assert;
 import org.junit.Before;
@@ -56,6 +49,11 @@ public class TestGeoGeoLookupDTOService extends GeoTest {
         Assert.assertEquals("0600", geoLookupDTO.getLocalityCode());
         Assert.assertEquals("NUK", geoLookupDTO.getLocalityAbbrev());
         Assert.assertEquals("Nuuk", geoLookupDTO.getLocalityName());
+        Assert.assertEquals(3900, geoLookupDTO.getPostalCode());
+        Assert.assertEquals("Nuuk", geoLookupDTO.getPostalDistrict());
+
+        Assert.assertEquals("Nuuk", lookupService.getPostalCodeDistrict(3900));
+        Assert.assertEquals("Santa Claus/ juulli inua", lookupService.getPostalCodeDistrict(2412));
     }
 
 
@@ -78,16 +76,16 @@ public class TestGeoGeoLookupDTOService extends GeoTest {
         Assert.assertEquals("Randers Kommune", geoLookupDTO.getMunicipalityName());
         Assert.assertEquals(null, geoLookupDTO.getbNumber());
         Assert.assertEquals("Aage Beks Vej", geoLookupDTO.getRoadName());
-        //Assert.assertEquals("0600", geoLookupDTO.getLocalityCode());
-
-
+        Assert.assertEquals(8920, geoLookupDTO.getPostalCode());
+        Assert.assertEquals("Randers NV", geoLookupDTO.getPostalDistrict());
 
         geoLookupDTO = lookupService.doLookup(730, 4, "18");
 
         Assert.assertEquals("Randers Kommune", geoLookupDTO.getMunicipalityName());
         Assert.assertEquals(null, geoLookupDTO.getbNumber());
         Assert.assertEquals("Aalborggade", geoLookupDTO.getRoadName());
-        //Assert.assertEquals("0600", geoLookupDTO.getLocalityCode());
+        Assert.assertEquals(8940, geoLookupDTO.getPostalCode());
+        Assert.assertEquals("Randers SV", geoLookupDTO.getPostalDistrict());
     }
 
 }

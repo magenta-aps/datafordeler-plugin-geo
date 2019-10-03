@@ -2,12 +2,6 @@ package dk.magenta.datafordeler.geo;
 
 import dk.magenta.datafordeler.core.database.QueryManager;
 import dk.magenta.datafordeler.core.fapi.BaseQuery;
-import dk.magenta.datafordeler.core.util.DoubleHashMap;
-import dk.magenta.datafordeler.cpr.CprRecordFilter;
-import dk.magenta.datafordeler.cpr.records.road.RoadRecordQuery;
-import dk.magenta.datafordeler.cpr.records.road.data.RoadNameBitemporalRecord;
-import dk.magenta.datafordeler.cpr.records.road.data.RoadPostalcodeBitemporalRecord;
-import dk.magenta.datafordeler.cvr.records.unversioned.Municipality;
 import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressEntity;
 import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressQuery;
 import dk.magenta.datafordeler.geo.data.locality.GeoLocalityEntity;
@@ -22,11 +16,8 @@ import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 
 import java.time.OffsetDateTime;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class GeoLookupService extends CprLookupService{
 
@@ -99,7 +90,7 @@ public class GeoLookupService extends CprLookupService{
                 geoLookupDTO.setPostalDistrict(entity.getName().iterator().next().getName());
             }
 
-            LocalityQuery lq = new LocalityQuery();//lookup.localityCode
+            LocalityQuery lq = new LocalityQuery();
             lq.setCode(geoLookupDTO.getLocalityCode());
             List<GeoLocalityEntity> localities = QueryManager.getAllEntities(super.getSession(), lq, GeoLocalityEntity.class);
 
@@ -114,8 +105,8 @@ public class GeoLookupService extends CprLookupService{
 
 
     public String getPostalCodeDistrict(int code) {
-        //TODO: Implement something or delete
-        return null;
+        PostcodeEntity entity = QueryManager.getEntity(super.getSession(), PostcodeEntity.generateUUID(code), PostcodeEntity.class);
+        return entity.getName().iterator().next().getName();
     }
 
     private static void setQueryNow(BaseQuery query) {
