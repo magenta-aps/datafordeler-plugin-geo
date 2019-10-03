@@ -73,7 +73,7 @@ public class TestGeoGeoLookupDTOService extends GeoTest {
 
         GeoLookupDTO geoLookupDTO = lookupService.doLookup(730, 1, "18");
 
-        Assert.assertEquals("Randers Kommune", geoLookupDTO.getMunicipalityName());
+        Assert.assertEquals("Randers", geoLookupDTO.getMunicipalityName());
         Assert.assertEquals(null, geoLookupDTO.getbNumber());
         Assert.assertEquals("Aage Beks Vej", geoLookupDTO.getRoadName());
         Assert.assertEquals(8920, geoLookupDTO.getPostalCode());
@@ -81,7 +81,7 @@ public class TestGeoGeoLookupDTOService extends GeoTest {
 
         geoLookupDTO = lookupService.doLookup(730, 4, "18");
 
-        Assert.assertEquals("Randers Kommune", geoLookupDTO.getMunicipalityName());
+        Assert.assertEquals("Randers", geoLookupDTO.getMunicipalityName());
         Assert.assertEquals(null, geoLookupDTO.getbNumber());
         Assert.assertEquals("Aalborggade", geoLookupDTO.getRoadName());
         Assert.assertEquals(8940, geoLookupDTO.getPostalCode());
