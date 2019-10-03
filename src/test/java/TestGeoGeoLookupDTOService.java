@@ -46,9 +46,9 @@ public class TestGeoGeoLookupDTOService extends GeoTest {
     public void testLookupService() throws IOException {
 
         Session session = sessionManager.getSessionFactory().openSession();
-        GeoLookupService ll = new GeoLookupService(session);
+        GeoLookupService lookupService = new GeoLookupService(session);
 
-        GeoLookupDTO geoLookupDTO = ll.doLookup(956, 254, "18");
+        GeoLookupDTO geoLookupDTO = lookupService.doLookup(956, 254, "18");
 
         Assert.assertEquals("Kommuneqarfik Sermersooq", geoLookupDTO.getMunicipalityName());
         Assert.assertEquals("B-3197B", geoLookupDTO.getbNumber());
@@ -56,6 +56,38 @@ public class TestGeoGeoLookupDTOService extends GeoTest {
         Assert.assertEquals("0600", geoLookupDTO.getLocalityCode());
         Assert.assertEquals("NUK", geoLookupDTO.getLocalityAbbrev());
         Assert.assertEquals("Nuuk", geoLookupDTO.getLocalityName());
+    }
+
+
+
+
+
+    @Test
+    public void testLookupServiceDk() throws IOException {
+
+        Session session = sessionManager.getSessionFactory().openSession();
+
+
+        MunicipalityQuery query = new MunicipalityQuery();
+        query.addKommunekodeRestriction("1234");
+        List<GeoMunicipalityEntity> localities = QueryManager.getAllEntities(session, query, GeoMunicipalityEntity.class);
+        GeoLookupService lookupService = new GeoLookupService(session);
+
+        GeoLookupDTO geoLookupDTO = lookupService.doLookup(730, 1, "18");
+
+        Assert.assertEquals("Randers Kommune", geoLookupDTO.getMunicipalityName());
+        Assert.assertEquals(null, geoLookupDTO.getbNumber());
+        Assert.assertEquals("Aage Beks Vej", geoLookupDTO.getRoadName());
+        //Assert.assertEquals("0600", geoLookupDTO.getLocalityCode());
+
+
+
+        geoLookupDTO = lookupService.doLookup(730, 4, "18");
+
+        Assert.assertEquals("Randers Kommune", geoLookupDTO.getMunicipalityName());
+        Assert.assertEquals(null, geoLookupDTO.getbNumber());
+        Assert.assertEquals("Aalborggade", geoLookupDTO.getRoadName());
+        //Assert.assertEquals("0600", geoLookupDTO.getLocalityCode());
     }
 
 }

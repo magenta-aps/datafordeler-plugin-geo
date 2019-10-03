@@ -49,14 +49,12 @@ public class GeoLookupService extends CprLookupService{
 
     public GeoLookupDTO doLookup(int municipalityCode, int roadCode, String houseNumber) {
 
-        GeoLookupDTO geoLookupDTO = new GeoLookupDTO();
-
         OffsetDateTime now = OffsetDateTime.now();
 
         if (municipalityCode < 950) {
-            super.doLookup(municipalityCode, roadCode, houseNumber);
+            return super.doLookup(municipalityCode, roadCode, houseNumber);
         } else {
-
+            GeoLookupDTO geoLookupDTO = new GeoLookupDTO();
             if (COMPENSATE_2018_MUNICIPALITY_SPLIT && (municipalityCode == 959 || municipalityCode == 960)) {
                 municipalityCode = 958;
             }
@@ -109,8 +107,9 @@ public class GeoLookupService extends CprLookupService{
                 geoLookupDTO.setLocalityName(localities.get(0).getName().iterator().next().getName());
                 geoLookupDTO.setLocalityAbbrev(localities.get(0).getAbbreviation().iterator().next().getName());
             }
+            return geoLookupDTO;
         }
-        return geoLookupDTO;
+
     }
 
 
