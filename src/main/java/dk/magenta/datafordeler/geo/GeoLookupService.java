@@ -65,8 +65,8 @@ public class GeoLookupService extends CprLookupService{
 
 
             RoadQuery rq = new RoadQuery();
-            rq.addKommunekodeRestriction(Integer.toString(municipalityCode));
-            rq.addCode(Integer.toString(roadCode));
+            rq.setMunicipality(Integer.toString(municipalityCode));
+            rq.setCode(Integer.toString(roadCode));
             setQueryNow(rq);
             List<GeoRoadEntity> roadEntities = QueryManager.getAllEntities(super.getSession(), rq, GeoRoadEntity.class);
             if (roadEntities != null && roadEntities.size() > 0) {
