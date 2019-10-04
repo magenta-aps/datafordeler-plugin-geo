@@ -76,20 +76,21 @@ public class GeoLookupService extends CprLookupService{
 
 
             AccessAddressQuery bq = new AccessAddressQuery();
-            bq.addKommunekodeRestriction(Integer.toString(municipalityCode));
-            bq.addHouseNumber(houseNumber);
+            bq.setMunicipality(Integer.toString(municipalityCode));
+            bq.setHouseNumber(houseNumber);
             setQueryNow(bq);
-            List<AccessAddressEntity> accAdd = QueryManager.getAllEntities(super.getSession(), bq, AccessAddressEntity.class);
-            if (accAdd != null && accAdd.size() > 0) {
-                geoLookupDTO.setbNumber(accAdd.get(0).getBnr());
-                geoLookupDTO.setPostalCode(accAdd.get(0).getPostcode().iterator().next().getPostcode());
+            List<AccessAddressEntity> accessAddress = QueryManager.getAllEntities(super.getSession(), bq, AccessAddressEntity.class);
+            if (accessAddress != null && accessAddress.size() > 0) {
+                geoLookupDTO.setbNumber(accessAddress.get(0).getBnr());
+                geoLookupDTO.setPostalCode(accessAddress.get(0).getPostcode().iterator().next().getPostcode());
                 PostcodeEntity entity = QueryManager.getEntity(super.getSession(), PostcodeEntity.generateUUID(geoLookupDTO.getPostalCode()), PostcodeEntity.class);
                 geoLookupDTO.setPostalDistrict(entity.getName().iterator().next().getName());
             }
 
-            LocalityQuery lq = new LocalityQuery();
-            lq.setCode(geoLookupDTO.getLocalityCode());
-            List<GeoLocalityEntity> localities = QueryManager.getAllEntities(super.getSession(), lq, GeoLocalityEntity.class);
+            LocalityQuery localityQuery = new LocalityQuery();
+            localityQuery.setCode(geoLookupDTO.getLocalityCode());
+            localityQuery.setMunicipality(Integer.toString(municipalityCode));
+            List<GeoLocalityEntity> localities = QueryManager.getAllEntities(super.getSession(), localityQuery, GeoLocalityEntity.class);
 
             if (localities != null && localities.size() > 0) {
                 geoLookupDTO.setLocalityName(localities.get(0).getName().iterator().next().getName());
