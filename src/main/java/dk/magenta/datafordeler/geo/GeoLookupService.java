@@ -69,6 +69,8 @@ public class GeoLookupService extends CprLookupService{
             rq.setCode(Integer.toString(roadCode));
             setQueryNow(rq);
             List<GeoRoadEntity> roadEntities = QueryManager.getAllEntities(super.getSession(), rq, GeoRoadEntity.class);
+
+            log.error("GeoRoadEntitySize " + roadEntities.size());
             if (roadEntities != null && roadEntities.size() > 0) {
                 geoLookupDTO.setRoadName(roadEntities.get(0).getName().iterator().next().getName());
                 geoLookupDTO.setLocalityCode(roadEntities.get(0).getLocality().iterator().next().getCode());
@@ -78,8 +80,10 @@ public class GeoLookupService extends CprLookupService{
             AccessAddressQuery bq = new AccessAddressQuery();
             bq.setMunicipality(Integer.toString(municipalityCode));
             bq.setHouseNumber(houseNumber);
+            bq.setRoad(roadCode);
             setQueryNow(bq);
             List<AccessAddressEntity> accessAddress = QueryManager.getAllEntities(super.getSession(), bq, AccessAddressEntity.class);
+            log.info("AccessAddressEntitySize " + accessAddress.size());
             if (accessAddress != null && accessAddress.size() > 0) {
                 geoLookupDTO.setbNumber(accessAddress.get(0).getBnr());
                 geoLookupDTO.setPostalCode(accessAddress.get(0).getPostcode().iterator().next().getPostcode());
@@ -91,7 +95,7 @@ public class GeoLookupService extends CprLookupService{
             localityQuery.setCode(geoLookupDTO.getLocalityCode());
             localityQuery.setMunicipality(Integer.toString(municipalityCode));
             List<GeoLocalityEntity> localities = QueryManager.getAllEntities(super.getSession(), localityQuery, GeoLocalityEntity.class);
-
+            log.error("GeoLocalityEntitySize " + localities.size());
             if (localities != null && localities.size() > 0) {
                 geoLookupDTO.setLocalityName(localities.get(0).getName().iterator().next().getName());
                 geoLookupDTO.setLocalityAbbrev(localities.get(0).getAbbreviation().iterator().next().getName());
