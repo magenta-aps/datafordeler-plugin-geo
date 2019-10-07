@@ -115,7 +115,7 @@ public class GeoLookupService extends CprLookupService {
     }
 
     private static String formatBNumber(String bnr) {
-        if(bnr==null) {
+        if(bnr==null || bnr.equals("")) {
             return null;
         }
         bnr = bnr.replaceAll("^0+", "");
