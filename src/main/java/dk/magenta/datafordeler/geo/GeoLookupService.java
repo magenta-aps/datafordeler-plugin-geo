@@ -2,6 +2,7 @@ package dk.magenta.datafordeler.geo;
 
 import dk.magenta.datafordeler.core.database.QueryManager;
 import dk.magenta.datafordeler.core.fapi.BaseQuery;
+import dk.magenta.datafordeler.cpr.CprLookupService;
 import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressEntity;
 import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressQuery;
 import dk.magenta.datafordeler.geo.data.locality.GeoLocalityEntity;
@@ -19,11 +20,10 @@ import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
 
-public class GeoLookupService extends CprLookupService{
+public class GeoLookupService extends CprLookupService {
 
     private Logger log = LogManager.getLogger("dk.magenta.datafordeler.geo.GeoLookupService");
 
-    public static final boolean COMPENSATE_2018_MUNICIPALITY_SPLIT = true;
     private HashMap<Integer, GeoMunicipalityEntity> municipalityCacheGR = new HashMap<>();
 
     public GeoLookupService(Session session) {
@@ -39,11 +39,8 @@ public class GeoLookupService extends CprLookupService{
     }
 
     public GeoLookupDTO doLookup(int municipalityCode, int roadCode, String houseNumber) {
-
-        OffsetDateTime now = OffsetDateTime.now();
-
         if (municipalityCode < 950) {
-            return super.doLookup(municipalityCode, roadCode, houseNumber);
+            return new GeoLookupDTO(super.doLookup(municipalityCode, roadCode, houseNumber));
         } else {
             GeoLookupDTO geoLookupDTO = new GeoLookupDTO();
             GeoMunicipalityEntity municipalityEntity = null;
@@ -64,11 +61,11 @@ public class GeoLookupService extends CprLookupService{
             }
 
 
-            RoadQuery rq = new RoadQuery();
-            rq.setMunicipality(Integer.toString(municipalityCode));
-            rq.setCode(Integer.toString(roadCode));
-            setQueryNow(rq);
-            List<GeoRoadEntity> roadEntities = QueryManager.getAllEntities(super.getSession(), rq, GeoRoadEntity.class);
+            RoadQuery roadQuery = new RoadQuery();
+            roadQuery.setMunicipality(Integer.toString(municipalityCode));
+            roadQuery.setCode(Integer.toString(roadCode));
+            setQueryNow(roadQuery);
+            List<GeoRoadEntity> roadEntities = QueryManager.getAllEntities(super.getSession(), roadQuery, GeoRoadEntity.class);
 
             log.error("GeoRoadEntitySize " + roadEntities.size());
             if (roadEntities != null && roadEntities.size() > 0) {
@@ -77,12 +74,12 @@ public class GeoLookupService extends CprLookupService{
             }
 
 
-            AccessAddressQuery bq = new AccessAddressQuery();
-            bq.setMunicipality(Integer.toString(municipalityCode));
-            bq.setHouseNumber(houseNumber);
-            bq.setRoad(roadCode);
-            setQueryNow(bq);
-            List<AccessAddressEntity> accessAddress = QueryManager.getAllEntities(super.getSession(), bq, AccessAddressEntity.class);
+            AccessAddressQuery accessAddressQuery = new AccessAddressQuery();
+            accessAddressQuery.setMunicipality(Integer.toString(municipalityCode));
+            accessAddressQuery.setHouseNumber(houseNumber);
+            accessAddressQuery.setRoad(roadCode);
+            setQueryNow(accessAddressQuery);
+            List<AccessAddressEntity> accessAddress = QueryManager.getAllEntities(super.getSession(), accessAddressQuery, AccessAddressEntity.class);
             log.info("AccessAddressEntitySize " + accessAddress.size());
             if (accessAddress != null && accessAddress.size() > 0) {
                 geoLookupDTO.setbNumber(accessAddress.get(0).getBnr());
@@ -94,6 +91,7 @@ public class GeoLookupService extends CprLookupService{
             LocalityQuery localityQuery = new LocalityQuery();
             localityQuery.setCode(geoLookupDTO.getLocalityCode());
             localityQuery.setMunicipality(Integer.toString(municipalityCode));
+            setQueryNow(localityQuery);
             List<GeoLocalityEntity> localities = QueryManager.getAllEntities(super.getSession(), localityQuery, GeoLocalityEntity.class);
             log.error("GeoLocalityEntitySize " + localities.size());
             if (localities != null && localities.size() > 0) {
@@ -102,7 +100,6 @@ public class GeoLookupService extends CprLookupService{
             }
             return geoLookupDTO;
         }
-
     }
 
 
@@ -118,5 +115,4 @@ public class GeoLookupService extends CprLookupService{
         query.setEffectFrom(now);
         query.setEffectTo(now);
     }
-
 }

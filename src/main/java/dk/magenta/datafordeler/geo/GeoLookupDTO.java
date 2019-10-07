@@ -1,70 +1,23 @@
 package dk.magenta.datafordeler.geo;
 
-public class GeoLookupDTO {
-    private String municipalityName = null;
-    private String roadName = null;
-    private String localityCode = null;
-    private String localityAbbrev = null;
-    private String localityName = null;
-    private int postalCode = 0;
-    private String postalDistrict = null;
+import dk.magenta.datafordeler.cpr.CprLookupDTO;
+
+public class GeoLookupDTO extends CprLookupDTO {
+
+    public GeoLookupDTO() {
+    }
+
+    public GeoLookupDTO(CprLookupDTO cprDto) {
+        this.municipalityName = cprDto.getMunicipalityName();
+        this.roadName = cprDto.getRoadName();
+        this.localityCode = cprDto.getLocalityCode();
+        this.localityAbbrev = cprDto.getLocalityAbbrev();
+        this.localityName = cprDto.getLocalityName();
+        this.postalCode = cprDto.getPostalCode();
+        this.postalDistrict = cprDto.getPostalDistrict();
+    }
+
     private String bNumber = null;
-
-    public String getMunicipalityName() {
-        return municipalityName;
-    }
-
-    public void setMunicipalityName(String municipalityName) {
-        this.municipalityName = municipalityName;
-    }
-
-    public String getRoadName() {
-        return roadName;
-    }
-
-    public void setRoadName(String roadName) {
-        this.roadName = roadName;
-    }
-
-    public String getLocalityCode() {
-        return localityCode;
-    }
-
-    public void setLocalityCode(String localityCode) {
-        this.localityCode = localityCode;
-    }
-
-    public String getLocalityAbbrev() {
-        return localityAbbrev;
-    }
-
-    public void setLocalityAbbrev(String localityAbbrev) {
-        this.localityAbbrev = localityAbbrev;
-    }
-
-    public String getLocalityName() {
-        return localityName;
-    }
-
-    public void setLocalityName(String localityName) {
-        this.localityName = localityName;
-    }
-
-    public int getPostalCode() {
-        return postalCode;
-    }
-
-    public void setPostalCode(int postalCode) {
-        this.postalCode = postalCode;
-    }
-
-    public String getPostalDistrict() {
-        return postalDistrict;
-    }
-
-    public void setPostalDistrict(String postalDistrict) {
-        this.postalDistrict = postalDistrict;
-    }
 
     public String getbNumber() {
         return bNumber;
