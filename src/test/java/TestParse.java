@@ -156,7 +156,7 @@ public class TestParse extends GeoTest {
             BuildingEntity entity = QueryManager.getEntity(session, UUID.fromString("AF3550F5-2998-404D-B784-A70C4DEB2A18"), BuildingEntity.class);
             Assert.assertNotNull(entity);
             Assert.assertEquals(null, entity.getAnr());
-            Assert.assertEquals("B-3197B", entity.getBnr());
+            Assert.assertEquals("B-3197", entity.getBnr());
             Assert.assertEquals("{DC2CAE1B-1F98-44FF-AE8F-6A52556B13FD}", entity.getSumiffiikId());
             Assert.assertTrue(OffsetDateTime.parse("2017-09-29T16:12:36Z").isEqual(entity.getCreationDate()));
             Assert.assertEquals("thard_nukissiorfiit", entity.getCreator());
@@ -182,7 +182,7 @@ public class TestParse extends GeoTest {
         try {
             AccessAddressEntity entity = QueryManager.getEntity(session, UUID.fromString("2E3776BF-05C2-433C-ADB9-8A07DF6B3E8F"), AccessAddressEntity.class);
             Assert.assertNotNull(entity);
-            Assert.assertEquals("B-3197B", entity.getBnr());
+            Assert.assertEquals("B-3197", entity.getBnr());
             Assert.assertTrue(OffsetDateTime.parse("2018-08-23T14:48:05Z").isEqual(entity.getCreationDate()));
             Assert.assertEquals("IRKS", entity.getCreator());
             Assert.assertEquals("{69231C66-F37A-4F78-80C1-E379BFEE165D}", entity.getSumiffiikId());

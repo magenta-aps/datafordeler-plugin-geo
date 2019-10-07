@@ -39,6 +39,10 @@ public class GeoLookupService extends CprLookupService {
     }
 
     public GeoLookupDTO doLookup(int municipalityCode, int roadCode, String houseNumber) {
+        return this.doLookup(municipalityCode, roadCode, houseNumber, null);
+    }
+
+    public GeoLookupDTO doLookup(int municipalityCode, int roadCode, String houseNumber, String bNumber) {
         if (municipalityCode < 950) {
             return new GeoLookupDTO(super.doLookup(municipalityCode, roadCode, houseNumber));
         } else {
@@ -69,6 +73,9 @@ public class GeoLookupService extends CprLookupService {
 
             log.info("GeoRoadEntitySize " + roadEntities.size());
             if (roadEntities != null && roadEntities.size() > 0) {
+                //There can be more than one roadEntities, we just take the first one.
+                //This is becrause ane road can be split into many roadentities by sideroads.
+                //If all sideeroads does not have the same name, it is an error at the delivered data.
                 geoLookupDTO.setRoadName(roadEntities.get(0).getName().iterator().next().getName());
                 geoLookupDTO.setLocalityCode(roadEntities.get(0).getLocality().iterator().next().getCode());
             }
@@ -76,13 +83,18 @@ public class GeoLookupService extends CprLookupService {
 
             AccessAddressQuery accessAddressQuery = new AccessAddressQuery();
             accessAddressQuery.setMunicipality(Integer.toString(municipalityCode));
-            accessAddressQuery.setHouseNumber(houseNumber);
+            log.info("Houseno " + houseNumber);
+            if(houseNumber!=null && !houseNumber.equals("")) {
+                accessAddressQuery.setHouseNumber(houseNumber);
+            }
             accessAddressQuery.setRoad(roadCode);
             setQueryNow(accessAddressQuery);
             List<AccessAddressEntity> accessAddress = QueryManager.getAllEntities(super.getSession(), accessAddressQuery, AccessAddressEntity.class);
             log.info("AccessAddressEntitySize " + accessAddress.size());
             if (accessAddress != null && accessAddress.size() > 0) {
-                geoLookupDTO.setbNumber(accessAddress.get(0).getBnr());
+                //There can be more than one access-address, we just take the first one.
+                //There can be more than one accessaddress on a road, but they have the same postalcode and postaldistrict
+                geoLookupDTO.setbNumber(formatBNumber(bNumber));
                 geoLookupDTO.setPostalCode(accessAddress.get(0).getPostcode().iterator().next().getPostcode());
                 PostcodeEntity entity = QueryManager.getEntity(super.getSession(), PostcodeEntity.generateUUID(geoLookupDTO.getPostalCode()), PostcodeEntity.class);
                 geoLookupDTO.setPostalDistrict(entity.getName().iterator().next().getName());
@@ -100,6 +112,15 @@ public class GeoLookupService extends CprLookupService {
             }
             return geoLookupDTO;
         }
+    }
+
+    private static String formatBNumber(String bnr) {
+        if(bnr==null) {
+            return null;
+        }
+        bnr = bnr.replaceAll("^0+", "");
+        bnr = bnr.replaceAll("^B-?", "");
+        return "B-" + bnr;
     }
 
 

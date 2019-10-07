@@ -41,10 +41,10 @@ public class TestGeoGeoLookupDTOService extends GeoTest {
         Session session = sessionManager.getSessionFactory().openSession();
         GeoLookupService lookupService = new GeoLookupService(session);
 
-        GeoLookupDTO geoLookupDTO = lookupService.doLookup(956, 254, "18");
+        GeoLookupDTO geoLookupDTO = lookupService.doLookup(956, 254, "18", "3197");
 
         Assert.assertEquals("Kommuneqarfik Sermersooq", geoLookupDTO.getMunicipalityName());
-        Assert.assertEquals("B-3197B", geoLookupDTO.getbNumber());
+        Assert.assertEquals("B-3197", geoLookupDTO.getbNumber());
         Assert.assertEquals("Qarsaalik", geoLookupDTO.getRoadName());
         Assert.assertEquals("0600", geoLookupDTO.getLocalityCode());
         Assert.assertEquals("NUK", geoLookupDTO.getLocalityAbbrev());
