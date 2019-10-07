@@ -67,7 +67,7 @@ public class GeoLookupService extends CprLookupService {
             setQueryNow(roadQuery);
             List<GeoRoadEntity> roadEntities = QueryManager.getAllEntities(super.getSession(), roadQuery, GeoRoadEntity.class);
 
-            log.error("GeoRoadEntitySize " + roadEntities.size());
+            log.info("GeoRoadEntitySize " + roadEntities.size());
             if (roadEntities != null && roadEntities.size() > 0) {
                 geoLookupDTO.setRoadName(roadEntities.get(0).getName().iterator().next().getName());
                 geoLookupDTO.setLocalityCode(roadEntities.get(0).getLocality().iterator().next().getCode());
@@ -93,7 +93,7 @@ public class GeoLookupService extends CprLookupService {
             localityQuery.setMunicipality(Integer.toString(municipalityCode));
             setQueryNow(localityQuery);
             List<GeoLocalityEntity> localities = QueryManager.getAllEntities(super.getSession(), localityQuery, GeoLocalityEntity.class);
-            log.error("GeoLocalityEntitySize " + localities.size());
+            log.info("GeoLocalityEntitySize " + localities.size());
             if (localities != null && localities.size() > 0) {
                 geoLookupDTO.setLocalityName(localities.get(0).getName().iterator().next().getName());
                 geoLookupDTO.setLocalityAbbrev(localities.get(0).getAbbreviation().iterator().next().getName());
