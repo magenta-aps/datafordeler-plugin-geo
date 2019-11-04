@@ -12,12 +12,14 @@ import dk.magenta.datafordeler.geo.data.municipality.GeoMunicipalityEntity;
 import dk.magenta.datafordeler.geo.data.municipality.MunicipalityQuery;
 import dk.magenta.datafordeler.geo.data.postcode.PostcodeEntity;
 import dk.magenta.datafordeler.geo.data.road.GeoRoadEntity;
+import dk.magenta.datafordeler.geo.data.road.RoadNameRecord;
 import dk.magenta.datafordeler.geo.data.road.RoadQuery;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 
 import java.time.OffsetDateTime;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -73,11 +75,12 @@ public class GeoLookupService extends CprLookupService {
             List<GeoRoadEntity> roadEntities = QueryManager.getAllEntities(super.getSession(), roadQuery, GeoRoadEntity.class);
 
             if (roadEntities != null && roadEntities.size() > 0) {
+                GeoRoadEntity roadEntity = roadEntities.stream().min( Comparator.comparing(GeoRoadEntity::getId)).get();
                 //There can be more than one roadEntities, we just take the first one.
                 //This is becrause ane road can be split into many roadentities by sideroads.
                 //If all sideeroads does not have the same name, it is an error at the delivered data.
-                geoLookupDTO.setRoadName(roadEntities.get(0).getName().iterator().next().getName());
-                geoLookupDTO.setLocalityCode(roadEntities.get(0).getLocality().iterator().next().getCode());
+                geoLookupDTO.setRoadName(roadEntity.getName().iterator().next().getName());
+                geoLookupDTO.setLocalityCode(roadEntity.getLocality().iterator().next().getCode());
             } else {
                 geoLookupDTO.setRoadName(GeoHardcode.getHardcodedRoadname(municipalityCode, roadCode));
             }
