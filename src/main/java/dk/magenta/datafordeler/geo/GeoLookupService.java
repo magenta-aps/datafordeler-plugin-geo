@@ -3,6 +3,7 @@ package dk.magenta.datafordeler.geo;
 import dk.magenta.datafordeler.core.database.QueryManager;
 import dk.magenta.datafordeler.core.fapi.BaseQuery;
 import dk.magenta.datafordeler.cpr.CprLookupService;
+import dk.magenta.datafordeler.geo.data.GeoHardcode;
 import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressEntity;
 import dk.magenta.datafordeler.geo.data.accessaddress.AccessAddressQuery;
 import dk.magenta.datafordeler.geo.data.locality.GeoLocalityEntity;
@@ -71,26 +72,27 @@ public class GeoLookupService extends CprLookupService {
             setQueryNow(roadQuery);
             List<GeoRoadEntity> roadEntities = QueryManager.getAllEntities(super.getSession(), roadQuery, GeoRoadEntity.class);
 
-            log.info("GeoRoadEntitySize " + roadEntities.size());
             if (roadEntities != null && roadEntities.size() > 0) {
                 //There can be more than one roadEntities, we just take the first one.
                 //This is becrause ane road can be split into many roadentities by sideroads.
                 //If all sideeroads does not have the same name, it is an error at the delivered data.
                 geoLookupDTO.setRoadName(roadEntities.get(0).getName().iterator().next().getName());
                 geoLookupDTO.setLocalityCode(roadEntities.get(0).getLocality().iterator().next().getCode());
+            } else {
+                geoLookupDTO.setRoadName(GeoHardcode.getHardcodedRoadname(municipalityCode, roadCode));
             }
 
 
             AccessAddressQuery accessAddressQuery = new AccessAddressQuery();
             accessAddressQuery.setMunicipality(Integer.toString(municipalityCode));
-            log.info("Houseno " + houseNumber);
+
             if(houseNumber!=null && !houseNumber.equals("")) {
                 accessAddressQuery.setHouseNumber(houseNumber);
             }
             accessAddressQuery.setRoad(roadCode);
             setQueryNow(accessAddressQuery);
             List<AccessAddressEntity> accessAddress = QueryManager.getAllEntities(super.getSession(), accessAddressQuery, AccessAddressEntity.class);
-            log.info("AccessAddressEntitySize " + accessAddress.size());
+
             if (accessAddress != null && accessAddress.size() > 0) {
                 //There can be more than one access-address, we just take the first one.
                 //There can be more than one accessaddress on a road, but they have the same postalcode and postaldistrict
@@ -105,7 +107,6 @@ public class GeoLookupService extends CprLookupService {
             localityQuery.setMunicipality(Integer.toString(municipalityCode));
             setQueryNow(localityQuery);
             List<GeoLocalityEntity> localities = QueryManager.getAllEntities(super.getSession(), localityQuery, GeoLocalityEntity.class);
-            log.info("GeoLocalityEntitySize " + localities.size());
             if (localities != null && localities.size() > 0) {
                 geoLookupDTO.setLocalityName(localities.get(0).getName().iterator().next().getName());
                 geoLookupDTO.setLocalityAbbrev(localities.get(0).getAbbreviation().iterator().next().getName());
