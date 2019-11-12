@@ -56,7 +56,16 @@ public class TestGeoGeoLookupDTOService extends GeoTest {
         Assert.assertEquals("Santa Claus/ juulli inua", lookupService.getPostalCodeDistrict(2412));
     }
 
+    @Test
+    public void testLookupInHardcodedList() throws IOException {
 
+        Session session = sessionManager.getSessionFactory().openSession();
+        GeoLookupService lookupService = new GeoLookupService(session);
+
+        GeoLookupDTO geoLookupDTO = lookupService.doLookup(957, 9908, "18", "3197");
+        Assert.assertEquals("Qeqqata Kommunia", geoLookupDTO.getMunicipalityName());
+        Assert.assertEquals("Uden Fast Bopæl", geoLookupDTO.getRoadName());
+    }
 
 
 
