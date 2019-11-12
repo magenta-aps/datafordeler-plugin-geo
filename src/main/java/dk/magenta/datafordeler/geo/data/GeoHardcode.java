@@ -38,6 +38,9 @@ public class GeoHardcode {
     }
 
     public static String getHardcodedRoadname(int munipialicity, int roadcode) {
+        if(munipialicities.get(munipialicity)==null || munipialicities.get(munipialicity).get(roadcode)==null) {
+            return null;
+        }
         return munipialicities.get(munipialicity).get(roadcode);
     }
 }

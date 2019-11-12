@@ -106,13 +106,15 @@ public class GeoLookupService extends CprLookupService {
             }
 
             LocalityQuery localityQuery = new LocalityQuery();
-            localityQuery.setCode(geoLookupDTO.getLocalityCode());
-            localityQuery.setMunicipality(Integer.toString(municipalityCode));
-            setQueryNow(localityQuery);
-            List<GeoLocalityEntity> localities = QueryManager.getAllEntities(super.getSession(), localityQuery, GeoLocalityEntity.class);
-            if (localities != null && localities.size() > 0) {
-                geoLookupDTO.setLocalityName(localities.get(0).getName().iterator().next().getName());
-                geoLookupDTO.setLocalityAbbrev(localities.get(0).getAbbreviation().iterator().next().getName());
+            if(geoLookupDTO.getLocalityCode()!=null) {
+                localityQuery.setCode(geoLookupDTO.getLocalityCode());
+                localityQuery.setMunicipality(Integer.toString(municipalityCode));
+                setQueryNow(localityQuery);
+                List<GeoLocalityEntity> localities = QueryManager.getAllEntities(super.getSession(), localityQuery, GeoLocalityEntity.class);
+                if (localities != null && localities.size() > 0) {
+                    geoLookupDTO.setLocalityName(localities.get(0).getName().iterator().next().getName());
+                    geoLookupDTO.setLocalityAbbrev(localities.get(0).getAbbreviation().iterator().next().getName());
+                }
             }
             return geoLookupDTO;
         }
