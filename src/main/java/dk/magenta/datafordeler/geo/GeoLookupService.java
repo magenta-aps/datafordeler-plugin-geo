@@ -96,10 +96,10 @@ public class GeoLookupService extends CprLookupService {
             setQueryNow(accessAddressQuery);
             List<AccessAddressEntity> accessAddress = QueryManager.getAllEntities(super.getSession(), accessAddressQuery, AccessAddressEntity.class);
 
+            geoLookupDTO.setbNumber(formatBNumber(bNumber));
             if (accessAddress != null && accessAddress.size() > 0) {
                 //There can be more than one access-address, we just take the first one.
                 //There can be more than one accessaddress on a road, but they have the same postalcode and postaldistrict
-                geoLookupDTO.setbNumber(formatBNumber(bNumber));
                 geoLookupDTO.setPostalCode(accessAddress.get(0).getPostcode().iterator().next().getPostcode());
                 PostcodeEntity entity = QueryManager.getEntity(super.getSession(), PostcodeEntity.generateUUID(geoLookupDTO.getPostalCode()), PostcodeEntity.class);
                 geoLookupDTO.setPostalDistrict(entity.getName().iterator().next().getName());
