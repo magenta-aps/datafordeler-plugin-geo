@@ -15,10 +15,12 @@ import dk.magenta.datafordeler.geo.data.postcode.PostcodeEntity;
 import dk.magenta.datafordeler.geo.data.postcode.PostcodeEntityManager;
 import dk.magenta.datafordeler.geo.data.road.GeoRoadEntity;
 import dk.magenta.datafordeler.geo.data.road.RoadEntityManager;
+import dk.magenta.datafordeler.geo.data.road.RoadNameRecord;
 import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressEntity;
 import dk.magenta.datafordeler.geo.data.unitaddress.UnitAddressEntityManager;
 import org.hibernate.Session;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
+import java.util.Iterator;
 import java.util.UUID;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -42,26 +45,6 @@ public class TestParse extends GeoTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private MunicipalityEntityManager municipalityEntityManager;
-
-    @Autowired
-    private LocalityEntityManager localityEntityManager;
-
-    @Autowired
-    private RoadEntityManager roadEntityManager;
-
-    @Autowired
-    private BuildingEntityManager buildingEntityManager;
-
-    @Autowired
-    private AccessAddressEntityManager accessAddressEntityManager;
-
-    @Autowired
-    private UnitAddressEntityManager unitAddressEntityManager;
-
-    @Autowired
-    private PostcodeEntityManager postcodeEntityManager;
 
     private ResponseEntity<String> restSearch(ParameterMap parameters, String type) {
         return this.lookup("/geo/"+type+"/1/rest/search?" + parameters.asUrlParams());
@@ -71,10 +54,14 @@ public class TestParse extends GeoTest {
         return this.lookup("/geo/"+type+"/1/rest/" + id);
     }
 
+    @Before
+    public void initialize() throws Exception {
+        this.loadAll();
+        this.loadCprAddress();
+    }
+
     @Test
     public void testMunicipality() throws IOException {
-        this.load(municipalityEntityManager, "/municipality.json");
-        this.load(municipalityEntityManager, "/municipality.json");
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {
@@ -84,10 +71,9 @@ public class TestParse extends GeoTest {
             Assert.assertTrue(OffsetDateTime.parse("2018-07-19T11:11:05Z").isEqual(entity.getCreationDate()));
             Assert.assertEquals("GREENADMIN", entity.getCreator());
             Assert.assertEquals(1, entity.getShape().size());
-            Assert.assertEquals("23a2a20416bb427fab4849384ee677ff", entity.getSumiffiikId());
+            Assert.assertEquals("5cc15446cddb4633b6832847b6f5d66d", entity.getSumiffiikId());
             Assert.assertEquals(1, entity.getName().size());
             Assert.assertEquals("Kommuneqarfik Sermersooq", entity.getName().iterator().next().getName());
-            Assert.assertTrue(OffsetDateTime.parse("2018-08-07T12:33:50Z").isEqual(entity.getName().iterator().next().getRegistrationFrom()));
         } finally {
             session.close();
         }
@@ -102,8 +88,6 @@ public class TestParse extends GeoTest {
 
     @Test
     public void testLocality() throws IOException {
-        this.load(localityEntityManager, "/locality.json");
-        this.load(localityEntityManager, "/locality.json");
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {
@@ -140,8 +124,6 @@ public class TestParse extends GeoTest {
 
     @Test
     public void testRoad() throws IOException {
-        this.load(roadEntityManager, "/road.json");
-        this.load(roadEntityManager, "/road.json");
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {
@@ -170,16 +152,13 @@ public class TestParse extends GeoTest {
 
     @Test
     public void testBuilding() throws IOException {
-        this.load(localityEntityManager, "/locality.json");
-        this.load(buildingEntityManager, "/building.json");
-        this.load(buildingEntityManager, "/building.json");
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {
             BuildingEntity entity = QueryManager.getEntity(session, UUID.fromString("AF3550F5-2998-404D-B784-A70C4DEB2A18"), BuildingEntity.class);
             Assert.assertNotNull(entity);
             Assert.assertEquals(null, entity.getAnr());
-            Assert.assertEquals("B-3197B", entity.getBnr());
+            Assert.assertEquals("B-3197", entity.getBnr());
             Assert.assertEquals("{DC2CAE1B-1F98-44FF-AE8F-6A52556B13FD}", entity.getSumiffiikId());
             Assert.assertTrue(OffsetDateTime.parse("2017-09-29T16:12:36Z").isEqual(entity.getCreationDate()));
             Assert.assertEquals("thard_nukissiorfiit", entity.getCreator());
@@ -200,16 +179,12 @@ public class TestParse extends GeoTest {
 
     @Test
     public void testAccessAddress() throws IOException {
-        this.load(postcodeEntityManager, "/post.json");
-        this.load(buildingEntityManager, "/building.json");
-        this.load(accessAddressEntityManager, "/access.json");
-        this.load(accessAddressEntityManager, "/access.json");
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {
             AccessAddressEntity entity = QueryManager.getEntity(session, UUID.fromString("2E3776BF-05C2-433C-ADB9-8A07DF6B3E8F"), AccessAddressEntity.class);
             Assert.assertNotNull(entity);
-            Assert.assertEquals("B-3197B", entity.getBnr());
+            Assert.assertEquals("B-3197", entity.getBnr());
             Assert.assertTrue(OffsetDateTime.parse("2018-08-23T14:48:05Z").isEqual(entity.getCreationDate()));
             Assert.assertEquals("IRKS", entity.getCreator());
             Assert.assertEquals("{69231C66-F37A-4F78-80C1-E379BFEE165D}", entity.getSumiffiikId());
@@ -253,8 +228,6 @@ public class TestParse extends GeoTest {
 
     @Test
     public void testUnitAddress() throws IOException {
-        this.load(unitAddressEntityManager, "unit.json");
-        this.load(unitAddressEntityManager, "unit.json");
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {
@@ -288,8 +261,6 @@ public class TestParse extends GeoTest {
 
     @Test
     public void testPostcode() throws IOException {
-        this.load(postcodeEntityManager, "/post.json");
-        this.load(postcodeEntityManager, "/post.json");
 
         Session session = sessionManager.getSessionFactory().openSession();
         try {
