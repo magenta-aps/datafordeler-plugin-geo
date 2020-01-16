@@ -151,7 +151,9 @@ public class AccessAddressQuery extends SumiffiikQuery<AccessAddressEntity> {
         }
     }
 
-
+    public void clearHouseNumber() {
+        houseNumber.clear();
+    }
 
 
     public List<String> getHouseNumber() {

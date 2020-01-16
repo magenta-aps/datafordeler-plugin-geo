@@ -82,7 +82,13 @@ public class GeoLookupService extends CprLookupService {
                 geoLookupDTO.setRoadName(roadEntity.getName().iterator().next().getName());
                 geoLookupDTO.setLocalityCode(roadEntity.getLocality().iterator().next().getCode());
             } else {
-                geoLookupDTO.setRoadName(GeoHardcode.getHardcodedRoadname(municipalityCode, roadCode));
+                GeoHardcode.HardcodedAdressStructure hardcodedAdress = GeoHardcode.getHardcodedRoadname(municipalityCode, roadCode);
+                if(hardcodedAdress!=null) {
+                    geoLookupDTO.setRoadName(hardcodedAdress.getVejnavn());
+                    geoLookupDTO.setPostalCode(hardcodedAdress.getPostcode());
+                    geoLookupDTO.setLocalityCode(hardcodedAdress.getLocationcode());
+                    geoLookupDTO.setPostalDistrict(hardcodedAdress.getCityname());
+                }
             }
 
 
@@ -95,6 +101,11 @@ public class GeoLookupService extends CprLookupService {
             accessAddressQuery.setRoad(roadCode);
             setQueryNow(accessAddressQuery);
             List<AccessAddressEntity> accessAddress = QueryManager.getAllEntities(super.getSession(), accessAddressQuery, AccessAddressEntity.class);
+
+            if(accessAddress.size()==0) {
+                accessAddressQuery.clearHouseNumber();
+                accessAddress = QueryManager.getAllEntities(super.getSession(), accessAddressQuery, AccessAddressEntity.class);
+            }
 
             geoLookupDTO.setbNumber(formatBNumber(bNumber));
             if (accessAddress != null && accessAddress.size() > 0) {
