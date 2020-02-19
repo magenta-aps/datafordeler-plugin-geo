@@ -27,8 +27,7 @@ public class GeoLookupService extends CprLookupService {
 
     private Logger log = LogManager.getLogger("dk.magenta.datafordeler.geo.GeoLookupService");
 
-    private HashMap<Integer, GeoMunicipalityEntity> municipalityCacheGR = new HashMap<>();
-
+    private HashMap<Integer, String> municipalityCacheGR = new HashMap<>();
 
     public GeoLookupService(SessionManager sessionManager) {
         super(sessionManager);
@@ -49,7 +48,7 @@ public class GeoLookupService extends CprLookupService {
             try(Session session = sessionManager.getSessionFactory().openSession()) {
 
                 GeoLookupDTO geoLookupDTO = new GeoLookupDTO();
-                GeoMunicipalityEntity municipalityEntity = null;
+                String municipalityEntity = null;
                 if (municipalityCacheGR.containsKey(municipalityCode)) {
                     municipalityEntity = municipalityCacheGR.get(municipalityCode);
                 } else {
@@ -58,14 +57,13 @@ public class GeoLookupService extends CprLookupService {
                     setQueryNow(query);
                     List<GeoMunicipalityEntity> municipilalicities = QueryManager.getAllEntities(session, query, GeoMunicipalityEntity.class);
                     for (GeoMunicipalityEntity municipilalicity : municipilalicities) {
-                        municipalityCacheGR.put(municipilalicity.getCode(), municipilalicity);
+                        municipalityCacheGR.put(municipilalicity.getCode(), municipilalicity.getName().iterator().next().getName());
                     }
                     municipalityEntity = municipalityCacheGR.get(municipalityCode);
                 }
                 if (municipalityEntity != null) {
-                    geoLookupDTO.setMunicipalityName(municipalityEntity.getName().iterator().next().getName());
+                    geoLookupDTO.setMunicipalityName(municipalityEntity);
                 }
-
 
                 RoadQuery roadQuery = new RoadQuery();
                 roadQuery.setMunicipality(Integer.toString(municipalityCode));
